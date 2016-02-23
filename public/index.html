@@ -5,13 +5,54 @@
     <link rel="import" href="bower_components/paper-datatable/paper-datatable.html"/>
     <link href="bower_components/iron-icons/iron-icons.html" rel="import">
 
+	  <link rel="import" 
+	        href="bower_components/paper-header-panel/paper-header-panel.html">
+	  <link rel="import" 
+	        href="bower_components/paper-toolbar/paper-toolbar.html">
+	  <link rel="import" 
+	        href="bower_components/paper-icon-button/paper-icon-button.html">
+	  <link rel="import"
+	        href="bower_components/paper-tabs/paper-tabs.html">
+	  <link rel="import" 
+	        href="bower_components/iron-icons/iron-icons.html">
+	  <link rel="import" 
+	        href="bower_components/iron-flex-layout/iron-flex-layout.html">
+	  <link rel="stylesheet" 
+	        href="/stylesheets/style.css">
+
   </head>
   <body unresolved>
-  <template is="dom-bind" id="app">
+
+
+<paper-header-panel class="flex">
+    <paper-toolbar class="medium-tall">
+      <paper-icon-button id="navicon"
+                         icon="menu"></paper-icon-button>
+      <!-- flex class forces span to fill space between icons -->
+      <span class="flex">Optimus Prime - Healthcare Personalization</span>
+      <!-- icon displays at right because of span class above -->
+      <paper-icon-button id="morebutton"
+                         icon="more-vert"></paper-icon-button>
+      <paper-tabs class="pink bottom fit" selected="0">
+        <paper-tab>ONE</paper-tab>
+        <paper-tab>TWO</paper-tab>
+      </paper-tabs>
+    </paper-toolbar>
+
+<template is="dom-bind" id="app">
 	  <paper-fab icon="add" onclick="{{addColumn}}" title="Add a column"></paper-fab>
 
-	<paper-datatable data="{{data}}" selectable multi-selection>
-	    <paper-datatable-column header="NAME" property="string" type="String" sortable default="Default" sortable editable>
+
+	<iron-ajax
+		id="ajax"
+	    auto
+	    url="/data/core"
+	    params='{"alt":"json", "q":"chrome"}'
+	    handle-as="json"
+	    last-response="{{nutritives}}"
+	    debounce-duration="300"></iron-ajax>
+	<paper-datatable data="{{nutritives}}" selectable multi-selection>
+	    <paper-datatable-column header="NAME" property="NAME" type="String" sortable default="Default" sortable editable>
 			<template>{{value}}</template>
     	</paper-datatable-column>
 	    <paper-datatable-column header="MOISTURE(GM)" property="string" type="String" sortable default="Default" sortable editable>
@@ -43,16 +84,12 @@
 	    </paper-datatable-column>
 	</paper-datatable>
 
-	<iron-ajax
-	    auto
-	    url="/data/core"
-	    params='{"alt":"json", "q":"chrome"}'
-	    handle-as="json"
-	    on-response="handleResponse"
-	    debounce-duration="300"></iron-ajax>
-
 	</template>
 
+
+  </paper-header-panel>
+
+  
   <script>
   		var app = document.querySelector("#app");
 			app.data = [
@@ -63,10 +100,6 @@
 				{string: 'Gingerbread', integer: 356, float: 49.2459783407653497443, date: "1958-10-02T18:32:59-08:00", object: {integer: 8, string: 'XYZ'}},
 				{string: 'Jelly bean', integer: 1110, float: 9.34534058345934593844, date: "1967-02-24T06:49:36-08:00", object: {integer: 2, string: 'DE'}}
 			];
-
-			app.handleResponse = function(err, data){
-				console.log("handleResponse invoked. Data is ", data);
-			};
 
 			app.addColumn = function(){
 				var div = document.createElement('div');

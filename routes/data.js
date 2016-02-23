@@ -11,11 +11,11 @@ router.get('/:kindOfData', function(req, res, next) {
 	console.log("Got request for ", req.params.kindOfData);
 	switch (req.params.kindOfData) {
 		case 'core':
-			Nutritive.find({}).limit(5).then(function(err, data) {
-				res.send({data:data});
-			}, function(err) {
-				res.send({error:err});
-			});
+			Nutritive.find({})
+				.limit(4)
+				.exec(function(err, data) {
+					res.send(data);
+				});
 			break;
 		default:
 			break;
