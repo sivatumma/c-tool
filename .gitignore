@@ -1,0 +1,17 @@
+node_modules
+dist
+bower_components
+.tmp
+C:\\nppdf32Log\\debuglog.txt
+
+client/external
+!client/external/paper-date-picker/*
+!client/external/paper-time-picker/*
+
+.idea/
+**/*.log
+*.log
+client/build.html
+tmp_*.js
+*.*~
+*.out

@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+var dbModule = require('../core/dbModule')();
+
+/**
+ * Module dependencies.
+ */
+
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+dbModule.once('open', function callback() {
+  var app = require('../app');
+  var debug = require('debug')('nutritives:server');
+  var http = require('http');
+
+  // var httpsServer = https.createServer(server_credentials, app)
+  // httpsServer.on('error', function(err) {
+  //   console.log("HTTPS could not be started as the port is in use. Trying to serve only HTTP");
+  //   console.log("...");
+  // });
+  // httpsServer.listen(config.https_port || 1443, function(err) {
+  //   if (err) {} else
+  //     console.log('Express HTTPS server listening on port ' + config.http_port || 443);
+  // });
+
+  var port = normalizePort(process.env.PORT || '3000');
+  app.set('port', port);
+
+  var server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+  function onError(error) {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+
+    var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  }
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+  }
+
+});
+
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */

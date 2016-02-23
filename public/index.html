@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="bower_components/paper-datatable/paper-datatable.html"/>
+    <link href="bower_components/iron-icons/iron-icons.html" rel="import">
+
+  </head>
+  <body unresolved>
+  <template is="dom-bind" id="app">
+	  <paper-fab icon="add" onclick="{{addColumn}}" title="Add a column"></paper-fab>
+
+	<paper-datatable data="{{data}}" selectable multi-selection>
+	    <paper-datatable-column header="NAME" property="string" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+    	</paper-datatable-column>
+	    <paper-datatable-column header="MOISTURE(GM)" property="string" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="PROTEIN(GM)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="FAT(GM)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="FIBER(GM)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="CARBOHYDRATES(GM)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="ENERGY(KCALS)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="CALCIUM(MG)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="PHOSPHOROUS(MG)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	    <paper-datatable-column header="IRON(MG)" property="integer" type="String" sortable default="Default" sortable editable>
+			<template>{{value}}</template>
+	    </paper-datatable-column>
+	</paper-datatable>
+
+	<iron-ajax
+	    auto
+	    url="/data/core"
+	    params='{"alt":"json", "q":"chrome"}'
+	    handle-as="json"
+	    on-response="handleResponse"
+	    debounce-duration="300"></iron-ajax>
+
+	</template>
+
+  <script>
+  		var app = document.querySelector("#app");
+			app.data = [
+				{string: 'Frozen yogurt', integer: 159, float: 24.234234234256547569878089, date: "1973-10-06T06:57:04-07:00", object: {integer: 1, string: 'AB'}},
+				{string: 'Ice cream sandwich', integer: 237, float: 9.2384290745893573940856398456, date: "1944-12-03T00:23:52-07:00", object: {integer: 2, string: 'DE'}},
+				{string: 'Eclair', integer: 262, float: 4.345083495345792734293056340, date: "2001-09-08T19:07:57-07:00", object: {integer: 2, string: 'BC'}},
+				{string: 'Cupcake', integer: 305, float: 9.23477349694578596263273544, date: "1958-09-15T02:12:31-07:00", object: {integer: 3, string: 'AA'}},
+				{string: 'Gingerbread', integer: 356, float: 49.2459783407653497443, date: "1958-10-02T18:32:59-08:00", object: {integer: 8, string: 'XYZ'}},
+				{string: 'Jelly bean', integer: 1110, float: 9.34534058345934593844, date: "1967-02-24T06:49:36-08:00", object: {integer: 2, string: 'DE'}}
+			];
+
+			app.handleResponse = function(err, data){
+				console.log("handleResponse invoked. Data is ", data);
+			};
+
+			app.addColumn = function(){
+				var div = document.createElement('div');
+				div.innerHTML = '<paper-datatable-column header="Fat (dyn)" property="fat" type="Number" align="right" editable sortable tooltip="The total amount of fat in the given serving size."></paper-datatable-column>';
+				var columns = Polymer.dom(document).querySelectorAll('paper-datatable-column');
+				columns[3].parentNode.insertBefore(div.childNodes[0], columns[3]);
+			};
+  </script>
+  </body>
+
+</html>
