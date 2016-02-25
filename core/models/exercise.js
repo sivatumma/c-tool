@@ -3,10 +3,11 @@ var mongoose = require('mongoose'),
 
 
 var exerciseSchema = new Schema({
+	{
 	name:String,
 	time:String,
 	caloriesConsumed:Number,
-
+}
 
 	sutableFor:[String],
 		});
