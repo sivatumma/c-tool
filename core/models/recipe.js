@@ -3,11 +3,11 @@ var mongoose = require('mongoose'),
 
 
 var recipeSchema = new Schema({
-	name: String,
+	name: String,[{
 	cuisine: String,
 	subCusine: String,
 	recipeType: String,
-    	},
+    	}],
 	ingredients: [{
 	name: String,
 	qty: Number
