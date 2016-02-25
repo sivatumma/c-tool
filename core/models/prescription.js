@@ -1,3 +1,11 @@
+var prescriptionSchema = new Schema({
+{
+patientsName: String,
+adress: String,
+age: Number,
+gender: String,
+height: Number,
+weight: Number,
 typeOfDecease:[{String}],
 allergies: String,
 pmh: String,
