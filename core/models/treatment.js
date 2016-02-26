@@ -29,7 +29,7 @@ reconsulting: [{
        schedulings: Number,
            }]
 
-var Treatment = mongoose.model('Recipe', treatmentSchema);
+var Treatment = mongoose.model('Treatment', treatmentSchema);
 module.exports = Treatment;
 }]
 )};
