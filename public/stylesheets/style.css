@@ -1,5 +1,6 @@
 body {
-  padding: 50px;
+  padding: 0px;
+  margin:0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -7,7 +8,13 @@ a {
   color: #00B7FF;
 }
 
-
+paper-fab{margin:10px 0px 0px 20px;}
+paper-datatable{margin:20px;}
+paper-tabs{
+	background:green;
+}
 paper-tabs.pink::shadow #selectionBar {
   background-color: #ff4081;
 }
+
+paper-tab{font-size:20px;}
