@@ -8,7 +8,6 @@ a {
   color: #00B7FF;
 }
 
-paper-fab{margin:10px 0px 0px 20px;}
 paper-datatable{margin:20px;}
 paper-tabs{
 	background:green;
@@ -18,3 +17,20 @@ paper-tabs.pink::shadow #selectionBar {
 }
 
 paper-tab{font-size:20px;}
+
+#recipesPage{padding:20px; width:400px;}
+
+  .cafe-header { @apply(--paper-font-headline); }
+  .cafe-light { color: var(--paper-grey-600); }
+  .cafe-location {
+    float: right;
+    font-size: 15px;
+    vertical-align: middle;
+  }
+  .cafe-reserve { color: var(--google-blue-500); }
+  iron-icon.star {
+    --iron-icon-width: 16px;
+    --iron-icon-height: 16px;
+    color: var(--paper-amber-500);
+  }
+  iron-icon.star:last-of-type { color: var(--paper-grey-500); }

@@ -1,11 +1,14 @@
 var express = require('express'),
+	fs = require('fs'),
+	n = require('./nutritiveNames');	// n means nutritive Names
+	mc = require('mc'),
 	router = express.Router(),
 	Nutritive = require('../core/models/nutritive');
 
 
 /* get different kinds of data: 
 	kindOfData can be core, substantial, nonSubstantial */
-router.get('/:kindOfData', function(req, res, next) {
+router.get('/:kindOfData/', function(req, res, next) {
 
 	// res.render('index', { title: 'Express' });
 	console.log("Got request for ", req.params.kindOfData);
@@ -18,27 +21,103 @@ router.get('/:kindOfData', function(req, res, next) {
 				});
 			break;
 		case 'memcached':
-			res.send("Came to memcached");
-			var Memcached = require('memcached');
-			Memcached.config.poolSize = 25;
-			var memcached = new Memcached('172.17.1.61:1121');
-			console.log(memcached);
+			console.log( "N is here ", n('ch'));
 
-			memcached.touch('foo', 10, function(err) {
-				console.log("err happened : ", err);
-			});
-			memcached.get('foo', function(err, data) {
-				if(err){console.log("Err while 'get', ",err);}
-				console.log(data || "No data was found. Setting some key:value to test...", data, this.command);
-				memcached.set('foo', 'bar', 10, function (err, data) { console.log("Unable to set key:value... err: ",err, data); });
-				memcached.add('foo', 'bar', 10, function (err) { console.log("Error also while 'add' ",err); });
+			var client = new mc.Client('localhost:1121');
+			client.connect(function(err, response) {
+				if (!err) {
+					console.log("Connected to the memcache on host 127.0.0.1 on port 1121!");
+					client.add('myKey', new Buffer('Siva Tumma'), {
+						flags: 0,
+						exptime: 3600
+					}, function(err, status) {
+						if (!err) {
+							console.log(status); // 'STORED' on success!
+						} else {
+							console.log("Error while add: ", err);
+						}
+					});
+					client.get('myKey', function(err, response) {
+						if (!err) {
+							console.log("This was not error: getting myKey's value: ", response['myKey']); // should output a simple string.
+						} else {
+							console.log("This is error : ", err);
+						}
+					});
 
+				} else console.log("Error :  ", err);
 			});
+			break;
 		default:
 			break;
 
 	}
 	// res.sendFile(process.cwd() + '/public/index.html');
+});
+
+router.get('/:kindOfData/:toFind', function(req, res, next) {
+
+	// res.render('index', { title: 'Express' });
+	console.log("Got request for ", req.params.kindOfData);
+	switch (req.params.kindOfData) {
+		case 'core':
+			Nutritive.find({})
+				.limit(14)
+				.exec(function(err, data) {
+					res.send(data);
+				});
+			break;
+		case 'memcached':
+			console.log( "N is here ", n('ch'));
+
+			var client = new mc.Client('localhost:1121');
+			client.connect(function(err, response) {
+				if (!err) {
+					console.log("Connected to the memcache on host 127.0.0.1 on port 1121!");
+					client.add('myKey', new Buffer('Siva Tumma'), {
+						flags: 0,
+						exptime: 3600
+					}, function(err, status) {
+						if (!err) {
+							console.log(status); // 'STORED' on success!
+						} else {
+							console.log("Error while add: ", err);
+						}
+					});
+					client.get('myKey', function(err, response) {
+						if (!err) {
+							console.log("This was not error: getting myKey's value: ", response['myKey']); // should output a simple string.
+						} else {
+							console.log("This is error : ", err);
+						}
+					});
+
+				} else console.log("Error :  ", err);
+			});
+			break;
+		default:
+			break;
+
+	}
+	// res.sendFile(process.cwd() + '/public/index.html');
+});
+
+router.post('/:kindOfData', function(req, res, next) {
+	switch (req.params.kindOfData) {
+		case 'recipeImageUpload':
+			console.log("Came to fileUpload");
+			req.pipe(req.busboy);
+			req.busboy.on('file', function(fieldname, file, filename) {
+				console.log("Uploading: " + filename);
+
+				console.log(typeof file);
+				var fstream = fs.createWriteStream(__dirname + '/' + filename);
+				file.pipe(fstream);
+			});
+			break;
+		default:
+			break;
+	}
 });
 
 module.exports = router;
