@@ -25,7 +25,9 @@ challenges:[{
              weightloss: Number,
              foodDiet: String,
             }]
-reconsulting: Boolean,
+reconsulting: [{
+       schedulings: Number,
+           }]
 
 var Treatment = mongoose.model('Recipe', treatmentSchema);
 module.exports = Treatment;
