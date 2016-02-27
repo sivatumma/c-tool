@@ -8,24 +8,24 @@ age: Number,
 weight: Number,
 overallHealth: String,
 medicalHistory: String,
-medications: Boolean,
-
-deceaseName: String,
-levels :[{
-          level1: Number,
-          level2: Number,
-        ]}
-treatment:[{
-          medications: String,
-          nutrition: String,
-          physicalActivity: String,
-          }]
-
-challenges:[{
+category: String,
+treatmentPlanType: String,
+[{
+treatmentPlanSubType: String,
+description: String,
+Name: String
+}]
+Date: Number,
+[{
+startDate: Number,
+endDate: Number,
+}]
+careType: String,
+goals:[{
              weightloss: Number,
              foodDiet: String,
             }]
-reconsulting: [{
+recuringSchedule: [{
        schedulings: Number,
            }]
 
