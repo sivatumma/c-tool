@@ -4,6 +4,11 @@ var mongoose = require('mongoose'),
 var exerciseSchema = new Schema({
 	tip: String,
 	sutableFor: [String],
+	delivered: Boolean,
+    [{
+      view: Number,
+    ignore: Number,
+    }]
 });
 
 var Tip = mongoose.model('Tip', tipSchema);
