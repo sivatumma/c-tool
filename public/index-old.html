@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+	<link rel="import" href="bower_components/paper-datatable/paper-datatable.html"/>
+	<link href="bower_components/iron-icons/iron-icons.html" rel="import">
+
+	<link rel="import" 
+	    href="bower_components/paper-header-panel/paper-header-panel.html">
+	<link rel="import" 
+	    href="bower_components/paper-input/paper-input.html">
+	<link rel="import" 
+	    href="bower_components/file-upload/file-upload.html">
+	<link rel="import" 
+	    href="bower_components/paper-card/paper-card.html">
+	<link rel="import" 
+	    href="bower_components/paper-toolbar/paper-toolbar.html">
+	<link rel="import" 
+	    href="bower_components/paper-icon-button/paper-icon-button.html">
+	<link rel="import"
+	    href="bower_components/paper-tabs/paper-tabs.html">
+	<link rel="import" 
+	    href="bower_components/iron-pages/iron-pages.html">
+	<link rel="import" 
+	    href="bower_components/iron-icons/iron-icons.html">
+	<link rel="import" 
+	    href="bower_components/paper-fab/paper-fab.html">
+	<link rel="import" 
+	    href="bower_components/paper-chip/paper-chip.html">
+	<link rel="import" 
+	    href="bower_components/iron-flex-layout/iron-flex-layout.html">
+	<link rel="import" 
+	    href="bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+	<link rel="stylesheet" 
+	    href="public/stylesheets/style.css">
+</head>
+
+
+
+<body unresolved>
+<template is="dom-bind" id="app">
+
+	<paper-header-panel mode="waterfall">
+		<div class="paper-header">
+		    <paper-toolbar class="medium-tall">
+		      <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
+		      <span class="flex">Optimus Prime - Healthcare Personalization</span>
+		      <paper-icon-button id="morebutton" icon="more-vert"></paper-icon-button>
+
+
+		      <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
+		        <paper-tab>Nutritives</paper-tab>
+		        <paper-tab>Food DB</paper-tab>
+		        <paper-tab>Exercises</paper-tab>
+		        <paper-tab>Tips</paper-tab>
+		        <paper-tab>Q &amp; A</paper-tab>
+		      </paper-tabs>
+		    </paper-toolbar>
+	    </div>
+	</paper-header-panel>
+
+
+<iron-pages id="pageContents" selected="{{selectedPage}}">
+    <div>
+		<iron-ajax
+			id="ajax"
+		    auto
+		    url="/data/core"
+		    handle-as="json"
+		    last-response="{{nutritives}}"
+		    debounce-duration="300"></iron-ajax>
+
+		<paper-datatable data="{{nutritives}}" selectable multi-selection>
+		    <paper-datatable-column header="NAME" property="NAME" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+	    	</paper-datatable-column>
+		    <paper-datatable-column header="MOISTURE(GM)" property="MOISTURE(GM)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="PROTEIN(GM)" property="PROTEIN(GM)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="FAT(GM)" property="FAT(GM)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="FIBER(GM)" property="FIBER(GM)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="CARBOHYDRATES(GM)" property="CARBOHYDRATES(GM)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="ENERGY(KCALS)" property="ENERGY(KCALS)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="CALCIUM(MG)" property="CALCIUM(MG)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="PHOSPHOROUS(MG)" property="PHOSPHOROUS(MG)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		    <paper-datatable-column header="IRON(MG)" property="IRON(MG)" type="String" sortable default="Default" sortable editable>
+				<template>{{value}}</template>
+		    </paper-datatable-column>
+		</paper-datatable>
+	</div>
+
+	<div id="recipesPage">	
+		<paper-fab icon="add" on-click="addRecipe" title="Add a column"></paper-fab>
+		<paper-input label="What is the Recipe Name"></paper-input>
+		<div id="ingredients"></div>
+
+  		<vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{nutritiveNames}}" on-value-changed="addIngredient" allowCustomValue></vaadin-combo-box>
+
+	  <paper-card image="public/images/dummy.jpg">
+		<file-upload target="/data/recipeImageUpload" droppable="true" raised="true" multi="true" accept="image/*">Choose File</file-upload>
+	    <div class="card-content">
+	      <div class="cafe-header">Cafe Basilico
+	        <div class="cafe-location cafe-light">
+	          <iron-icon icon="communication:location-on"></iron-icon>
+	          <span>250ft</span>
+	        </div>
+	      </div>
+	      <div class="cafe-rating">
+	        <iron-icon class="star" icon="star"></iron-icon>
+	        <iron-icon class="star" icon="star"></iron-icon>
+	        <iron-icon class="star" icon="star"></iron-icon>
+	        <iron-icon class="star" icon="star"></iron-icon>
+	        <iron-icon class="star" icon="star"></iron-icon>
+	      </div>
+	      <p>$・Italian, Cafe</p>
+	      <p class="cafe-light">Small plates, salads &amp; sandwiches in an intimate setting with 12 indoor seats plus patio seating.</p>
+	    </div>
+
+	    <div class="card-actions">
+		      <p>Tonight's availability</p>
+		      <div class="horizontal justified">
+			        <paper-icon-button icon="icons:event"></paper-icon-button>
+			        <paper-button>5:30PM</paper-button>
+			        <paper-button>7:30PM</paper-button>
+			        <paper-button>9:00PM</paper-button>
+		      </div>
+		      <paper-button class="cafe-reserve">Reserve</paper-button>
+	    </div>
+	  </paper-card>
+
+</div>
+
+
+</iron-pages>
+
+
+</template>
+  <script>
+
+
+  		var app = document.querySelector("#app");
+		app.recipe = {ingredients:[{hidden:true}]};
+
+
+		app.selectedPage = 0;
+
+		console.log(app.recipe);
+
+	app.addColumn = function(){
+		var div = document.createElement('div');
+		div.innerHTML = '<paper-datatable-column header="Fat (dyn)" property="fat" type="Number" align="right" editable sortable tooltip="The total amount of fat in the given serving size."></paper-datatable-column>';
+		var columns = Polymer.dom(document).querySelectorAll('paper-datatable-column');
+		columns[3].parentNode.insertBefore(div.childNodes[0], columns[3]);
+	};
+
+	app.addIngredient = function(e){
+		var ingredients = Polymer.dom(app.root).querySelector("#ingredients");
+		console.log(ingredients);
+
+		var chip = document.createElement("paper-chip"),
+			chipData = document.createElement("h1");
+
+		chipData.appendChild(document.createTextNode(e.detail.value));
+		chip.appendChild(chipData);
+		this.appendChild(chip);
+
+		// this.recipe.ingredients.push({name:e.detail.value, hidden:false});
+	};
+
+	app.nutritiveNames = ["Bajra",
+		"Barley",
+		"Italian millet",
+		"Jowar",
+		"Maize dry",
+		"Maize tender",
+		"Panivaragu",
+		"Ragi",
+		"Rice Parboiled, hand pounded.",
+		"Rice parboiled ,milled",
+		"Rice, raw, hand pounded",
+		"Rice raw milled",
+		"Rice bran",
+		"Rice flakes",
+		"Rice Puffed",
+		"Samai",
+		"Sanwa millet",
+		"Varagu",
+		"Wheat bulgar(parboiled)",
+		"Wheat whole",
+		"Wheat flour Whole",
+		"Wheat flour refines",
+		"Wheat germ",
+		"Wheat semolina",
+		"Wheat vermicelli",
+		"Wheat bread(brown)",
+		"Wheat bread(white)",
+		"Bengal gram whole",
+		"Bengal gram dal",
+		"Bengal gram roasted",
+		"Black gram dal",
+		"Cow pea",
+		"Field beans dry",
+		"Green gram whole",
+		"Green gram dal",
+		"Horse gram whole",
+		"Kesari dal",
+		"Lentil",
+		"Moth beans",
+		"Peas green",
+		"Peas dry",
+		"Peas roasted",
+		"Red gram dal",
+		"Red gram tender",
+		"Soy bean",
+		"Agathi",
+		"Amaranth Gangeticus tender",
+		"Amaranth Gangeticus stem",
+		"Amaranth Paniculatus",
+		"Amaranth Spinosos",
+		"Amaranth viridis",
+		"Ambatchuka",
+		"Bathua leaves",
+		"Beet greens",
+		"Betel leaves",
+		"Brussels sprouts",
+		"Cabbage",
+		"Carrot leaves",
+		"Celery leaves",
+		"Celery stalk",
+		"Chekkurmanis",
+		"Colocasia leaves (black variety)",
+		"Colocasia leaves(green variety)",
+		"Coriander leaves",
+		"Cow pea leaves",
+		"Curry leaves",
+		"Drum stick leaves",
+		"Fenugreek leaves",
+		"Fetid cassia fresh",
+		"Garden cress",
+		"Gogu",
+		"Ipomoea leaves",
+		"Knol-khol greens",
+		"Kuppameni",
+		"Lettuce",
+		"Manatakkali leaves",
+		"Mayalu",
+		"Mint",
+		"Mukarrate keerai",
+		"Mustard leaves",
+		"Nerringi",
+		"Parsley",
+		"Paruppu keerai",
+		"Ponnanganni",
+		"Radish leaves",
+		"Radish leaves table",
+		"Rape leaves",
+		"Safflower leaves",
+		"Shepu",
+		"Spinach",
+		"Tamarind leaves tender",
+		"Turnip greens",
+		"Banana rhizome",
+		"Beetroot",
+		"Carrot",
+		"Colocasia",
+		"Mango ginger",
+		"Onion big",
+		"Onion small",
+		"Parsnip",
+		"Potato",
+		"Radish pink",
+		"Radish table",
+		"Radish white",
+		"Sweet potato",
+		"Tapioca",
+		"Tapioca chips dried",
+		"Turnip",
+		"Yam elephant",
+		"Yam ordinary",
+		"Yam wild",
+		"OTHER VEGETABLES",
+		"Ash gourd",
+		"Beans( scarlet runner)",
+		"Bitter gourd",
+		"Bitter gourd small",
+		"Bottle gourd",
+		"Brinjal",
+		"Broad beans",
+		"Cauliflower",
+		"Cho cho marrow",
+		"Cluster beans",
+		"Colocasia stem",
+		"Cow pea pods",
+		"Cucumber",
+		"Double beans",
+		"Drum stick",
+		"Field beans tender",
+		"French beans",
+		"Ghosala",
+		"Gaint chillies",
+		"Jack fruit ,tender",
+		"Jack fruit, seeds",
+		"Kankoda",
+		"Kovai",
+		"Knoll-kohl",
+		"Ladies finger",
+		"Leeks",
+		"Lotus stem dry",
+		"Mango green",
+		"Onion stalks",
+		"Papaya green",
+		"Parwar",
+		"Pink beans",
+		"Plantain flower",
+		"Plantain green",
+		"Plantain stem",
+		"Pumpkin fruit",
+		"Ridge gourd",
+		"Snake gourd",
+		"Sundakkai dry",
+		"Sword beans",
+		"Tinda tender",
+		"Tomato green",
+		"Vegetable marrow",
+		"Water chest nut fresh",
+		"Almond",
+		"Areca nut",
+		"Cashew nut",
+		"Chilgoza",
+		"Coconut dry",
+		"Coconut fresh",
+		"Coconut milk",
+		"Coconut water",
+		"Coconut meal deoiled.",
+		"Gingerly seeds",
+		"Groundnut",
+		"Groundnut roasted",
+		"Linseed seeds",
+		"Mustard seeds",
+		"Niger seeds",
+		"Pistachio nut",
+		"Piyal seeds",
+		"Sunflower seeds",
+		"Walnut",
+		"Asafetida",
+		"Cardamom",
+		"Chillies dry",
+		"Chillies green",
+		"Cloves dry",
+		"Cloves green",
+		"Coriander",
+		"Cumin seeds",
+		"Fenugreek seeds",
+		"Garlic dry",
+		"Ginger fresh",
+		"Mace",
+		"Nutmeg fruit",
+		"Omum",
+		"Pepper green",
+		"Tamarind pulp",
+		"Turmeric",
+		"Ambada",
+		"Amla",
+		"Apple",
+		"Apricot fresh",
+		"Apricot dried",
+		"Bael fruit",
+		"Banana ripe",
+		"Bilimbi",
+		"Bread fruit",
+		"Bullock’s heart",
+		"Cape gooseberry",
+		"Cashew fruit",
+		"Cherries red",
+		"Currants black",
+		"Dates dried",
+		"Figs (ficus carcia)",
+		"Grapes blue variety",
+		"Grapes pale green variety",
+		"Grape fruit marsh’s Seedless",
+		"Grape fruit trimph",
+		"Guava country",
+		"Guava hill",
+		"Jack fruit",
+		"Jamb safed",
+		"Jambu fruit",
+		"Korukkapalli",
+		"Lakuch",
+		"Lemon",
+		"Lemon sweet",
+		"Lichi",
+		"Lime",
+		"Lime sweet Malta",
+		"Lime sweet musambi",
+		"Loquat",
+		"Mahua ripe",
+		"Mango ripe",
+		"Melon musk",
+		"Melon water",
+		"Mulberry",
+		"Orange",
+		"Orange juice",
+		"Palmyra fruit tender",
+		"Papaya ripe",
+		"Passion fruit",
+		"Passion fruit juice",
+		"Peaches",
+		"Pears",
+		"Parsimmon",
+		"Phalsa",
+		"Pine apple",
+		"Plum",
+		"Pomegranate",
+		"Pummelo",
+		"Quince",
+		"Raisins",
+		"Raspberry",
+		"Rose apple",
+		"Sapota",
+		"Seethaphal",
+		"Strawberry",
+		"Tomato ripe",
+		"Tomatillo",
+		"Tree tomato",
+		"Wood apple",
+		"Zizphus",
+		"Air",
+		"Bacha",
+		"Bam",
+		"Beley",
+		"Bhanger fresh",
+		"Bhangan Bata",
+		"Bhekti fresh",
+		"Bhole",
+		"Boal",
+		"Cat fish",
+		"Chital",
+		"Crab muscle",
+		"Fouli",
+		"Hilsa",
+		"Horse mackerel",
+		"Kalabasu",
+		"Katla",
+		"Khoyra fresh",
+		"Koi",
+		"Lata",
+		"Magur",
+		"Mrigal",
+		"Mullet",
+		"Pabda",
+		"Pangas",
+		"Parsey fresh",
+		"Pomfrets white",
+		"Prawn",
+		"Puti",
+		"Ribbon fish fresh",
+		"Rohu",
+		"Sardine",
+		"Sarputi",
+		"Shark",
+		"Shrimp(small., dried)",
+		"Seer",
+		"Singhi",
+		"Sole",
+		"Tengra fresh",
+		"White bait",
+		"Beef meal",
+		"Beef muscle",
+		"Buffalo meat",
+		"Egg, duck",
+		"Egg, hen",
+		"Fowl",
+		"Goat meat(lean)",
+		"Liver Goat",
+		"Liver Sheep",
+		"Mutton",
+		"Pork, muscle",
+		"Milk ass’s",
+		"Milk buffalo’s",
+		"Milk cow’s",
+		"Milk goat’s",
+		"Milk human",
+		"Curds (cow’s milk)",
+		"Skimmed milk ,liquid",
+		"Channa,cow’s milk",
+		"Cheese",
+		"Khoa(whole cow milk)",
+		"Skimmed milk powder (cow’s milk)",
+		"Whole milk powder (cow’s milk)",
+		"Butter",
+		"Ghee(cow)",
+		"Ghee(buffalo)",
+		"Hydrogenated oil(fortified)"
+	];
+  </script>
+  </body>
+
+</html>

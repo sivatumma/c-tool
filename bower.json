@@ -38,11 +38,12 @@
     "file-upload": "^1.6.3",
     "paper-button": "PolymerElements/paper-button#^1.0.11",
     "paper-input": "PolymerElements/paper-input#^1.1.8",
-    "vaadin-combo-box": "^1.0.0-alpha6"
+    "vaadin-combo-box": "^1.0.0-alpha6",
+    "paper-card": "PolymerElements/paper-card#^1.1.1"
   },
   "resolutions": {
     "polymer": "^1.0.0",
     "webcomponentsjs": "0.7.21",
-    "paper-styles": "^1.0.0"
+    "paper-styles": "^1.1.2"
   }
 }
