@@ -8,6 +8,9 @@ a {
   color: #00B7FF;
 }
 
+
+paper-card.ingredient{ padding:10px 20px; margin:30px 0px; background:#f9f9f9; }
+
 paper-datatable{margin:20px;}
 paper-tabs{
 	background:green;
@@ -18,19 +21,38 @@ paper-tabs.pink::shadow #selectionBar {
 
 paper-tab{font-size:20px;}
 
-#recipesPage{padding:20px; width:400px;}
+vaadin-combo-box{width:70% !important; display:inline; }
+iron-list{height:100px;}
+#recipesPage, #exercisesPage ,#tipsPage, #qAndAPage{padding:20px 100px;}
+#recipesPage table{width:100%;}
+#recipesPage table tr td{margin:30px;}
+#recipesPage #recipeName, #recipesPage #servingsPerOnePerson{width:270px;}
+#recipesPage h1{margin:0;}
 
-  .cafe-header { @apply(--paper-font-headline); }
-  .cafe-light { color: var(--paper-grey-600); }
-  .cafe-location {
-    float: right;
-    font-size: 15px;
-    vertical-align: middle;
-  }
-  .cafe-reserve { color: var(--google-blue-500); }
-  iron-icon.star {
-    --iron-icon-width: 16px;
-    --iron-icon-height: 16px;
-    color: var(--paper-amber-500);
-  }
-  iron-icon.star:last-of-type { color: var(--paper-grey-500); }
+.cafe-header { @apply(--paper-font-headline); }
+.cafe-light { color: var(--paper-grey-600); }
+.cafe-location {
+  float: right;
+  font-size: 15px;
+  vertical-align: middle;
+}
+.cafe-reserve { color: var(--google-blue-500); }
+iron-icon.star {
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  color: var(--paper-amber-500);
+}
+iron-icon.star:last-of-type { color: var(--paper-grey-500); }
+
+.yellow-button {
+  text-transform: none;
+  color: #eeff41;
+}
+
+paper-button.green {
+  background-color: var(--paper-green-500);
+  color: white;
+}
+paper-button.green[active] {
+  background-color: var(--paper-red-500);
+}

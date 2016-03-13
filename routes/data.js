@@ -3,19 +3,20 @@ var express = require('express'),
 	n = require('./nutritiveNames');	// n means nutritive Names
 	mc = require('mc'),
 	router = express.Router(),
-	Nutritive = require('../core/models/nutritive');
+	Nutritive = require('../core/models/nutritive'),
+	Recipe = require('../core/models/recipe'),
+	QandA = require('../core/models/qAndA');
 
 
 /* get different kinds of data: 
 	kindOfData can be core, substantial, nonSubstantial */
-router.get('/:kindOfData/', function(req, res, next) {
+router.get('/:kindOfData', function(req, res, next) {
 
 	// res.render('index', { title: 'Express' });
 	console.log("Got request for ", req.params.kindOfData);
 	switch (req.params.kindOfData) {
 		case 'core':
 			Nutritive.find({})
-				.limit(14)
 				.exec(function(err, data) {
 					res.send(data);
 				});
@@ -48,6 +49,12 @@ router.get('/:kindOfData/', function(req, res, next) {
 				} else console.log("Error :  ", err);
 			});
 			break;
+		case 'recipeListOfCurrentUser':
+			Recipe.find({createdBy:req.query.username}).exec(function(err,data){
+				if(err) res.status(500).send("Server busy, Contact Siva");
+				res.send(data);
+			});
+			break;
 		default:
 			break;
 
@@ -60,10 +67,12 @@ router.get('/:kindOfData/:toFind', function(req, res, next) {
 	// res.render('index', { title: 'Express' });
 	console.log("Got request for ", req.params.kindOfData);
 	switch (req.params.kindOfData) {
+		//	/data/core
 		case 'core':
+			console.log("Executing Nutritive.find()");
 			Nutritive.find({})
-				.limit(14)
 				.exec(function(err, data) {
+					if(err) res.status(500).send("ERROR at server");
 					res.send(data);
 				});
 			break;

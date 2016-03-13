@@ -9,22 +9,37 @@ var express = require('express'),
     routes = require('./routes/index'),
     users = require('./routes/users'),
     data = require('./routes/data'),
+    crud = require('./routes/crud'),
+    bulk = require('./routes/bulk'),
+    expressSession = require('express-session'),
+    passport = require('passport'),
     app = express();
 
-app.use(morgan('combined'));
+// app.use(morgan('combined'));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressSession({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(busboy());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname)));
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/data',data)
+app.use('/data',data);
+app.use('/crud',crud);
+app.use('/bulk',bulk);
+app.use('/users',users)
 
 
 // view engine setup

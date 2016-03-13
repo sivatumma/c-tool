@@ -1,14 +1,20 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
-var exerciseSchema = new Schema({
+var tipSchema = new Schema({
 	tip: String,
-	sutableFor: [String],
+	sutableForDecease: {
+		type:String,
+		default:"Both"
+	},
+	sutableForTime:{
+		type:String,
+		default:"Mornings"
+	},
 	delivered: Boolean,
-    [{
-      view: Number,
-    ignore: Number,
-    }]
+    views: Number,
+    ignores: Number,
+	createdBy:String
 });
 
 var Tip = mongoose.model('Tip', tipSchema);
