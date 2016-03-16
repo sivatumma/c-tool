@@ -77,13 +77,13 @@ module.exports = function(env) {
         ]
     };
     var dev = {
-        database: 'mongodb://localhost:27017/test',
+        database: 'mongodb://localhost:27017/ccc',
         old_pricing_engine_app_root: path.join('C:', 'work', 'PricingEngine', 'baseUI'),
         pricing_engine_app_root: path.join('C:', 'work', 'chpe', 'src-ui', 'html'),
         services_json_path: path.join('C:', 'work', 'chpe', 'src-ui', 'services.json')
     };
     var prod = {
-        database: 'mongodb://localhost:27017/test',
+        database: 'mongodb://localhost:27017/ccc',
         temp: path.join('/', 'tmp'),
         certificates_dir: path.join('/', 'etc', 'ssl', 'self-signed'),
         pricing_engine_app_root: path.join('/', 'root', 'siva', 'chpe', 'src-ui'),
