@@ -13,52 +13,52 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      all: ["client/assets/styles/*.min.css", "client/assets/scripts/*.min.js", "client/build.html", "client/assets/scripts/<%= pkg.name %>_concat.js"]
+      all: ["public/styleSheets/*.min.css", "public/javascripts/*.min.js", "client/build.html", "public/javascripts/<%= pkg.name %>_concat.js"]
     },
-    jshint: {
-      options: {
-        reporter: require('jshint-stylish')
-      },
-      js: {
-        options: {
-          jshintrc: '.jshintrc'
-        },
-        src: ['Gruntfile.js', 'client/assets/scripts/*.js', 'client/config/*.js']
-      },
-      html: {
-        options: {
-          extract: 'always',
-          undef: true,
-          latedef: true,
-          unused: false,
-          browser: true,
-          globals: {
-            "wrap": true,
-            "unwrap": true,
-            "Polymer": true,
-            "Platform": true,
-            "page": true,
-            "app": true,
-            "schemeBase": true,
-            "chUtils": true,
-            "MoreRouting": true,
-            "generalConfig": true,
-            "_": true,
-            "google": true,
-            "console": true,
-            "module": true
-          }
-        },
-        files: {
-          src: ['client/components/*.html']
-        }
-      }
-    },
+    // jshint: {
+    //   options: {
+    //     reporter: require('jshint-stylish')
+    //   },
+    //   js: {
+    //     options: {
+    //       jshintrc: '.jshintrc'
+    //     },
+    //     src: ['Gruntfile.js', 'public/javascripts/*.js', 'client/config/*.js']
+    //   },
+    //   html: {
+    //     options: {
+    //       extract: 'always',
+    //       undef: true,
+    //       latedef: true,
+    //       unused: false,
+    //       browser: true,
+    //       globals: {
+    //         "wrap": true,
+    //         "unwrap": true,
+    //         "Polymer": true,
+    //         "Platform": true,
+    //         "page": true,
+    //         "app": true,
+    //         "schemeBase": true,
+    //         "chUtils": true,
+    //         "MoreRouting": true,
+    //         "generalConfig": true,
+    //         "_": true,
+    //         "google": true,
+    //         "console": true,
+    //         "module": true
+    //       }
+    //     },
+    //     files: {
+    //       src: ['client/components/*.html']
+    //     }
+    //   }
+    // },
     concatCss: {},
     concat: {
       dist: {
-        src: ["client/external/lodash/lodash.min.js", "client/config/*.js", "client/lib/*.js", "client/assets/scripts/*.js", ],
-        dest: 'client/assets/scripts/<%= pkg.name %>_concat.js'
+        src: ["client/external/lodash/lodash.min.js", "client/config/*.js", "client/lib/*.js", "public/javascripts/*.js", ],
+        dest: 'public/javascripts/<%= pkg.name %>_concat.js'
       },
       options: {
         separator: "\n\n\n/******  END OF ONE SCRIPT, STARTING ANOTHER - DONE BY CONCATENATION Grunt *******/\n\n\n"
@@ -71,15 +71,15 @@ module.exports = function(grunt) {
       },
       absolute: {
         files: [{
-          src: ['client/assets/styles/*.css', '!*.min.css'],
-          dest: 'client/assets/styles/main.min.css',
+          src: ['public/styleSheets/*.css', '!*.min.css'],
+          dest: 'public/styleSheets/main.min.css',
         }]
       }
     },
     uglify: {
       dist: {
-        src: 'client/assets/scripts/<%= pkg.name %>_concat.js',
-        dest: 'client/assets/scripts/app.min.js'
+        src: 'public/javascripts/<%= pkg.name %>_concat.js',
+        dest: 'public/javascripts/app.min.js'
       }
     }
   });
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-vulcanize');
 
-  grunt.registerTask('default', ['clean', 'jshint', 'concat', 'cssmin', 'uglify', 'vulcanize']);
+  grunt.registerTask('default', ['vulcanize']);
   // grunt.registerTask('default', ['vulcanize']);
 
 };
