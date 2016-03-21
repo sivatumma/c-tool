@@ -96,7 +96,8 @@ module.exports = function(mongoose) {
         },
         avatar: {
             type: String
-        }
+        },
+        createdCounts:{}
 
     });
 

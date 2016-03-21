@@ -46,15 +46,15 @@
     "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
     "paper-item": "PolymerElements/paper-item#^1.1.4",
     "iron-form": "PolymerElements/iron-form#^1.0.16",
-    "login-form": "*",
+    "login-form": "https://github.com/sivatumma/login-form.git",
     "paper-dialog": "PolymerElements/paper-dialog#^1.0.4",
     "paper-spinner": "PolymerElements/paper-spinner#^1.1.1",
-    "login-form":"https://github.com/sivatumma/login-form.git",
-    "siva-compact-table":"https://github.com/sivatumma/compact-table.git",
-    "siva-recipe-creation":"https://github.com/sivatumma/recipe-creation.git",
-    "siva-qa-creation":"https://github.com/sivatumma/qa-creation.git",
-    "siva-tip-creation":"https://github.com/sivatumma/tip-creation.git",
-    "siva-exercise-creation":"https://github.com/sivatumma/exercise-creation.git"
+    "siva-compact-table": "https://github.com/sivatumma/compact-table.git",
+    "siva-recipe-creation": "https://github.com/sivatumma/recipe-creation.git",
+    "siva-qa-creation": "https://github.com/sivatumma/qa-creation.git",
+    "siva-tip-creation": "https://github.com/sivatumma/tip-creation.git",
+    "siva-exercise-creation": "https://github.com/sivatumma/exercise-creation.git",
+    "iron-localstorage": "PolymerElements/iron-localstorage#^1.0.5"
   },
   "resolutions": {
     "polymer": "^1.2.4",

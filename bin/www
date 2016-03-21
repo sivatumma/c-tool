@@ -24,7 +24,7 @@ dbModule.once('open', function callback() {
   //     console.log('Express HTTPS server listening on port ' + config.http_port || 443);
   // });
 
-  var port = normalizePort(process.env.PORT || '3000');
+  var port = normalizePort(process.env.OPRIME_WEB_PORT || '3000');
   app.set('port', port);
 
   var server = http.createServer(app);
