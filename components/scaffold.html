@@ -1,0 +1,87 @@
+<link rel="import" href="./nutritives.html"/>
+
+<dom-module id="siva-scaffold">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+    }
+    :host count{padding:10px; margin:10px; border-radius:30px; background:yellow;font-weight:bold; color:green;};
+    :host siva-compact-table{padding-top:80px;}
+    :host span{display:inline;}
+    :host siva-compact-table{float:right; width:70%;}
+    :host #uom {float:right; width:100px; margin:4px;}
+    :host #recipeQuantities{float:left; width:100px;}
+
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host paper-button.green[active] {
+      background-color: var(--paper-red-500);
+    }
+    :host siva-compact-table{margin-top:50px;}
+  </style>
+  <template>
+    <paper-header-panel mode="waterfall">
+      <div class="paper-header">
+        <paper-toolbar class="medium-tall">
+          <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
+          <span class="flex">Optimus Prime - Healthcare Personalization</span>
+          <div class="layout horizontal">
+
+            <table><tr>
+              <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
+              <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
+              <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
+              <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
+            </tr></table>
+          </div>
+          <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
+
+          <paper-dialog id="signOutDialog">
+            <h2>You wanna Signout ?</h2>
+            <div class="buttons">
+              <paper-button dialog-confirm autofocus on-click="signout">Sing Out</paper-button>
+            </div>
+          </paper-dialog>            
+
+
+          <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
+            <paper-tab>Food DB</paper-tab>
+            <paper-tab>Exercises</paper-tab>
+            <paper-tab>Tips</paper-tab>
+            <paper-tab>Q &amp; A</paper-tab>
+            <paper-tab>Nutritives</paper-tab>
+          </paper-tabs>
+        </paper-toolbar>
+      </div>
+    </paper-header-panel>
+
+
+    <iron-pages id="pageContents" selected="{{selectedPage}}">
+      <div id="recipesPage">
+        <siva-recipe-creation></siva-recipe-creation>
+      </div>
+      <div id="exercisesPage">
+        <siva-exercise-creation></siva-exercise-creation>
+      </div>
+      <div id="tipsPage">
+        <siva-tip-creation></siva-tip-creation>
+      </div>
+      <div id="qAndAPage">
+        <siva-qa-creation></siva-qa-creation>
+      </div>
+      <div id="nutritivesPage">
+        <siva-nutritives></siva-nutritives>
+      </div>
+    </iron-pages>
+
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is:"siva-scaffold",
+});
+</script>

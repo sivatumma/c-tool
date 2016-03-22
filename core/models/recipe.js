@@ -40,6 +40,14 @@ var recipeSchema = new Schema({
 	createdBy: String,
 });
 
+recipeSchema.add({
+    servingUnit:String,
+    diseaseFriendly:String,
+    giIndex: String
+
+});
+    
+
 recipeSchema.methods.totalEnergy = function() {
 
 };

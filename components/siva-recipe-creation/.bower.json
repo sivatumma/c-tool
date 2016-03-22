@@ -1,0 +1,37 @@
+{
+  "name": "seed-element",
+  "authors": [
+    "Siva P Tumma <sivatumma@gmail.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "seed"
+  ],
+  "main": "seed-element.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  },
+  "_release": "170ba9ebc2",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "170ba9ebc2ae1363c5e77611503f6fe53f01a4ce"
+  },
+  "_source": "https://github.com/sivatumma/recipe-creation.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/sivatumma/recipe-creation.git"
+}

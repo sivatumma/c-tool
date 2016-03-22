@@ -106,7 +106,6 @@ module.exports = function(mongoose) {
         return this;
     };
 
-
     usersSchema.virtual('isLocked').get(function() {
         return !!(this.lockUntil && this.lockUntil > Date.now());
     });

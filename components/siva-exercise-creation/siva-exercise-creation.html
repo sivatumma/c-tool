@@ -1,0 +1,131 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <siva-exercise-creation></siva-exercise-creation>
+
+@demo
+-->
+<dom-module id="siva-exercise-creation">
+  <style>
+    :host {
+      box-sizing: border-box;
+    }
+
+  :host paper-card{ width:300px; background:#f9f9f9;}
+  :host p{ margin-top:0px; font-size:90%;}
+  paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  paper-button.green[active] {
+    background-color: var(--paper-red-500);
+  }
+  </style>
+
+  <template>
+    <h1>Create New Exercise</h1>
+    <form is="iron-form" id="form" method="post" action="/form/handler">
+    <paper-card elevation="4">
+    <div class="card-actions">
+      <paper-input id="name" required auto-validate error-message="Exercise Name shouldn't be empty" value="{{name}}" label="Name of the Exercise"></paper-input>
+      <paper-input prefix="KG" type="number" value="{{weight}}" label="Weight of a person (KG)"></paper-input>
+      <p>Take any weight. This weight will be taken as basemark for creating calorific consumption of a person of any weight</p>
+      <paper-input prefix="Minutes" type="number" value="{{time}}" label="Time (Minutes)"></paper-input>
+      <paper-input prefix="Minutes" type="number" value="{{caloriesBurn}}" label="Calories Burned"></paper-input>
+      <paper-dropdown-menu label="suitableFor" value="{{suitableFor}}">
+        <paper-listbox class="dropdown-content">
+          <paper-item>Diabetes</paper-item>
+          <paper-item>Hypertension</paper-item>
+          <paper-item>Both</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </div>
+    </paper-card>
+
+    <br/>
+    <br/>
+    <br/>
+    <paper-button raised class="green" on-click="addExercise">Save Exercise Data</paper-button>
+    <paper-toast id="toast_1" text="">
+      <paper-button onclick="toast_1.toggle()" class="yellow-button">Okay !</paper-button>
+    </paper-toast>
+  </form>
+  </template>
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'siva-exercise-creation',
+    properties:{
+    },
+    
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    addExercise: function(e){
+      var exercise = {};
+      exercise.name=this.name;
+      exercise.weight = this.weight;
+      exercise.time = this.time;
+      exercise.caloriesBurn = this.caloriesBurn;
+      exercise.createdBy = JSON.parse(localStorage.user).username;
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.statusCode,res.statusCode,res, xhr.response);
+        that.$.toast_1.text = xhr.response;
+        that.$.toast_1.open();
+        that.$.form.reset();
+
+        _.extend(that.currentCounts, JSON.parse(xhr.response));
+        var counts = JSON.parse(xhr.response);
+        that.exerciseCount = counts.Exercise;
+      };
+      xhr.open("POST",'/crud/Exercise');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      if(!this.$.name.invalid)
+        xhr.send(JSON.stringify(exercise));
+    }
+
+
+
+  });
+
+</script>

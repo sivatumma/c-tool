@@ -1,0 +1,56 @@
+<dom-module id="siva-nutritives">
+      <style>
+            :host {
+                  display: block;
+                  box-sizing: border-box;
+            }
+      </style>
+      <template>
+            <iron-ajax
+                  id="ajax"
+                  auto
+                  url="/data/core"
+                  handle-as="json"
+                  last-response="{{nutritives}}"
+                  on-response="initData"
+                  debounce-duration="300"></iron-ajax>
+
+            <paper-datatable data="{{nutritives}}" selectable multi-selection>
+            <paper-datatable-column header="NAME" property="NAME" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="MOISTURE_GM" property="MOISTURE_GM" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="PROTEIN_GM" property="PROTEIN_GM" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="FAT_GM" property="FAT_GM" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="FIBER_GM" property="FIBER_GM" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="CARBOHYDRATES_GM" property="CARBOHYDRATES_GM" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="ENERGY_KCALS" property="ENERGY_KCALS" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="CALCIUM_MG" property="CALCIUM_MG" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="PHOSPHOROUS_MG" property="PHOSPHOROUS_MG" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="IRON_MG" property="IRON_MG" type="String" sortable default="Default" sortable editable>
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            </paper-datatable>
+      </template>
+</dom-module>
+
+<script>
+Polymer({
+      is:"siva-nutritives"
+});      

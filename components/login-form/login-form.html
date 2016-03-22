@@ -1,0 +1,99 @@
+<dom-module id="login-form" name="login-form" attributes="username username_placeholder password password_min_length handler failed">
+
+	<style>
+		:host paper-card{
+			width:400px;
+			margin:10% 35%;
+			padding:30px;
+			text-align:center;
+		}
+		:host fieldset #submit{
+			margin:0;
+		}
+    :host #msg{color:red;};
+	</style>
+    <template>
+    	<paper-card id="form" elevation="4">
+  			<div id="msg"></div>
+	      <paper-input type="email" name="username" id="username" placeholder="Please enter your email ID" value="{{username}}">
+        </paper-input>
+
+	      <paper-input type="password" name="password"  id="password" placeholder="Please enter your password" value="{{password}}"></paper-input>
+
+	    	<paper-button raised on-click="submitForm">Connect</paper-button>
+		</paper-card>
+    </template>
+</dom-module>
+
+<script>
+	
+
+  Polymer({
+
+    is: 'login-form',
+
+    listeners: {
+      onSubmit: 'submitForm'
+    },
+
+    properties: {
+    	username:String,
+    	password:String
+    },
+
+    // Element Lifecycle
+
+    initData:function(e){
+    },
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+    submitForm:function(e){
+      console.log("Came here");
+  		var authData = {};
+  		authData.username = this.username;
+  		authData.password = this.password;
+
+  		var xhr = new XMLHttpRequest();
+  		var that = this;
+
+  		xhr.onload = function(e) {
+        var response = JSON.parse(e.currentTarget.response);
+
+        if(response.status == 'fail'){
+          that.$.msg.innerHTML = response.message;
+          return false;
+        } else {
+          localStorage.user = e.currentTarget.response;
+          localStorage.loggedIn = true;
+          that.fire('loggedIn');
+        }
+  		};
+
+  		xhr.open("POST", '/users/login');
+  		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  		xhr.send(JSON.stringify(authData));
+  	}
+});
+</script>
