@@ -20,36 +20,97 @@ Example:
 -->
 
 
-<dom-module id="siva-recipe-creation">
+<dom-module id="siva-recipe-creation1">
   <style>
     :host {
+      margin:30px;
       display: block;
       box-sizing: border-box;
     }
-    :host count{padding:10px; margin:10px; border-radius:30px; background:yellow;font-weight:bold; color:green;};
-    :host siva-compact-table{padding-top:80px;}
-    :host span{display:inline;}
-    :host siva-compact-table{float:right; width:70%;}
-    :host #uom {float:right; width:100px; margin:4px;}
-    :host #recipeQuantities{float:left; width:100px;}
-
-    :host paper-button.green {
-      background-color: var(--paper-green-500);
-      color: white;
-    }
-    :host paper-button.green[active] {
-      background-color: var(--paper-red-500);
-    }
-    :host siva-compact-table{margin-top:50px;}
   </style>
   <template>
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <siva-compact-table data="{{recipeIngredients}}" nutritives="{{nutritives}}"></siva-compact-table>
       <h1> Create new Recipe Data </h1>
       <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
+
+                  <div layout flex horizontal id="mealType1">
+                    <h4>Meal Type</h4>
+                    <paper-checkbox>Breakfast</paper-checkbox>
+                    <paper-checkbox>Lunch</paper-checkbox>
+                    <paper-checkbox>Dinner</paper-checkbox>
+                    <paper-checkbox>Desert</paper-checkbox>
+                    <paper-checkbox>Side Dish</paper-checkbox>
+                    <paper-checkbox>Sweet</paper-checkbox>
+                    <paper-checkbox>Drink</paper-checkbox>
+                  </div>
+                  <div layout flex horizontal id="diseaseFriendly1">
+                    <h4>Friendly for deseases</h4>
+                    <paper-checkbox>Diabetes</paper-checkbox>
+                    <paper-checkbox>Hypertension</paper-checkbox>
+                    <paper-checkbox>Cholesterol</paper-checkbox>
+                  </div>
+                
+                <div flex horizontal>
+                <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{foodType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Vegetarian</paper-item>
+                    <paper-item>Non Vegetarian</paper-item>
+                    <paper-item>Contains Egg only</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br/><br/>
+                <paper-dropdown-menu hidden id="mealType" label="Meal Type ?" value="{{mealType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Breakfast</paper-item>
+                    <paper-item>Lunch</paper-item>
+                    <paper-item>Dinner</paper-item>
+                    <paper-item>Desert</paper-item>
+                    <paper-item>Side Dish</paper-item>
+                    <paper-item>Sweet</paper-item>
+                    <paper-item>Drink</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+
+
+
+                <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{cuisine}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Maharastra</paper-item>
+                    <paper-item>Karnataka</paper-item>
+                    <paper-item>Gujarati</paper-item>
+                    <paper-item>West Bengal</paper-item>
+                    <paper-item>Andhra Pradesh</paper-item>
+                    <paper-item>Telangana</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br/><br/>
+                <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{servingUnit}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>1 cup</paper-item>
+                    <paper-item>1 bowl</paper-item>
+                    <paper-item>1 glass</paper-item>
+                    <paper-item>1 Tablespoon</paper-item>
+                    <paper-item>1 piece</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br/><br/>
+                <paper-dropdown-menu hidden id="diseaseFriendly" label="Friendly to Disease" value="{{diseaseFriendly}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Diabetese</paper-item>
+                    <paper-item>Hypertension</paper-item>
+                    <paper-item>Cholesterol</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br/><br/>
+                <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{giIndex}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Low</paper-item>
+                    <paper-item>Medium</paper-item>
+                    <paper-item>High</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br/><br/>
+              </div>
+
       <paper-input id="servingsPerOnePerson" label="Servings Per Person" type="number" required auto-validate error-message="Please mention servings" value="{{currentIngredient.servingsPerOnePerson}}"></paper-input>
       <paper-card class="ingredient" heading="Add Ingredient" elevation="4">
-        <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{ingredientNames}}" allowCustomValue></vaadin-combo-box>
+        <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{ingredientNames}}" ></vaadin-combo-box>
 
         <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
           <paper-listbox class="dropdown-content">
@@ -60,7 +121,7 @@ Example:
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}" allowCustomValue>
+        <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}" >
         </paper-input>
         <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
       </paper-card>
@@ -81,12 +142,7 @@ Example:
 
   Polymer({
 
-    is: 'siva-recipe-creation',
-
-    listeners: {
-      'ajax.onResponse': 'initData'
-    },
-
+    is: 'siva-recipe-creation1',
     properties: {
 
       /**

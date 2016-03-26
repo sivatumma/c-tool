@@ -1,5 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-	<style>
+	<style is="custom-style" include="iron-flex"></style>
+	
+<style>
 body{
 	min-width:1100px;
 }
@@ -12698,6 +12700,331 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><script>
+
+  /**
+   * `Use Polymer.IronValidatableBehavior` to implement an element that validates user input.
+   * Use the related `Polymer.IronValidatorBehavior` to add custom validation logic to an iron-input.
+   *
+   * By default, an `<iron-form>` element validates its fields when the user presses the submit button.
+   * To validate a form imperatively, call the form's `validate()` method, which in turn will
+   * call `validate()` on all its children. By using `Polymer.IronValidatableBehavior`, your
+   * custom element will get a public `validate()`, which
+   * will return the validity of the element, and a corresponding `invalid` attribute,
+   * which can be used for styling.
+   *
+   * To implement the custom validation logic of your element, you must override
+   * the protected `_getValidity()` method of this behaviour, rather than `validate()`.
+   * See [this](https://github.com/PolymerElements/iron-form/blob/master/demo/simple-element.html)
+   * for an example.
+   *
+   * ### Accessibility
+   *
+   * Changing the `invalid` property, either manually or by calling `validate()` will update the
+   * `aria-invalid` attribute.
+   *
+   * @demo demo/index.html
+   * @polymerBehavior
+   */
+  Polymer.IronValidatableBehavior = {
+
+    properties: {
+
+      /**
+       * Namespace for this validator.
+       */
+      validatorType: {
+        type: String,
+        value: 'validator'
+      },
+
+      /**
+       * Name of the validator to use.
+       */
+      validator: {
+        type: String
+      },
+
+      /**
+       * True if the last call to `validate` is invalid.
+       */
+      invalid: {
+        notify: true,
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false
+      },
+
+      _validatorMeta: {
+        type: Object
+      }
+
+    },
+
+    observers: [
+      '_invalidChanged(invalid)'
+    ],
+
+    get _validator() {
+      return this._validatorMeta && this._validatorMeta.byKey(this.validator);
+    },
+
+    ready: function() {
+      this._validatorMeta = new Polymer.IronMeta({type: this.validatorType});
+    },
+
+    _invalidChanged: function() {
+      if (this.invalid) {
+        this.setAttribute('aria-invalid', 'true');
+      } else {
+        this.removeAttribute('aria-invalid');
+      }
+    },
+
+    /**
+     * @return {boolean} True if the validator `validator` exists.
+     */
+    hasValidator: function() {
+      return this._validator != null;
+    },
+
+    /**
+     * Returns true if the `value` is valid, and updates `invalid`. If you want
+     * your element to have custom validation logic, do not override this method;
+     * override `_getValidity(value)` instead.
+
+     * @param {Object} value The value to be validated. By default, it is passed
+     * to the validator's `validate()` function, if a validator is set.
+     * @return {boolean} True if `value` is valid.
+     */
+    validate: function(value) {
+      this.invalid = !this._getValidity(value);
+      return !this.invalid;
+    },
+
+    /**
+     * Returns true if `value` is valid.  By default, it is passed
+     * to the validator's `validate()` function, if a validator is set. You
+     * should override this method if you want to implement custom validity
+     * logic for your element.
+     *
+     * @param {Object} value The value to be validated.
+     * @return {boolean} True if `value` is valid.
+     */
+
+    _getValidity: function(value) {
+      if (this.hasValidator()) {
+        return this._validator.validate(value);
+      }
+      return true;
+    }
+  };
+
+</script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+  /**
+  Polymer.IronFormElementBehavior enables a custom element to be included
+  in an `iron-form`.
+
+  @demo demo/index.html
+  @polymerBehavior
+  */
+  Polymer.IronFormElementBehavior = {
+
+    properties: {
+      /**
+       * Fired when the element is added to an `iron-form`.
+       *
+       * @event iron-form-element-register
+       */
+
+      /**
+       * Fired when the element is removed from an `iron-form`.
+       *
+       * @event iron-form-element-unregister
+       */
+
+      /**
+       * The name of this element.
+       */
+      name: {
+        type: String
+      },
+
+      /**
+       * The value for this element.
+       */
+      value: {
+        notify: true,
+        type: String
+      },
+
+      /**
+       * Set to true to mark the input as required. If used in a form, a
+       * custom element that uses this behavior should also use
+       * Polymer.IronValidatableBehavior and define a custom validation method.
+       * Otherwise, a `required` element will always be considered valid.
+       * It's also strongly recommended to provide a visual style for the element
+       * when its value is invalid.
+       */
+      required: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * The form that the element is registered to.
+       */
+      _parentForm: {
+        type: Object
+      }
+    },
+
+    attached: function() {
+      // Note: the iron-form that this element belongs to will set this
+      // element's _parentForm property when handling this event.
+      this.fire('iron-form-element-register');
+    },
+
+    detached: function() {
+      if (this._parentForm) {
+        this._parentForm.fire('iron-form-element-unregister', {target: this});
+      }
+    }
+
+  };
+
+</script>
+<script>
+
+  /**
+   * Use `Polymer.IronCheckedElementBehavior` to implement a custom element
+   * that has a `checked` property, which can be used for validation if the
+   * element is also `required`. Element instances implementing this behavior
+   * will also be registered for use in an `iron-form` element.
+   *
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.IronCheckedElementBehavior
+   */
+  Polymer.IronCheckedElementBehaviorImpl = {
+
+    properties: {
+      /**
+       * Fired when the checked state changes.
+       *
+       * @event iron-change
+       */
+
+      /**
+       * Gets or sets the state, `true` is checked and `false` is unchecked.
+       */
+      checked: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        notify: true,
+        observer: '_checkedChanged'
+      },
+
+      /**
+       * If true, the button toggles the active state with each tap or press
+       * of the spacebar.
+       */
+      toggles: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true
+      },
+
+      /* Overriden from Polymer.IronFormElementBehavior */
+      value: {
+        type: String,
+        value: 'on',
+        observer: '_valueChanged'
+      }
+    },
+
+    observers: [
+      '_requiredChanged(required)'
+    ],
+
+    created: function() {
+      // Used by `iron-form` to handle the case that an element with this behavior
+      // doesn't have a role of 'checkbox' or 'radio', but should still only be
+      // included when the form is serialized if `this.checked === true`.
+      this._hasIronCheckedElementBehavior = true;
+    },
+
+    /**
+     * Returns false if the element is required and not checked, and true otherwise.
+     * @param {*=} _value Ignored.
+     * @return {boolean} true if `required` is false, or if `required` and `checked` are both true.
+     */
+    _getValidity: function(_value) {
+      return this.disabled || !this.required || (this.required && this.checked);
+    },
+
+    /**
+     * Update the aria-required label when `required` is changed.
+     */
+    _requiredChanged: function() {
+      if (this.required) {
+        this.setAttribute('aria-required', 'true');
+      } else {
+        this.removeAttribute('aria-required');
+      }
+    },
+
+    /**
+     * Fire `iron-changed` when the checked state changes.
+     */
+    _checkedChanged: function() {
+      this.active = this.checked;
+      this.fire('iron-change');
+    },
+
+    /**
+     * Reset value to 'on' if it is set to `undefined`.
+     */
+    _valueChanged: function() {
+      if (this.value === undefined || this.value === null) {
+        this.value = 'on';
+      }
+    }
+  };
+
+  /** @polymerBehavior Polymer.IronCheckedElementBehavior */
+  Polymer.IronCheckedElementBehavior = [
+    Polymer.IronFormElementBehavior,
+    Polymer.IronValidatableBehavior,
+    Polymer.IronCheckedElementBehaviorImpl
+  ];
+
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
   (function() {
     'use strict';
 
@@ -13131,6 +13458,331 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     };
   })();
 </script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior
+   */
+  Polymer.IronControlState = {
+
+    properties: {
+
+      /**
+       * If true, the element currently has focus.
+       */
+      focused: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        readOnly: true,
+        reflectToAttribute: true
+      },
+
+      /**
+       * If true, the user cannot interact with this element.
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: '_disabledChanged',
+        reflectToAttribute: true
+      },
+
+      _oldTabIndex: {
+        type: Number
+      },
+
+      _boundFocusBlurHandler: {
+        type: Function,
+        value: function() {
+          return this._focusBlurHandler.bind(this);
+        }
+      }
+
+    },
+
+    observers: [
+      '_changedControlState(focused, disabled)'
+    ],
+
+    ready: function() {
+      this.addEventListener('focus', this._boundFocusBlurHandler, true);
+      this.addEventListener('blur', this._boundFocusBlurHandler, true);
+    },
+
+    _focusBlurHandler: function(event) {
+      // NOTE(cdata):  if we are in ShadowDOM land, `event.target` will
+      // eventually become `this` due to retargeting; if we are not in
+      // ShadowDOM land, `event.target` will eventually become `this` due
+      // to the second conditional which fires a synthetic event (that is also
+      // handled). In either case, we can disregard `event.path`.
+
+      if (event.target === this) {
+        this._setFocused(event.type === 'focus');
+      } else if (!this.shadowRoot && !this.isLightDescendant(event.target)) {
+        this.fire(event.type, {sourceEvent: event}, {
+          node: this,
+          bubbles: event.bubbles,
+          cancelable: event.cancelable
+        });
+      }
+    },
+
+    _disabledChanged: function(disabled, old) {
+      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      this.style.pointerEvents = disabled ? 'none' : '';
+      if (disabled) {
+        this._oldTabIndex = this.tabIndex;
+        this.focused = false;
+        this.tabIndex = -1;
+        this.blur();
+      } else if (this._oldTabIndex !== undefined) {
+        this.tabIndex = this._oldTabIndex;
+      }
+    },
+
+    _changedControlState: function() {
+      // _controlStateChanged is abstract, follow-on behaviors may implement it
+      if (this._controlStateChanged) {
+        this._controlStateChanged();
+      }
+    }
+
+  };
+
+</script>
+<script>
+
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.IronButtonState
+   */
+  Polymer.IronButtonStateImpl = {
+
+    properties: {
+
+      /**
+       * If true, the user is currently holding down the button.
+       */
+      pressed: {
+        type: Boolean,
+        readOnly: true,
+        value: false,
+        reflectToAttribute: true,
+        observer: '_pressedChanged'
+      },
+
+      /**
+       * If true, the button toggles the active state with each tap or press
+       * of the spacebar.
+       */
+      toggles: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
+
+      /**
+       * If true, the button is a toggle and is currently in the active state.
+       */
+      active: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        reflectToAttribute: true
+      },
+
+      /**
+       * True if the element is currently being pressed by a "pointer," which
+       * is loosely defined as mouse or touch input (but specifically excluding
+       * keyboard input).
+       */
+      pointerDown: {
+        type: Boolean,
+        readOnly: true,
+        value: false
+      },
+
+      /**
+       * True if the input device that caused the element to receive focus
+       * was a keyboard.
+       */
+      receivedFocusFromKeyboard: {
+        type: Boolean,
+        readOnly: true
+      },
+
+      /**
+       * The aria attribute to be set if the button is a toggle and in the
+       * active state.
+       */
+      ariaActiveAttribute: {
+        type: String,
+        value: 'aria-pressed',
+        observer: '_ariaActiveAttributeChanged'
+      }
+    },
+
+    listeners: {
+      down: '_downHandler',
+      up: '_upHandler',
+      tap: '_tapHandler'
+    },
+
+    observers: [
+      '_detectKeyboardFocus(focused)',
+      '_activeChanged(active, ariaActiveAttribute)'
+    ],
+
+    keyBindings: {
+      'enter:keydown': '_asyncClick',
+      'space:keydown': '_spaceKeyDownHandler',
+      'space:keyup': '_spaceKeyUpHandler',
+    },
+
+    _mouseEventRe: /^mouse/,
+
+    _tapHandler: function() {
+      if (this.toggles) {
+       // a tap is needed to toggle the active state
+        this._userActivate(!this.active);
+      } else {
+        this.active = false;
+      }
+    },
+
+    _detectKeyboardFocus: function(focused) {
+      this._setReceivedFocusFromKeyboard(!this.pointerDown && focused);
+    },
+
+    // to emulate native checkbox, (de-)activations from a user interaction fire
+    // 'change' events
+    _userActivate: function(active) {
+      if (this.active !== active) {
+        this.active = active;
+        this.fire('change');
+      }
+    },
+
+    _downHandler: function(event) {
+      this._setPointerDown(true);
+      this._setPressed(true);
+      this._setReceivedFocusFromKeyboard(false);
+    },
+
+    _upHandler: function() {
+      this._setPointerDown(false);
+      this._setPressed(false);
+    },
+
+    /**
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyDownHandler: function(event) {
+      var keyboardEvent = event.detail.keyboardEvent;
+      var target = Polymer.dom(keyboardEvent).localTarget;
+
+      // Ignore the event if this is coming from a focused light child, since that
+      // element will deal with it.
+      if (this.isLightDescendant(/** @type {Node} */(target)))
+        return;
+
+      keyboardEvent.preventDefault();
+      keyboardEvent.stopImmediatePropagation();
+      this._setPressed(true);
+    },
+
+    /**
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyUpHandler: function(event) {
+      var keyboardEvent = event.detail.keyboardEvent;
+      var target = Polymer.dom(keyboardEvent).localTarget;
+
+      // Ignore the event if this is coming from a focused light child, since that
+      // element will deal with it.
+      if (this.isLightDescendant(/** @type {Node} */(target)))
+        return;
+
+      if (this.pressed) {
+        this._asyncClick();
+      }
+      this._setPressed(false);
+    },
+
+    // trigger click asynchronously, the asynchrony is useful to allow one
+    // event handler to unwind before triggering another event
+    _asyncClick: function() {
+      this.async(function() {
+        this.click();
+      }, 1);
+    },
+
+    // any of these changes are considered a change to button state
+
+    _pressedChanged: function(pressed) {
+      this._changedButtonState();
+    },
+
+    _ariaActiveAttributeChanged: function(value, oldValue) {
+      if (oldValue && oldValue != value && this.hasAttribute(oldValue)) {
+        this.removeAttribute(oldValue);
+      }
+    },
+
+    _activeChanged: function(active, ariaActiveAttribute) {
+      if (this.toggles) {
+        this.setAttribute(this.ariaActiveAttribute,
+                          active ? 'true' : 'false');
+      } else {
+        this.removeAttribute(this.ariaActiveAttribute);
+      }
+      this._changedButtonState();
+    },
+
+    _controlStateChanged: function() {
+      if (this.disabled) {
+        this._setPressed(false);
+      } else {
+        this._changedButtonState();
+      }
+    },
+
+    // provide hook for follow-on behaviors to react to button-state
+
+    _changedButtonState: function() {
+      if (this._buttonStateChanged) {
+        this._buttonStateChanged(); // abstract
+      }
+    }
+
+  };
+
+  /** @polymerBehavior */
+  Polymer.IronButtonState = [
+    Polymer.IronA11yKeysBehavior,
+    Polymer.IronButtonStateImpl
+  ];
+
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
 <!--
 Material design: [Surface reaction](https://www.google.com/design/spec/animation/responsive-interaction.html#responsive-interaction-surface-reaction)
 
@@ -13876,665 +14528,7 @@ Apply `circle` class to make the rippling effect within a circle.
     });
   })();
 </script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
-
-  /**
-   * `Use Polymer.IronValidatableBehavior` to implement an element that validates user input.
-   * Use the related `Polymer.IronValidatorBehavior` to add custom validation logic to an iron-input.
-   *
-   * By default, an `<iron-form>` element validates its fields when the user presses the submit button.
-   * To validate a form imperatively, call the form's `validate()` method, which in turn will
-   * call `validate()` on all its children. By using `Polymer.IronValidatableBehavior`, your
-   * custom element will get a public `validate()`, which
-   * will return the validity of the element, and a corresponding `invalid` attribute,
-   * which can be used for styling.
-   *
-   * To implement the custom validation logic of your element, you must override
-   * the protected `_getValidity()` method of this behaviour, rather than `validate()`.
-   * See [this](https://github.com/PolymerElements/iron-form/blob/master/demo/simple-element.html)
-   * for an example.
-   *
-   * ### Accessibility
-   *
-   * Changing the `invalid` property, either manually or by calling `validate()` will update the
-   * `aria-invalid` attribute.
-   *
-   * @demo demo/index.html
-   * @polymerBehavior
-   */
-  Polymer.IronValidatableBehavior = {
-
-    properties: {
-
-      /**
-       * Namespace for this validator.
-       */
-      validatorType: {
-        type: String,
-        value: 'validator'
-      },
-
-      /**
-       * Name of the validator to use.
-       */
-      validator: {
-        type: String
-      },
-
-      /**
-       * True if the last call to `validate` is invalid.
-       */
-      invalid: {
-        notify: true,
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false
-      },
-
-      _validatorMeta: {
-        type: Object
-      }
-
-    },
-
-    observers: [
-      '_invalidChanged(invalid)'
-    ],
-
-    get _validator() {
-      return this._validatorMeta && this._validatorMeta.byKey(this.validator);
-    },
-
-    ready: function() {
-      this._validatorMeta = new Polymer.IronMeta({type: this.validatorType});
-    },
-
-    _invalidChanged: function() {
-      if (this.invalid) {
-        this.setAttribute('aria-invalid', 'true');
-      } else {
-        this.removeAttribute('aria-invalid');
-      }
-    },
-
-    /**
-     * @return {boolean} True if the validator `validator` exists.
-     */
-    hasValidator: function() {
-      return this._validator != null;
-    },
-
-    /**
-     * Returns true if the `value` is valid, and updates `invalid`. If you want
-     * your element to have custom validation logic, do not override this method;
-     * override `_getValidity(value)` instead.
-
-     * @param {Object} value The value to be validated. By default, it is passed
-     * to the validator's `validate()` function, if a validator is set.
-     * @return {boolean} True if `value` is valid.
-     */
-    validate: function(value) {
-      this.invalid = !this._getValidity(value);
-      return !this.invalid;
-    },
-
-    /**
-     * Returns true if `value` is valid.  By default, it is passed
-     * to the validator's `validate()` function, if a validator is set. You
-     * should override this method if you want to implement custom validity
-     * logic for your element.
-     *
-     * @param {Object} value The value to be validated.
-     * @return {boolean} True if `value` is valid.
-     */
-
-    _getValidity: function(value) {
-      if (this.hasValidator()) {
-        return this._validator.validate(value);
-      }
-      return true;
-    }
-  };
-
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
-  /**
-  Polymer.IronFormElementBehavior enables a custom element to be included
-  in an `iron-form`.
-
-  @demo demo/index.html
-  @polymerBehavior
-  */
-  Polymer.IronFormElementBehavior = {
-
-    properties: {
-      /**
-       * Fired when the element is added to an `iron-form`.
-       *
-       * @event iron-form-element-register
-       */
-
-      /**
-       * Fired when the element is removed from an `iron-form`.
-       *
-       * @event iron-form-element-unregister
-       */
-
-      /**
-       * The name of this element.
-       */
-      name: {
-        type: String
-      },
-
-      /**
-       * The value for this element.
-       */
-      value: {
-        notify: true,
-        type: String
-      },
-
-      /**
-       * Set to true to mark the input as required. If used in a form, a
-       * custom element that uses this behavior should also use
-       * Polymer.IronValidatableBehavior and define a custom validation method.
-       * Otherwise, a `required` element will always be considered valid.
-       * It's also strongly recommended to provide a visual style for the element
-       * when its value is invalid.
-       */
-      required: {
-        type: Boolean,
-        value: false
-      },
-
-      /**
-       * The form that the element is registered to.
-       */
-      _parentForm: {
-        type: Object
-      }
-    },
-
-    attached: function() {
-      // Note: the iron-form that this element belongs to will set this
-      // element's _parentForm property when handling this event.
-      this.fire('iron-form-element-register');
-    },
-
-    detached: function() {
-      if (this._parentForm) {
-        this._parentForm.fire('iron-form-element-unregister', {target: this});
-      }
-    }
-
-  };
-
-</script>
 <script>
-
-  /**
-   * Use `Polymer.IronCheckedElementBehavior` to implement a custom element
-   * that has a `checked` property, which can be used for validation if the
-   * element is also `required`. Element instances implementing this behavior
-   * will also be registered for use in an `iron-form` element.
-   *
-   * @demo demo/index.html
-   * @polymerBehavior Polymer.IronCheckedElementBehavior
-   */
-  Polymer.IronCheckedElementBehaviorImpl = {
-
-    properties: {
-      /**
-       * Fired when the checked state changes.
-       *
-       * @event iron-change
-       */
-
-      /**
-       * Gets or sets the state, `true` is checked and `false` is unchecked.
-       */
-      checked: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        notify: true,
-        observer: '_checkedChanged'
-      },
-
-      /**
-       * If true, the button toggles the active state with each tap or press
-       * of the spacebar.
-       */
-      toggles: {
-        type: Boolean,
-        value: true,
-        reflectToAttribute: true
-      },
-
-      /* Overriden from Polymer.IronFormElementBehavior */
-      value: {
-        type: String,
-        value: 'on',
-        observer: '_valueChanged'
-      }
-    },
-
-    observers: [
-      '_requiredChanged(required)'
-    ],
-
-    created: function() {
-      // Used by `iron-form` to handle the case that an element with this behavior
-      // doesn't have a role of 'checkbox' or 'radio', but should still only be
-      // included when the form is serialized if `this.checked === true`.
-      this._hasIronCheckedElementBehavior = true;
-    },
-
-    /**
-     * Returns false if the element is required and not checked, and true otherwise.
-     * @param {*=} _value Ignored.
-     * @return {boolean} true if `required` is false, or if `required` and `checked` are both true.
-     */
-    _getValidity: function(_value) {
-      return this.disabled || !this.required || (this.required && this.checked);
-    },
-
-    /**
-     * Update the aria-required label when `required` is changed.
-     */
-    _requiredChanged: function() {
-      if (this.required) {
-        this.setAttribute('aria-required', 'true');
-      } else {
-        this.removeAttribute('aria-required');
-      }
-    },
-
-    /**
-     * Fire `iron-changed` when the checked state changes.
-     */
-    _checkedChanged: function() {
-      this.active = this.checked;
-      this.fire('iron-change');
-    },
-
-    /**
-     * Reset value to 'on' if it is set to `undefined`.
-     */
-    _valueChanged: function() {
-      if (this.value === undefined || this.value === null) {
-        this.value = 'on';
-      }
-    }
-  };
-
-  /** @polymerBehavior Polymer.IronCheckedElementBehavior */
-  Polymer.IronCheckedElementBehavior = [
-    Polymer.IronFormElementBehavior,
-    Polymer.IronValidatableBehavior,
-    Polymer.IronCheckedElementBehaviorImpl
-  ];
-
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
-
-  /**
-   * @demo demo/index.html
-   * @polymerBehavior
-   */
-  Polymer.IronControlState = {
-
-    properties: {
-
-      /**
-       * If true, the element currently has focus.
-       */
-      focused: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        readOnly: true,
-        reflectToAttribute: true
-      },
-
-      /**
-       * If true, the user cannot interact with this element.
-       */
-      disabled: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: '_disabledChanged',
-        reflectToAttribute: true
-      },
-
-      _oldTabIndex: {
-        type: Number
-      },
-
-      _boundFocusBlurHandler: {
-        type: Function,
-        value: function() {
-          return this._focusBlurHandler.bind(this);
-        }
-      }
-
-    },
-
-    observers: [
-      '_changedControlState(focused, disabled)'
-    ],
-
-    ready: function() {
-      this.addEventListener('focus', this._boundFocusBlurHandler, true);
-      this.addEventListener('blur', this._boundFocusBlurHandler, true);
-    },
-
-    _focusBlurHandler: function(event) {
-      // NOTE(cdata):  if we are in ShadowDOM land, `event.target` will
-      // eventually become `this` due to retargeting; if we are not in
-      // ShadowDOM land, `event.target` will eventually become `this` due
-      // to the second conditional which fires a synthetic event (that is also
-      // handled). In either case, we can disregard `event.path`.
-
-      if (event.target === this) {
-        this._setFocused(event.type === 'focus');
-      } else if (!this.shadowRoot && !this.isLightDescendant(event.target)) {
-        this.fire(event.type, {sourceEvent: event}, {
-          node: this,
-          bubbles: event.bubbles,
-          cancelable: event.cancelable
-        });
-      }
-    },
-
-    _disabledChanged: function(disabled, old) {
-      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-      this.style.pointerEvents = disabled ? 'none' : '';
-      if (disabled) {
-        this._oldTabIndex = this.tabIndex;
-        this.focused = false;
-        this.tabIndex = -1;
-        this.blur();
-      } else if (this._oldTabIndex !== undefined) {
-        this.tabIndex = this._oldTabIndex;
-      }
-    },
-
-    _changedControlState: function() {
-      // _controlStateChanged is abstract, follow-on behaviors may implement it
-      if (this._controlStateChanged) {
-        this._controlStateChanged();
-      }
-    }
-
-  };
-
-</script>
-<script>
-
-  /**
-   * @demo demo/index.html
-   * @polymerBehavior Polymer.IronButtonState
-   */
-  Polymer.IronButtonStateImpl = {
-
-    properties: {
-
-      /**
-       * If true, the user is currently holding down the button.
-       */
-      pressed: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        reflectToAttribute: true,
-        observer: '_pressedChanged'
-      },
-
-      /**
-       * If true, the button toggles the active state with each tap or press
-       * of the spacebar.
-       */
-      toggles: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      },
-
-      /**
-       * If true, the button is a toggle and is currently in the active state.
-       */
-      active: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        reflectToAttribute: true
-      },
-
-      /**
-       * True if the element is currently being pressed by a "pointer," which
-       * is loosely defined as mouse or touch input (but specifically excluding
-       * keyboard input).
-       */
-      pointerDown: {
-        type: Boolean,
-        readOnly: true,
-        value: false
-      },
-
-      /**
-       * True if the input device that caused the element to receive focus
-       * was a keyboard.
-       */
-      receivedFocusFromKeyboard: {
-        type: Boolean,
-        readOnly: true
-      },
-
-      /**
-       * The aria attribute to be set if the button is a toggle and in the
-       * active state.
-       */
-      ariaActiveAttribute: {
-        type: String,
-        value: 'aria-pressed',
-        observer: '_ariaActiveAttributeChanged'
-      }
-    },
-
-    listeners: {
-      down: '_downHandler',
-      up: '_upHandler',
-      tap: '_tapHandler'
-    },
-
-    observers: [
-      '_detectKeyboardFocus(focused)',
-      '_activeChanged(active, ariaActiveAttribute)'
-    ],
-
-    keyBindings: {
-      'enter:keydown': '_asyncClick',
-      'space:keydown': '_spaceKeyDownHandler',
-      'space:keyup': '_spaceKeyUpHandler',
-    },
-
-    _mouseEventRe: /^mouse/,
-
-    _tapHandler: function() {
-      if (this.toggles) {
-       // a tap is needed to toggle the active state
-        this._userActivate(!this.active);
-      } else {
-        this.active = false;
-      }
-    },
-
-    _detectKeyboardFocus: function(focused) {
-      this._setReceivedFocusFromKeyboard(!this.pointerDown && focused);
-    },
-
-    // to emulate native checkbox, (de-)activations from a user interaction fire
-    // 'change' events
-    _userActivate: function(active) {
-      if (this.active !== active) {
-        this.active = active;
-        this.fire('change');
-      }
-    },
-
-    _downHandler: function(event) {
-      this._setPointerDown(true);
-      this._setPressed(true);
-      this._setReceivedFocusFromKeyboard(false);
-    },
-
-    _upHandler: function() {
-      this._setPointerDown(false);
-      this._setPressed(false);
-    },
-
-    /**
-     * @param {!KeyboardEvent} event .
-     */
-    _spaceKeyDownHandler: function(event) {
-      var keyboardEvent = event.detail.keyboardEvent;
-      var target = Polymer.dom(keyboardEvent).localTarget;
-
-      // Ignore the event if this is coming from a focused light child, since that
-      // element will deal with it.
-      if (this.isLightDescendant(/** @type {Node} */(target)))
-        return;
-
-      keyboardEvent.preventDefault();
-      keyboardEvent.stopImmediatePropagation();
-      this._setPressed(true);
-    },
-
-    /**
-     * @param {!KeyboardEvent} event .
-     */
-    _spaceKeyUpHandler: function(event) {
-      var keyboardEvent = event.detail.keyboardEvent;
-      var target = Polymer.dom(keyboardEvent).localTarget;
-
-      // Ignore the event if this is coming from a focused light child, since that
-      // element will deal with it.
-      if (this.isLightDescendant(/** @type {Node} */(target)))
-        return;
-
-      if (this.pressed) {
-        this._asyncClick();
-      }
-      this._setPressed(false);
-    },
-
-    // trigger click asynchronously, the asynchrony is useful to allow one
-    // event handler to unwind before triggering another event
-    _asyncClick: function() {
-      this.async(function() {
-        this.click();
-      }, 1);
-    },
-
-    // any of these changes are considered a change to button state
-
-    _pressedChanged: function(pressed) {
-      this._changedButtonState();
-    },
-
-    _ariaActiveAttributeChanged: function(value, oldValue) {
-      if (oldValue && oldValue != value && this.hasAttribute(oldValue)) {
-        this.removeAttribute(oldValue);
-      }
-    },
-
-    _activeChanged: function(active, ariaActiveAttribute) {
-      if (this.toggles) {
-        this.setAttribute(this.ariaActiveAttribute,
-                          active ? 'true' : 'false');
-      } else {
-        this.removeAttribute(this.ariaActiveAttribute);
-      }
-      this._changedButtonState();
-    },
-
-    _controlStateChanged: function() {
-      if (this.disabled) {
-        this._setPressed(false);
-      } else {
-        this._changedButtonState();
-      }
-    },
-
-    // provide hook for follow-on behaviors to react to button-state
-
-    _changedButtonState: function() {
-      if (this._buttonStateChanged) {
-        this._buttonStateChanged(); // abstract
-      }
-    }
-
-  };
-
-  /** @polymerBehavior */
-  Polymer.IronButtonState = [
-    Polymer.IronA11yKeysBehavior,
-    Polymer.IronButtonStateImpl
-  ];
-
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
 
   /**
    * `Polymer.PaperRippleBehavior` dynamically implements a ripple
@@ -14650,7 +14644,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
 <script>
 
   /**
@@ -14757,7 +14759,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <!--
 @license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
@@ -14787,12 +14789,16 @@ Custom property | Description | Default
 `--paper-checkbox-unchecked-background-color` | Checkbox background color when the input is not checked | `transparent`
 `--paper-checkbox-unchecked-color` | Checkbox border color when the input is not checked | `--primary-text-color`
 `--paper-checkbox-unchecked-ink-color` | Selected/focus ripple color when the input is not checked | `--primary-text-color`
-`--paper-checkbox-checked-color` | Checkbox color when the input is checked | `--default-primary-color`
-`--paper-checkbox-checked-ink-color` | Selected/focus ripple color when the input is checked | `--default-primary-color`
+`--paper-checkbox-checked-color` | Checkbox color when the input is checked | `--primary-color`
+`--paper-checkbox-checked-ink-color` | Selected/focus ripple color when the input is checked | `--primary-color`
 `--paper-checkbox-checkmark-color` | Checkmark color | `white`
 `--paper-checkbox-label-color` | Label color | `--primary-text-color`
 `--paper-checkbox-label-spacing` | Spacing between the label and the checkbox | `8px`
-`--paper-checkbox-error-color` | Checkbox color when invalid | `--google-red-500`
+`--paper-checkbox-error-color` | Checkbox color when invalid | `--error-color`
+`--paper-checkbox-size` | Size of the checkbox | `18px`
+
+This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
+In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
 
 @demo demo/index.html
 -->
@@ -14804,6 +14810,9 @@ Custom property | Description | Default
         display: inline-block;
         white-space: nowrap;
         cursor: pointer;
+        --calculated-paper-checkbox-size: var(--paper-checkbox-size, 18px);
+        @apply(--paper-font-common-base);
+        line-height: 0;
       }
 
       :host(:focus) {
@@ -14817,31 +14826,34 @@ Custom property | Description | Default
       #checkboxContainer {
         display: inline-block;
         position: relative;
-        width: 18px;
-        height: 18px;
-        min-width: 18px;
+        width: var(--calculated-paper-checkbox-size);
+        height: var(--calculated-paper-checkbox-size);
+        min-width: var(--calculated-paper-checkbox-size);
         vertical-align: middle;
         background-color: var(--paper-checkbox-unchecked-background-color, transparent);
       }
 
       #ink {
         position: absolute;
-        top: -15px;
-        left: -15px;
-        width: 48px;
-        height: 48px;
+
+        /* Center the ripple in the checkbox by negative offsetting it by
+         * (inkWidth - rippleWidth) / 2 */
+        top: calc(0px - (2.66 * var(--calculated-paper-checkbox-size) - var(--calculated-paper-checkbox-size)) / 2);
+        left: calc(0px - (2.66 * var(--calculated-paper-checkbox-size) - var(--calculated-paper-checkbox-size)) / 2);
+        width: calc(2.66 * var(--calculated-paper-checkbox-size));
+        height: calc(2.66 * var(--calculated-paper-checkbox-size));
         color: var(--paper-checkbox-unchecked-ink-color, --primary-text-color);
         opacity: 0.6;
         pointer-events: none;
       }
 
       :host-context([dir="rtl"]) #ink {
-        right: -15px;
+        right: calc(0px - (2.66 * var(--calculated-paper-checkbox-size) - var(--calculated-paper-checkbox-size)) / 2);
         left: auto;
       }
 
       #ink[checked] {
-        color: var(--paper-checkbox-checked-ink-color, --default-primary-color);
+        color: var(--paper-checkbox-checked-ink-color, --primary-color);
       }
 
       #checkbox {
@@ -14881,22 +14893,28 @@ Custom property | Description | Default
       }
 
       #checkbox.checked {
-        background-color: var(--paper-checkbox-checked-color, --default-primary-color);
-        border-color: var(--paper-checkbox-checked-color, --default-primary-color);
+        background-color: var(--paper-checkbox-checked-color, --primary-color);
+        border-color: var(--paper-checkbox-checked-color, --primary-color);
       }
 
       #checkmark {
         position: absolute;
-        width: 5px;
-        height: 10px;
+        width: 36%;
+        height: 70%;
         border-style: solid;
         border-top: none;
         border-left: none;
-        border-right-width: 2px;
-        border-bottom-width: 2px;
+        border-right-width: calc(2/15 * var(--calculated-paper-checkbox-size));
+        border-bottom-width: calc(2/15 * var(--calculated-paper-checkbox-size));
         border-color: var(--paper-checkbox-checkmark-color, white);
-        transform-origin: 97% 86%;
         -webkit-transform-origin: 97% 86%;
+        transform-origin: 97% 86%;
+        box-sizing: content-box; /* protect against page-level box-sizing */
+      }
+
+      :host-context([dir="rtl"]) #checkmark {
+        -webkit-transform-origin: 50% 14%;
+        transform-origin: 50% 14%;
       }
 
       /* label */
@@ -14906,7 +14924,7 @@ Custom property | Description | Default
         vertical-align: middle;
         padding-left: var(--paper-checkbox-label-spacing, 8px);
         white-space: normal;
-        pointer-events: none;
+        line-height: normal;
         color: var(--paper-checkbox-label-color, --primary-text-color);
       }
 
@@ -14920,9 +14938,6 @@ Custom property | Description | Default
       }
 
       /* disabled state */
-      :host([disabled]) {
-        pointer-events: none;
-      }
 
       :host([disabled]) #checkbox {
         opacity: 0.5;
@@ -14940,7 +14955,7 @@ Custom property | Description | Default
 
       /* invalid state */
       #checkbox.invalid:not(.checked) {
-        border-color: var(--paper-checkbox-error-color, --google-red-500);
+        border-color: var(--paper-checkbox-error-color, --error-color);
       }
     </style>
 
@@ -15922,14 +15937,14 @@ var WeakCache = function(limit){
 			}
 			tr td, tr th{
 				border-bottom: 1px solid var(--paper-datatable-divider-color, --divider-color);
-				padding: 6px 28px 6px 28px;
+				padding: 6px 2px 6px 28px;
 				box-sizing: border-box;
 			}
 			td{
 				height: 48px;
 			}
 			th{
-				font-weight: 500;
+				font-weight: 100;
 				text-align:left;
 				white-space: nowrap;
 				@apply(--paper-font-common-base);
@@ -21517,6 +21532,412 @@ Custom property | Description | Default
     });
   </script>
 </dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!-- Most common used flex styles-->
+<dom-module id="iron-flex" assetpath="/bower_components/iron-flex-layout/">
+  <template>
+    <style>
+      .layout.horizontal,
+      .layout.vertical {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+      }
+
+      .layout.inline {
+        display: -ms-inline-flexbox;
+        display: -webkit-inline-flex;
+        display: inline-flex;
+      }
+
+      .layout.horizontal {
+        -ms-flex-direction: row;
+        -webkit-flex-direction: row;
+        flex-direction: row;
+      }
+
+      .layout.vertical {
+        -ms-flex-direction: column;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+      }
+
+      .layout.wrap {
+        -ms-flex-wrap: wrap;
+        -webkit-flex-wrap: wrap;
+        flex-wrap: wrap;
+      }
+
+      .layout.center,
+      .layout.center-center {
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+      }
+
+      .layout.center-justified,
+      .layout.center-center {
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+      }
+
+      .flex {
+        -ms-flex: 1 1 0.000000001px;
+        -webkit-flex: 1;
+        flex: 1;
+        -webkit-flex-basis: 0.000000001px;
+        flex-basis: 0.000000001px;
+      }
+
+      .flex-auto {
+        -ms-flex: 1 1 auto;
+        -webkit-flex: 1 1 auto;
+        flex: 1 1 auto;
+      }
+
+      .flex-none {
+        -ms-flex: none;
+        -webkit-flex: none;
+        flex: none;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<!-- Basic flexbox reverse styles -->
+<dom-module id="iron-flex-reverse" assetpath="/bower_components/iron-flex-layout/">
+  <template>
+    <style>
+      .layout.horizontal-reverse,
+      .layout.vertical-reverse {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+      }
+
+      .layout.horizontal-reverse {
+        -ms-flex-direction: row-reverse;
+        -webkit-flex-direction: row-reverse;
+        flex-direction: row-reverse;
+      }
+
+      .layout.vertical-reverse {
+        -ms-flex-direction: column-reverse;
+        -webkit-flex-direction: column-reverse;
+        flex-direction: column-reverse;
+      }
+
+      .layout.wrap-reverse {
+        -ms-flex-wrap: wrap-reverse;
+        -webkit-flex-wrap: wrap-reverse;
+        flex-wrap: wrap-reverse;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<!-- Flexbox alignment -->
+<dom-module id="iron-flex-alignment" assetpath="/bower_components/iron-flex-layout/">
+  <template>
+    <style>
+      /**
+       * Alignment in cross axis.
+       */
+      .layout.start {
+        -ms-flex-align: start;
+        -webkit-align-items: flex-start;
+        align-items: flex-start;
+      }
+
+      .layout.center,
+      .layout.center-center {
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+      }
+
+      .layout.end {
+        -ms-flex-align: end;
+        -webkit-align-items: flex-end;
+        align-items: flex-end;
+      }
+
+      .layout.baseline {
+        -ms-flex-align: baseline;
+        -webkit-align-items: baseline;
+        align-items: baseline;
+      }
+
+      /**
+       * Alignment in main axis.
+       */
+      .layout.start-justified {
+        -ms-flex-pack: start;
+        -webkit-justify-content: flex-start;
+        justify-content: flex-start;
+      }
+
+      .layout.center-justified,
+      .layout.center-center {
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+      }
+
+      .layout.end-justified {
+        -ms-flex-pack: end;
+        -webkit-justify-content: flex-end;
+        justify-content: flex-end;
+      }
+
+      .layout.around-justified {
+        -ms-flex-pack: distribute;
+        -webkit-justify-content: space-around;
+        justify-content: space-around;
+      }
+
+      .layout.justified {
+        -ms-flex-pack: justify;
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+      }
+
+      /**
+       * Self alignment.
+       */
+      .self-start {
+        -ms-align-self: flex-start;
+        -webkit-align-self: flex-start;
+        align-self: flex-start;
+      }
+
+      .self-center {
+        -ms-align-self: center;
+        -webkit-align-self: center;
+        align-self: center;
+      }
+
+      .self-end {
+        -ms-align-self: flex-end;
+        -webkit-align-self: flex-end;
+        align-self: flex-end;
+      }
+
+      .self-stretch {
+        -ms-align-self: stretch;
+        -webkit-align-self: stretch;
+        align-self: stretch;
+      }
+
+      .self-baseline {
+        -ms-align-self: baseline;
+        -webkit-align-self: baseline;
+        align-self: baseline;
+      };
+
+      /**
+       * multi-line alignment in main axis.
+       */
+      .layout.start-aligned {
+        -ms-flex-line-pack: start;  /* IE10 */
+        -ms-align-content: flex-start;
+        -webkit-align-content: flex-start;
+        align-content: flex-start;
+      }
+
+      .layout.end-aligned {
+        -ms-flex-line-pack: end;  /* IE10 */
+        -ms-align-content: flex-end;
+        -webkit-align-content: flex-end;
+        align-content: flex-end;
+      }
+
+      .layout.center-aligned {
+        -ms-flex-line-pack: center;  /* IE10 */
+        -ms-align-content: center;
+        -webkit-align-content: center;
+        align-content: center;
+      }
+
+      .layout.between-aligned {
+        -ms-flex-line-pack: justify;  /* IE10 */
+        -ms-align-content: space-between;
+        -webkit-align-content: space-between;
+        align-content: space-between;
+      }
+
+      .layout.around-aligned {
+        -ms-flex-line-pack: distribute;  /* IE10 */
+        -ms-align-content: space-around;
+        -webkit-align-content: space-around;
+        align-content: space-around;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="iron-flex-factors" assetpath="/bower_components/iron-flex-layout/">
+  <template>
+    <style>
+      .flex,
+      .flex-1 {
+        -ms-flex: 1 1 0.000000001px;
+        -webkit-flex: 1;
+        flex: 1;
+        -webkit-flex-basis: 0.000000001px;
+        flex-basis: 0.000000001px;
+      }
+
+      .flex-2 {
+        -ms-flex: 2;
+        -webkit-flex: 2;
+        flex: 2;
+      }
+
+      .flex-3 {
+        -ms-flex: 3;
+        -webkit-flex: 3;
+        flex: 3;
+      }
+
+      .flex-4 {
+        -ms-flex: 4;
+        -webkit-flex: 4;
+        flex: 4;
+      }
+
+      .flex-5 {
+        -ms-flex: 5;
+        -webkit-flex: 5;
+        flex: 5;
+      }
+
+      .flex-6 {
+        -ms-flex: 6;
+        -webkit-flex: 6;
+        flex: 6;
+      }
+
+      .flex-7 {
+        -ms-flex: 7;
+        -webkit-flex: 7;
+        flex: 7;
+      }
+
+      .flex-8 {
+        -ms-flex: 8;
+        -webkit-flex: 8;
+        flex: 8;
+      }
+
+      .flex-9 {
+        -ms-flex: 9;
+        -webkit-flex: 9;
+        flex: 9;
+      }
+
+      .flex-10 {
+        -ms-flex: 10;
+        -webkit-flex: 10;
+        flex: 10;
+      }
+
+      .flex-11 {
+        -ms-flex: 11;
+        -webkit-flex: 11;
+        flex: 11;
+      }
+
+      .flex-12 {
+        -ms-flex: 12;
+        -webkit-flex: 12;
+        flex: 12;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<!-- Non-flexbox positioning helper styles -->
+<dom-module id="iron-positioning" assetpath="/bower_components/iron-flex-layout/">
+  <template>
+    <style>
+      .block {
+        display: block;
+      }
+
+      /* IE 10 support for HTML5 hidden attr */
+      [hidden] {
+        display: none !important;
+      }
+
+      .invisible {
+        visibility: hidden !important;
+      }
+
+      .relative {
+        position: relative;
+      }
+
+      .fit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      body.fullbleed {
+        margin: 0;
+        height: 100vh;
+      }
+
+      .scroll {
+        -webkit-overflow-scrolling: touch;
+        overflow: auto;
+      }
+
+      /* fixed position */
+      .fixed-bottom,
+      .fixed-left,
+      .fixed-right,
+      .fixed-top {
+        position: fixed;
+      }
+
+      .fixed-top {
+        top: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .fixed-right {
+        top: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .fixed-bottom {
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      .fixed-left {
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+  </template>
+</dom-module>
 <script>
 
   /**
@@ -24473,6 +24894,248 @@ after the list became visible again. e.g.
   });
 
 })();
+
+</script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Element access to Web Storage API (window.localStorage).
+
+Keeps `value` property in sync with localStorage.
+
+Value is saved as json by default.
+
+### Usage:
+
+`ls-sample` will automatically save changes to its value.
+
+    <dom-module id="ls-sample">
+      <iron-localstorage name="my-app-storage"
+        value="{{cartoon}}"
+        on-iron-localstorage-load-empty="initializeDefaultCartoon"
+      ></iron-localstorage>
+    </dom-module>
+
+    <script>
+      Polymer({
+        is: 'ls-sample',
+        properties: {
+          cartoon: {
+            type: Object
+          }
+        },
+        // initializes default if nothing has been stored
+        initializeDefaultCartoon: function() {
+          this.cartoon = {
+            name: "Mickey",
+            hasEars: true
+          }
+        },
+        // use path set api to propagate changes to localstorage
+        makeModifications: function() {
+          this.set('cartoon.name', "Minions");
+          this.set('cartoon.hasEars', false);
+        }
+      });
+    </script>
+
+### Tech notes:
+
+* * `value.*` is observed, and saved on modifications. You must use
+    path change notifification methods such as `set()` to modify value
+    for changes to be observed.
+
+* * Set `auto-save-disabled` to prevent automatic saving.
+
+* * Value is saved as JSON by default.
+
+* * To delete a key, set value to null
+
+* Element listens to StorageAPI `storage` event, and will reload upon receiving it.
+
+* **Warning**: do not bind value to sub-properties until Polymer
+[bug 1550](https://github.com/Polymer/polymer/issues/1550)
+is resolved. Local storage will be blown away.
+`<iron-localstorage value="{{foo.bar}}"` will cause **data loss**.
+
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="iron-localstorage" assetpath="/bower_components/iron-localstorage/"></dom-module>
+<script>
+
+  Polymer({
+    is: 'iron-localstorage',
+
+    properties: {
+      /**
+       * localStorage item key
+       */
+      name: {
+        type: String,
+        value: ''
+      },
+      /**
+       * The data associated with this storage.
+       * If set to null item will be deleted.
+       * @type {*}
+       */
+      value: {
+        type: Object,
+        notify: true
+      },
+
+      /**
+       * If true: do not convert value to JSON on save/load
+       */
+      useRaw: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Value will not be saved automatically if true. You'll have to do it manually with `save()`
+       */
+      autoSaveDisabled: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Last error encountered while saving/loading items
+       */
+      errorMessage: {
+        type: String,
+        notify: true
+      },
+
+      /** True if value has been loaded */
+      _loaded: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    observers: [
+      '_debounceReload(name,useRaw)',
+      '_trySaveValue(autoSaveDisabled)',
+      '_trySaveValue(value.*)'
+    ],
+
+    ready: function() {
+      this._boundHandleStorage = this._handleStorage.bind(this);
+    },
+
+    attached: function() {
+      window.addEventListener('storage', this._boundHandleStorage);
+    },
+
+    detached: function() {
+      window.removeEventListener('storage', this._boundHandleStorage);
+    },
+
+    _handleStorage: function(ev) {
+      if (ev.key == this.name) {
+        this._load(true);
+      }
+    },
+
+    _trySaveValue: function() {
+      if (this._doNotSave) {
+        return;
+      }
+      if (this._loaded && !this.autoSaveDisabled) {
+        this.debounce('save', this.save);
+      }
+    },
+
+    _debounceReload: function() {
+      this.debounce('reload', this.reload);
+    },
+
+    /**
+     * Loads the value again. Use if you modify
+     * localStorage using DOM calls, and want to
+     * keep this element in sync.
+     */
+    reload: function() {
+      this._loaded = false;
+      this._load();
+    },
+
+    /**
+     * loads value from local storage
+     * @param {boolean=} externalChange true if loading changes from a different window
+     */
+    _load: function(externalChange) {
+      var v = window.localStorage.getItem(this.name);
+
+      if (v === null) {
+        this._loaded = true;
+        this._doNotSave = true;  // guard for save watchers
+        this.value = null;
+        this._doNotSave = false;
+        this.fire('iron-localstorage-load-empty', { externalChange: externalChange});
+      } else {
+        if (!this.useRaw) {
+          try { // parse value as JSON
+            v = JSON.parse(v);
+          } catch(x) {
+            this.errorMessage = "Could not parse local storage value";
+            console.error("could not parse local storage value", v);
+            v = null;
+          }
+        }
+        this._loaded = true;
+        this._doNotSave = true;
+        this.value = v;
+        this._doNotSave = false;
+        this.fire('iron-localstorage-load', { externalChange: externalChange});
+      }
+    },
+
+    /**
+     * Saves the value to localStorage. Call to save if autoSaveDisabled is set.
+     * If `value` is null or undefined, deletes localStorage.
+     */
+    save: function() {
+      var v = this.useRaw ? this.value : JSON.stringify(this.value);
+      try {
+        if (this.value === null || this.value === undefined) {
+          window.localStorage.removeItem(this.name);
+        } else {
+          window.localStorage.setItem(this.name, /** @type {string} */ (v));
+        }
+      }
+      catch(ex) {
+        // Happens in Safari incognito mode,
+        this.errorMessage = ex.message;
+        console.error("localStorage could not be saved. Safari incoginito mode?", ex);
+      }
+    }
+
+    /**
+     * Fired when value loads from localStorage.
+     *
+     * @event iron-localstorage-load
+     * @param {{externalChange:boolean}} detail -
+     *     externalChange: true if change occured in different window.
+     */
+
+    /**
+     * Fired when loaded value does not exist.
+     * Event handler can be used to initialize default value.
+     *
+     * @event iron-localstorage-load-empty
+     * @param {{externalChange:boolean}} detail -
+     *     externalChange: true if change occured in different window.
+     */
+  });
 
 </script>
 <!--
@@ -30422,17 +31085,17 @@ Example:
         <!--  MICRO Nutrients-->
         <th class="rotate"><div><span>&nbsp;</span></div></th>
         <th class="rotate"><div><span>QUANTITY</span></div></th>
-        <th class="rotate"><div><span>UNIT OF MEASURE</span></div></th>
+        <th class="rotate"><div><span>UNIT</span></div></th>
         <th class="rotate"><div><span>CAROTENE_Vit_A_microgram</span></div></th>
-        <th class="rotate"><div><span>THIAMINE_Vit_B1_MG</span></div></th>
-        <th class="rotate"><div><span>RIBOFLAVIN_VIT_B2_MG</span></div></th>
-        <th class="rotate"><div><span>NIACIN_VIT_B3_MG</span></div></th>
+        <th class="rotate"><div><span>THIAMINE_Vit_B1_mg</span></div></th>
+        <th class="rotate"><div><span>RIBOFLAVIN_VIT_B2_mg</span></div></th>
+        <th class="rotate"><div><span>NIACIN_VIT_B3_mg</span></div></th>
         <th class="rotate"><div><span>Folic_Acid_Free</span></div></th>
         <th class="rotate"><div><span>Folic_Acid_Total</span></div></th>
-        <th class="rotate"><div><span>CHOLINE_MG</span></div></th>
-        <th class="rotate"><div><span>Na_MG</span></div></th>
-        <th class="rotate"><div><span>K_MG</span></div></th>
-        <th class="rotate"><div><span>Zn_MG</span></div></th>
+        <th class="rotate"><div><span>CHOLINE_mg</span></div></th>
+        <th class="rotate"><div><span>Na_mg</span></div></th>
+        <th class="rotate"><div><span>K_mg</span></div></th>
+        <th class="rotate"><div><span>Zn_mg</span></div></th>
         <th class="rotate"><div><span>IRON_MG</span></div></th>
         <th class="rotate"><div><span>Total_Saturates_Percent</span></div></th>
         <th class="rotate"><div><span>Total_Monounsaturate_Percent</span></div></th>
@@ -30457,15 +31120,15 @@ Example:
               <td class="rotate"><div>{{item.qty}}</div></td>
               <td class="rotate"><div>{{item.uom}}</div></td>
               <td class="rotate"><div>{{item.CAROTENE_Vit_A_microgram}}</div></td>
-              <td class="rotate"><div>{{item.THIAMINE_Vit_B1_MG}}</div></td>
-              <td class="rotate"><div>{{item.RIBOFLAVIN_VIT_B2_MG}}</div></td>
-              <td class="rotate"><div>{{item.NIACIN_VIT_B3_MG}}</div></td>
+              <td class="rotate"><div>{{item.THIAMINE_Vit_B1_mg}}</div></td>
+              <td class="rotate"><div>{{item.RIBOFLAVIN_VIT_B2_mg}}</div></td>
+              <td class="rotate"><div>{{item.NIACIN_VIT_B3_mg}}</div></td>
               <td class="rotate"><div>{{item.Folic_Acid_Free}}</div></td>
               <td class="rotate"><div>{{item.Folic_Acid_Total}}</div></td>
-              <td class="rotate"><div>{{item.CHOLINE_MG}}</div></td>
-              <td class="rotate"><div>{{item.Na_MG}}</div></td>
-              <td class="rotate"><div>{{item.K_MG}}</div></td>
-              <td class="rotate"><div>{{item.Zn_MG}}</div></td>
+              <td class="rotate"><div>{{item.CHOLINE_mg}}</div></td>
+              <td class="rotate"><div>{{item.Na_mg}}</div></td>
+              <td class="rotate"><div>{{item.K_mg}}</div></td>
+              <td class="rotate"><div>{{item.Zn_mg}}</div></td>
               <td class="rotate"><div>{{item.IRON_MG}}</div></td>
               <td class="rotate"><div>{{item.Total_Saturates_Percent}}</div></td>
               <td class="rotate"><div>{{item.Total_Monounsaturate_Percent}}</div></td>
@@ -30668,6 +31331,10 @@ Example:
         that.$.toast_1.text = xhr.response;
         that.$.toast_1.open();
         that.$.form.reset();
+
+        _.extend(that.currentCounts, JSON.parse(xhr.response));
+        var counts = JSON.parse(xhr.response);
+        that.exerciseCount = counts.Exercise;
       };
       xhr.open("POST",'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -30796,6 +31463,9 @@ Example:
 
     addExercise: function(e){
       var qAndA = {};
+    
+      qAndA.createdBy = JSON.parse(localStorage.user).username;
+
       qAndA.doctorName=this.doctorName;
       qAndA.question = this.question;
       qAndA.answer = this.answer;
@@ -30878,7 +31548,7 @@ Example:
     <div class="card-actions">
       <paper-input id="tip" label="Describe your tip of the day" required="" auto-validate="" error-message="Please write some tip" value="{{tip}}"></paper-input>
 
-      <paper-dropdown-menu label="For" value="{{suitableForDecease}}">
+      <paper-dropdown-menu label="For" value="{{suitableForDisease}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -30888,14 +31558,14 @@ Example:
 
       <paper-dropdown-menu label="Tip Category" value="{{suitableForTime}}">
         <paper-listbox class="dropdown-content">
-          <paper-item>EXERCISE (50)</paper-item>
-          <paper-item>FOOD (100)</paper-item>
-          <paper-item>STRESS (50)</paper-item>
-          <paper-item>DO THIS NOT THAT (50)</paper-item>
-          <paper-item>TRY A RECIPE (50)</paper-item>
-          <paper-item>GO NATURAL (50)</paper-item>
-          <paper-item>RATE YOUR DAY(10)</paper-item>
-          <paper-item>QUIZ(50)</paper-item>
+          <paper-item>EXERCISE</paper-item>
+          <paper-item>FOOD</paper-item>
+          <paper-item>STRESS</paper-item>
+          <paper-item>DO THIS NOT THAT</paper-item>
+          <paper-item>TRY A RECIPE</paper-item>
+          <paper-item>GO NATURAL</paper-item>
+          <paper-item>RATE YOUR DAY</paper-item>
+          <paper-item>QUIZ</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
@@ -30953,8 +31623,11 @@ Example:
 
     addTip: function(e){
       var tip = {};
+
+      tip.createdBy = JSON.parse(localStorage.user).username;
+
       tip.tip=this.tip;
-      tip.suitableForDecease = this.suitableForDecease;
+      tip.suitableForDisease = this.suitableForDisease;
       tip.suitableForTime = this.suitableForTime;
       tip.createdBy = JSON.parse(localStorage.user).username;
 
@@ -30983,158 +31656,121 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
-// if(!localStorage.loggedIn){
-//   location.href = 'public/loginPage.html';
-// }
-</script>
-
-
-<link rel="stylesheet" href="/public/stylesheets/style.css">
-
-<!--
-An element providing a solution to no problem in particular.
-
-Example:
-
-    <siva-recipe-creation></siva-recipe-creation>
-
-@demo
--->
-<dom-module id="siva-recipe-creation" assetpath="/bower_components/siva-recipe-creation/">
+--><dom-module id="siva-recipe-creation1" assetpath="/components/siva-recipe-creation/">
   <style>
     :host {
+      margin:30px;
       display: block;
       box-sizing: border-box;
     }
-    :host siva-compact-table{padding-top:80px;}
-    :host span{display:inline;}
-    :host siva-compact-table{float:right; width:70%;}
-    :host #uom {float:right; width:100px; margin:4px;}
-    :host #recipeQuantities{float:left; width:100px;}
-
-    :host paper-button.green {
-      background-color: var(--paper-green-500);
-      color: white;
-    }
-    :host paper-button.green[active] {
-      background-color: var(--paper-red-500);
-    }
-    :host siva-compact-table{margin-top:50px;}
   </style>
   <template>
+    <form is="iron-form" id="form" method="post" action="/form/handler">
+      <siva-compact-table data="{{recipeIngredients}}" nutritives="{{nutritives}}"></siva-compact-table>
+      <h1> Create new Recipe Data </h1>
+      <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
 
-    <paper-header-panel mode="waterfall">
-      <div class="paper-header">
-          <paper-toolbar class="medium-tall">
-            <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-            <span class="flex">Optimus Prime - Healthcare Personalization</span>
-            <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
+                  <div layout="" flex="" horizontal="" id="mealType1">
+                    <h4>Meal Type</h4>
+                    <paper-checkbox>Breakfast</paper-checkbox>
+                    <paper-checkbox>Lunch</paper-checkbox>
+                    <paper-checkbox>Dinner</paper-checkbox>
+                    <paper-checkbox>Desert</paper-checkbox>
+                    <paper-checkbox>Side Dish</paper-checkbox>
+                    <paper-checkbox>Sweet</paper-checkbox>
+                    <paper-checkbox>Drink</paper-checkbox>
+                  </div>
+                  <div layout="" flex="" horizontal="" id="diseaseFriendly1">
+                    <h4>Friendly for deseases</h4>
+                    <paper-checkbox>Diabetes</paper-checkbox>
+                    <paper-checkbox>Hypertension</paper-checkbox>
+                    <paper-checkbox>Cholesterol</paper-checkbox>
+                  </div>
+                
+                <div flex="" horizontal="">
+                <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{foodType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Vegetarian</paper-item>
+                    <paper-item>Non Vegetarian</paper-item>
+                    <paper-item>Contains Egg only</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu hidden="" id="mealType" label="Meal Type ?" value="{{mealType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Breakfast</paper-item>
+                    <paper-item>Lunch</paper-item>
+                    <paper-item>Dinner</paper-item>
+                    <paper-item>Desert</paper-item>
+                    <paper-item>Side Dish</paper-item>
+                    <paper-item>Sweet</paper-item>
+                    <paper-item>Drink</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
 
-            <paper-dialog id="signOutDialog">
-              <h2>You wanna Signout ?</h2>
-              <div class="buttons">
-                <paper-button dialog-confirm="" autofocus="" on-click="signout">Sing Out</paper-button>
+
+
+                <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{cuisine}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Maharastra</paper-item>
+                    <paper-item>Karnataka</paper-item>
+                    <paper-item>Gujarati</paper-item>
+                    <paper-item>West Bengal</paper-item>
+                    <paper-item>Andhra Pradesh</paper-item>
+                    <paper-item>Telangana</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{servingUnit}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>1 cup</paper-item>
+                    <paper-item>1 bowl</paper-item>
+                    <paper-item>1 glass</paper-item>
+                    <paper-item>1 Tablespoon</paper-item>
+                    <paper-item>1 piece</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu hidden="" id="diseaseFriendly" label="Friendly to Disease" value="{{diseaseFriendly}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Diabetese</paper-item>
+                    <paper-item>Hypertension</paper-item>
+                    <paper-item>Cholesterol</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{giIndex}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Low</paper-item>
+                    <paper-item>Medium</paper-item>
+                    <paper-item>High</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
               </div>
-            </paper-dialog>            
 
+      <paper-input id="servingsPerOnePerson" label="Servings Per Person" type="number" required="" auto-validate="" error-message="Please mention servings" value="{{currentIngredient.servingsPerOnePerson}}"></paper-input>
+      <paper-card class="ingredient" heading="Add Ingredient" elevation="4">
+        <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{ingredientNames}}"></vaadin-combo-box>
 
-            <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
-              <paper-tab>Food DB</paper-tab>
-              <paper-tab>Exercises</paper-tab>
-              <paper-tab>Tips</paper-tab>
-              <paper-tab>Q &amp; A</paper-tab>
-              <paper-tab>Nutritives</paper-tab>
-            </paper-tabs>
-          </paper-toolbar>
-        </div>
-    </paper-header-panel>
+        <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
+          <paper-listbox class="dropdown-content">
+            <paper-item>ml</paper-item>
+            <paper-item>mg</paper-item>
+            <paper-item>gm</paper-item>
+            <paper-item>µg</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
 
-    <iron-pages id="pageContents" selected="{{selectedPage}}">
-      <div id="recipesPage">  
+        <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}">
+        </paper-input>
+        <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
+      </paper-card>
+      <br><br>
+      <paper-button raised="" class="green" on-click="addRecipe">Save Recipe Data</paper-button>
+      <paper-card image="public/images/bbread.png" hidden="">
+        <file-upload target="/data/recipeImageUpload" droppable="true" raised="true" multi="true" accept="image/*">Choose File</file-upload>
+      </paper-card>
 
-          <form is="iron-form" id="form" method="post" action="/form/handler">
-              <siva-compact-table data="{{recipeIngredients}}" nutritives="{{nutritives}}"></siva-compact-table>
-              <h1> Create new Recipe Data </h1>
-              <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
-              <paper-input id="servingsPerOnePerson" label="Servings Per Person" type="number" required="" auto-validate="" error-message="Please mention servings" value="{{currentIngredient.servingsPerOnePerson}}"></paper-input>
-                <paper-card class="ingredient" heading="Add Ingredient" elevation="4">
-                  <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{ingredientNames}}" allowcustomvalue=""></vaadin-combo-box>
-
-                  <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
-                    <paper-listbox class="dropdown-content">
-                      <paper-item>ml</paper-item>
-                      <paper-item>mg</paper-item>
-                      <paper-item>gm</paper-item>
-                      <paper-item>µg</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-
-                  <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}" allowcustomvalue="">
-                  </paper-input>
-                  <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
-                </paper-card>
-                <br><br>
-              <paper-button raised="" class="green" on-click="addRecipe">Save Recipe Data</paper-button>
-            <paper-card image="public/images/bbread.png" hidden="">
-              <file-upload target="/data/recipeImageUpload" droppable="true" raised="true" multi="true" accept="image/*">Choose File</file-upload>
-            </paper-card>
-              <iron-ajax auto="" url="/crud/Recipe" handle-as="json" last-response="{{recipesPersisted}}"></iron-ajax>
-
-            <paper-toast id="toast" text="">
-              <paper-button onclick="toast.toggle()" class="yellow-button">Okay !</paper-button>
-            </paper-toast>
-          </form>
-      </div>
-
-      <div id="exercisesPage">
-        <siva-exercise-creation data="{name:'Siva'}"></siva-exercise-creation>
-      </div>
-      <div id="tipsPage">
-        <siva-tip-creation data="{name:'Siva'}"></siva-tip-creation>
-      </div>
-      <div id="qAndAPage">
-        <siva-qa-creation data="{name:'Siva'}"></siva-qa-creation>
-      </div>
-
-      <div id="nutritivesPage">
-        <iron-ajax id="ajax" auto="" url="/data/core" handle-as="json" last-response="{{nutritives}}" on-response="initData" debounce-duration="300"></iron-ajax>
-
-        <paper-datatable data="{{nutritives}}" selectable="" multi-selection="">
-            <paper-datatable-column header="NAME" property="NAME" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="MOISTURE_GM" property="MOISTURE_GM" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="PROTEIN_GM" property="PROTEIN_GM" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="FAT_GM" property="FAT_GM" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="FIBER_GM" property="FIBER_GM" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="CARBOHYDRATES_GM" property="CARBOHYDRATES_GM" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="ENERGY_KCALS" property="ENERGY_KCALS" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="CALCIUM_MG" property="CALCIUM_MG" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="PHOSPHOROUS_MG" property="PHOSPHOROUS_MG" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-            <paper-datatable-column header="IRON_MG" property="IRON_MG" type="String" sortable="" default="Default" editable="">
-            <template>{{value}}</template>
-            </paper-datatable-column>
-        </paper-datatable>
-      </div>
-
-    </iron-pages>
+      <paper-toast id="toast" text="">
+        <paper-button onclick="toast.toggle()" class="yellow-button">Okay !</paper-button>
+      </paper-toast>
+    </form>
   </template>
 </dom-module>
 
@@ -31142,12 +31778,7 @@ Example:
 
   Polymer({
 
-    is: 'siva-recipe-creation',
-
-    listeners: {
-      'ajax.onResponse': 'initData'
-    },
-
+    is: 'siva-recipe-creation1',
     properties: {
 
       /**
@@ -31167,18 +31798,28 @@ Example:
         type:Object,
         notify:true
       },
-
       ingredientNames:{
         type:Array,
         value:[]
       },
-
       recipeIngredients:{
         type:Array,
         value:[],
         notify:true
       },
-
+      currentCounts:{
+        type:Object,
+        value:{},
+        notify:true
+      },
+      recipeCount:{
+        type:Number,
+        notify:true
+      },
+      exerciseCount:{
+        type:Number,
+        notify:true
+      },
       currentIngredient:{
         type:Object,
         value:function(){
@@ -31289,6 +31930,556 @@ Example:
           that.$.toast.open();
           that.$.form.reset();
           that.recipeIngredients = [];
+
+          _.extend(that.currentCounts, JSON.parse(xhr.response));
+          var counts = JSON.parse(xhr.response);
+          that.recipeCount = counts.Recipe;
+
+        }
+      };
+      xhr.open("POST",'/crud/Recipe');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      if(!this.$.recipeName.invalid && !this.$.servingsPerOnePerson.invalid){
+        xhr.send(JSON.stringify(recipe));
+      }
+    }
+  });
+
+</script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+// if(!localStorage.loggedIn){
+//   location.href = 'public/loginPage.html';
+// }
+</script>
+
+
+<link rel="stylesheet" href="/public/stylesheets/style.css">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <siva-recipe-creation></siva-recipe-creation>
+
+@demo
+-->
+<dom-module id="siva-recipe-creation" assetpath="/bower_components/siva-recipe-creation/">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+    }
+    :host count{padding:10px; margin:10px; border-radius:30px; background:yellow;font-weight:bold; color:green;};
+    :host siva-compact-table{padding-top:80px;}
+    :host span{display:inline;}
+    :host siva-compact-table{float:right; width:70%;}
+    :host #uom {float:right; width:100px; margin:4px;}
+    :host #recipeQuantities{float:left; width:100px;}
+
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host paper-button.green[active] {
+      background-color: var(--paper-red-500);
+    }
+    :host siva-compact-table{margin-top:50px;}
+  </style>
+  <template>
+
+    <paper-header-panel mode="waterfall">
+      <div class="paper-header">
+          <paper-toolbar class="medium-tall">
+            <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
+            <span class="flex">Optimus Prime - Healthcare Personalization</span>
+            <div class="layout horizontal">
+
+              <table><tbody><tr>
+                <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
+                <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
+                <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
+                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
+              </tr></tbody></table>
+            </div>
+            <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
+
+            <paper-dialog id="signOutDialog">
+              <h2>You wanna Signout ?</h2>
+              <div class="buttons">
+                <paper-button dialog-confirm="" autofocus="" on-click="signout">Sing Out</paper-button>
+              </div>
+            </paper-dialog>            
+
+
+            <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
+              <paper-tab>Food DB</paper-tab>
+              <paper-tab>Exercises</paper-tab>
+              <paper-tab>Tips</paper-tab>
+              <paper-tab>Q &amp; A</paper-tab>
+              <paper-tab>Nutritives</paper-tab>
+<!--               <paper-tab>Test Comp</paper-tab>
+ -->            </paper-tabs>
+          </paper-toolbar>
+        </div>
+    </paper-header-panel>
+
+    <iron-pages id="pageContents" selected="{{selectedPage}}">
+      <div id="recipesPage">  
+
+          <form is="iron-form" id="form" method="post" action="/form/handler">
+              <siva-compact-table data="{{recipeIngredients}}" nutritives="{{nutritives}}"></siva-compact-table>
+              <h1> Create new Recipe Data </h1>
+
+
+              <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
+
+
+                  <div layout="" flex="" horizontal="" id="mealType1">
+                    <h4>Meal Type</h4>
+                    <paper-checkbox>Breakfast</paper-checkbox>
+                    <paper-checkbox>Lunch</paper-checkbox>
+                    <paper-checkbox>Dinner</paper-checkbox>
+                    <paper-checkbox>Desert</paper-checkbox> <br><br>
+                    <paper-checkbox>Side Dish</paper-checkbox>
+                    <paper-checkbox>Sweet</paper-checkbox>
+                    <paper-checkbox>Drink</paper-checkbox>
+                  </div>
+                  <div layout="" flex="" horizontal="" id="diseaseFriendly1">
+                    <h4>Friendly for deseases</h4>
+                    <paper-checkbox>Diabetes</paper-checkbox>
+                    <paper-checkbox>Hypertension</paper-checkbox>
+                    <paper-checkbox>Cholesterol</paper-checkbox>
+                  </div>
+
+
+              <paper-input id="servingsPerOnePerson" hidden="" label="Servings Per Person" type="number" required="" auto-validate="" error-message="Please mention servings" value="{{currentIngredient.servingsPerOnePerson}}"></paper-input>
+
+                <paper-card class="ingredient" heading="Add Ingredient" elevation="4">
+                  <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{ingredientNames}}" allowcustomvalue=""></vaadin-combo-box>
+
+                  <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
+                    <paper-listbox class="dropdown-content">
+                      <paper-item>ml</paper-item>
+                      <paper-item>mg</paper-item>
+                      <paper-item>gm</paper-item>
+                      <paper-item>µg</paper-item>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+
+                  <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}" allowcustomvalue="">
+                  </paper-input>
+                  <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
+                </paper-card>
+
+              <div flex="" horizontal="">
+                <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{foodType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Vegetarian</paper-item>
+                    <paper-item>Non Vegetarian</paper-item>
+                    <paper-item>Contains Egg only</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu hidden="" id="mealType" label="Meal Type ?" value="{{mealType}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Breakfast</paper-item>
+                    <paper-item>Lunch</paper-item>
+                    <paper-item>Dinner</paper-item>
+                    <paper-item>Desert</paper-item>
+                    <paper-item>Side Dish</paper-item>
+                    <paper-item>Sweet</paper-item>
+                    <paper-item>Drink</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+
+
+
+                <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{cuisine}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Maharastra</paper-item>
+                    <paper-item>Karnataka</paper-item>
+                    <paper-item>Gujarati</paper-item>
+                    <paper-item>West Bengal</paper-item>
+                    <paper-item>Andhra Pradesh</paper-item>
+                    <paper-item>Telangana</paper-item>
+                    <paper-item>Arunachal pradesh</paper-item>
+                    <paper-item>Assam</paper-item>
+                    <paper-item>Bihar</paper-item>
+                    <paper-item>Chhattishgarh</paper-item>
+                    <paper-item>Goa</paper-item>
+                    <paper-item>Haryana</paper-item>
+                    <paper-item>HP</paper-item>
+                    <paper-item>J&amp;K</paper-item>
+                    <paper-item>Jharkhand</paper-item>
+                    <paper-item>Kerala</paper-item>
+                    <paper-item>MP</paper-item>
+                    <paper-item>Manipur</paper-item>
+                    <paper-item>Maghalaya</paper-item>
+                    <paper-item>Mizoram</paper-item>
+                    <paper-item>Nagaland</paper-item>
+                    <paper-item>Orissa</paper-item>
+                    <paper-item>Punjab</paper-item>
+                    <paper-item>Rajasthan</paper-item>
+                    <paper-item>Sikkim</paper-item>
+                    <paper-item>TN</paper-item>
+                    <paper-item>Tripura</paper-item>
+                    <paper-item>UP</paper-item>
+                    <paper-item>Uttarakhand</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{servingUnit}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>1 cup</paper-item>
+                    <paper-item>1 bowl</paper-item>
+                    <paper-item>1 glass</paper-item>
+                    <paper-item>1 Tablespoon</paper-item>
+                    <paper-item>1 piece</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu hidden="" id="diseaseFriendly" label="Friendly to Disease" value="{{diseaseFriendly}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Diabetese</paper-item>
+                    <paper-item>Hypertension</paper-item>
+                    <paper-item>Cholesterol</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+                <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{giIndex}}">
+                  <paper-listbox class="dropdown-content">
+                    <paper-item>Low</paper-item>
+                    <paper-item>Medium</paper-item>
+                    <paper-item>High</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu><br><br>
+              </div>
+
+
+                <br><br>
+              <paper-button raised="" class="green" on-click="addRecipe">Save Recipe Data</paper-button>
+            <paper-card image="public/images/bbread.png" hidden="">
+              <file-upload target="/data/recipeImageUpload" droppable="true" raised="true" multi="true" accept="image/*">Choose File</file-upload>
+            </paper-card>
+              <iron-ajax auto="" url="/crud/Recipe" handle-as="json" last-response="{{recipesPersisted}}"></iron-ajax>
+
+            <paper-toast id="toast" text="">
+              <paper-button onclick="toast.toggle()" class="yellow-button">Okay !</paper-button>
+            </paper-toast>
+          </form>
+      </div>
+
+      <div id="exercisesPage">
+        <siva-exercise-creation></siva-exercise-creation>
+      </div>
+      <div id="tipsPage">
+        <siva-tip-creation></siva-tip-creation>
+      </div>
+      <div id="qAndAPage">
+        <siva-qa-creation></siva-qa-creation>
+      </div>
+      <div id="nutritivesPage">
+        <iron-ajax id="ajax" auto="" url="/data/core" handle-as="json" last-response="{{nutritives}}" on-response="initData" debounce-duration="300"></iron-ajax>
+
+        <paper-datatable data="{{nutritives}}" selectable="" multi-selection="">
+            <paper-datatable-column header="NAME" property="NAME" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="MOISTURE_GM" property="MOISTURE_GM" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="PROTEIN_GM" property="PROTEIN_GM" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="FAT_GM" property="FAT_GM" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="FIBER_GM" property="FIBER_GM" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="CARBOHYDRATES_GM" property="CARBOHYDRATES_GM" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="ENERGY_KCALS" property="ENERGY_KCALS" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="CALCIUM_MG" property="CALCIUM_MG" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="PHOSPHOROUS_MG" property="PHOSPHOROUS_MG" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="IRON_MG" property="IRON_MG" type="String" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+  
+            <paper-datatable-column header="CAROTENE_Vit_A_microgram" property="CAROTENE_Vit_A_microgram" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="THIAMINE_Vit_B1_mg" property="THIAMINE_Vit_B1_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="RIBOFLAVIN_VIT_B2_mg" property="RIBOFLAVIN_VIT_B2_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="NIACIN_VIT_B3_mg" property="NIACIN_VIT_B3_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="TOTAL_B6_mg" property="TOTAL_B6_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Folic_Acid_Free" property="Folic_Acid_Free" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Folic_Acid_Total" property="Folic_Acid_Total" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="VITAMIN_C_mg" property="VITAMIN_C_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="CHOLINE_mg" property="CHOLINE_mg" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Na_MG" property="Na_MG" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="K_MG" property="K_MG" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Zn_MG" property="Zn_MG" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Total_Saturates_Percent" property="Total_Saturates_Percent" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Total_Monounsaturate_Percent" property="Total_Monounsaturate_Percent" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+            <paper-datatable-column header="Total_polyunsaturate_Percent" property="Total_Monounsaturate_Percent" type="Number" default="Default" editable="">
+            <template>{{value}}</template>
+            </paper-datatable-column>
+
+        </paper-datatable>
+      </div>
+<!--       <div id="recipesTestPage">
+        <siva-recipe-creation1></siva-recipe-creation1>
+      </div>
+ -->
+
+    </iron-pages>
+  </template>
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'siva-recipe-creation',
+
+    listeners: {
+      'ajax.onResponse': 'initData'
+    },
+
+    properties: {
+
+      /**
+       * `fancy` indicates that the element should don a monocle and tophat,
+       * while checking its pocket watch.
+       */
+      fancy: Boolean,
+
+      selectedPage:{
+        type:Number,
+        value:0
+      },
+      recipeName:{
+        type:String
+      },
+      servingUnit:{
+        type:String,
+      },
+      diseaseFriendly:{
+        type:String
+      },
+      giIndex:{
+        type:String
+      },
+      foodType:{
+        type:String
+      },
+      mealType:{
+        type:String
+      },
+      cuisine:{
+        type:String
+      },
+      nutritives:{
+        type:Object,
+        notify:true
+      },
+      ingredientNames:{
+        type:Array,
+        value:[]
+      },
+      recipeIngredients:{
+        type:Array,
+        value:[],
+        notify:true
+      },
+      currentCounts:{
+        type:Object,
+        value:{},
+        notify:true
+      },
+      recipeCount:{
+        type:Number,
+        notify:true
+      },
+      exerciseCount:{
+        type:Number,
+        notify:true
+      },
+      currentIngredient:{
+        type:Object,
+        value:function(){
+          return {qty:"",uom:"",servingsPerOnePerson:1};
+        }
+      },
+
+
+    },
+
+    openSignoutDialog:function(e){
+      this.$.signOutDialog.open();
+    },
+    signout:function(e){
+      delete localStorage.loggedIn;
+      location.reload(); 
+    },
+    // Element Lifecycle
+
+    initData:function(e){
+      this.fire('rendered',{hi:"Siva"});
+      this.ingredientNames = _.pluck(e.detail.response,"NAME")
+    },
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    addIngredient: function(e){
+      var that = this;
+      if(this.recipeIngredients.length > 0) this.pop('recipeIngredients');
+      // this.currentIngredient = this.currentIngredient || {};
+      _.extend(this.currentIngredient, _.find(this.nutritives,function(x){
+        return x.NAME == that.$.ingredientsInputCombo.value;
+      }));
+      //  Calculate micro and macro nutrient values according to the current quantity
+      //  The base nutritional values shared from doctors in the form of excel sheets
+      //  are per 100 gm of an ingredient
+      if(this.currentIngredient.qty > 0){
+        var tmpCurrentIngredient = {};
+        _.extend(tmpCurrentIngredient,this.currentIngredient);
+        for (k in this.currentIngredient){
+          if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
+          tmpCurrentIngredient[k] = tmpCurrentIngredient[k] * tmpCurrentIngredient.qty / 100;
+          tmpCurrentIngredient[k] = Math.round(tmpCurrentIngredient[k] * 100) / 100;
+        }
+        this.push('recipeIngredients',tmpCurrentIngredient);
+        this.updateTotals();
+      }
+    },
+    updateTotals:function(){
+      //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
+      //  The actual totals object is the totalsObject below this line
+      var totalsObject = {}
+      var tmpCurrentIngredient = this.recipeIngredients[0];
+      for (k in tmpCurrentIngredient){
+        if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
+        var x = _.pluck(this.recipeIngredients,k);
+        totalsObject[k] = x.reduce((a, b) => a + b);
+        totalsObject[k] = Math.round(totalsObject[k] * 100) / 100;
+      }
+      totalsObject.NAME = "Totals :";
+      this.push('recipeIngredients',totalsObject);
+    },
+    addRecipe: function(e){
+      var recipe = {};
+      recipe.mealType = "";
+      recipe.diseaseFriendly = "";
+
+      var mealTypes = document.querySelectorAll("#mealType1 > paper-checkbox[active]");
+
+      [].forEach.call(mealTypes,function(mealType){
+        recipe.mealType += mealType.innerText + ",";
+      });
+
+
+      var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly1 > paper-checkbox[active]");
+
+      [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
+        recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
+      });
+
+      console.log(recipe.mealType);
+      console.log(recipe.diseaseFriendly);
+      // recipe.totals = function(){
+      //   recipe.ingredients.forEach(function(x){
+      //   })
+      // }
+
+      recipe.name=this.recipeName;
+      recipe.ingredients = this.recipeIngredients;
+      recipe.servingUnit = this.servingUnit;
+      recipe.giIndex = this.giIndex;
+
+      recipe.foodType = this.foodType;
+      recipe.cuisine = this.cuisine;
+
+
+
+      recipe.createdBy = JSON.parse(localStorage.user).username;
+      console.log(recipe);
+      var xhr = new XMLHttpRequest();
+      var that = this;
+
+      xhr.onload = function(res){
+        console.log(xhr.statusCode,res.statusCode,res, xhr.response);
+        if(res.currentTarget.readyState == 4){
+          that.$.toast.text = xhr.response;
+          that.$.toast.open();
+          that.$.form.reset();
+          that.recipeIngredients = [];
+
+          _.extend(that.currentCounts, JSON.parse(xhr.response));
+          var counts = JSON.parse(xhr.response);
+          that.recipeCount = counts.Recipe;
 
         }
       };

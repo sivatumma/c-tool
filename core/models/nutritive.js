@@ -22,13 +22,21 @@ var nutritiveSchema = new Schema({
 	Folic_Acid_Total: Number,
 	VITAMIN_C_mg: Number,
 	CHOLINE_mg: Number,
-	Na_MG: Number,
-	K_MG: Number,
-	Zn_MG: Number,
+	Na_mg: Number,
+	K_mg: Number,
+	Zn_mg: Number,
 	Total_Saturates_Percent: Number,
 	Total_Monounsaturate_Percent: Number,
-	Total_polyunsaturate_Percent: Number
+	Total_Polyunsaturate_Percent: Number
 });
+
+nutritiveSchema.add({
+	Na_mg: Number,
+	K_mg: Number,
+	Zn_mg: Number,
+	Total_Polyunsaturate_Percent: Number
+});
+
 
 var Nutritive = mongoose.model('Nutritive', nutritiveSchema);
 module.exports = Nutritive;

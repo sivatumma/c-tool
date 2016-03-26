@@ -43,7 +43,10 @@ var recipeSchema = new Schema({
 recipeSchema.add({
     servingUnit:String,
     diseaseFriendly:String,
-    giIndex: String
+    giIndex: String,
+    foodType:String,
+    mealType:String,
+    cuisine:String
 
 });
     

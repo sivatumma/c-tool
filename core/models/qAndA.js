@@ -11,5 +11,8 @@ var questionAndAnswerSchema = new Schema({
 	comments: String,
 	createdBy:String
 });
+
+questionAndAnswerSchema.add({category:String, subCategory:String, consultNow:Boolean,consultDoctorType:String});
+
 var QandA = mongoose.model('QandA', questionAndAnswerSchema);
 module.exports = QandA;

@@ -5,18 +5,26 @@ var express = require('express'),
 	router = express.Router(),
 	db = require('../core/dbModule'),
 	Nutritive = require('../core/models/nutritive'),
-	nutritiveStaticData = require('../core/t')(),
+	// modelStaticData = require('../core/t')(),
 	Recipe = require('../core/models/recipe'),
 	Exercise = require('../core/models/exercise');
 
 router.post('/:modelName', function(req, res, next) {
 	var model = mongoose.model(req.params.modelName);
-	JSON.parse(nutritiveStaticData).forEach(function(oneModel) {
-		model(oneModel).save(function(err) {
+	if(!req.body.fileName || !req.body.createdBy) res.status(403).send("fileName to process, createdBy params are necessary for bulk processing of data. Files must be put in 'core' folder");
+	var modelStaticData = require('../core/' + req.body.fileName)();
+	console.log("Going to parse modelStaticData");
+	console.log(typeof modelStaticData);
+
+	modelStaticData.forEach(function(oneModel) {
+		oneModel.createdBy = req.body.createdBy;
+		model(oneModel).save(function(err,data) {
 			if (err) {
-				res.send({
+				console.log({
 					err: err
 				});
+				res.status(500).send(err.message);
+				return;
 			}
 		});
 	});
