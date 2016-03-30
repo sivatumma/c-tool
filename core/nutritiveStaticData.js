@@ -12413,5 +12413,5 @@ var _ = require('underscore');
     console.log(types);
 
 module.exports = exports = function() {
-    return JSON.stringify(totalNutrients);
+    return totalNutrients;
 };

@@ -46,7 +46,11 @@ recipeSchema.add({
     giIndex: String,
     foodType:String,
     mealType:String,
-    cuisine:String
+    cuisine:String,
+    createdAt:{
+        type: Date,
+        default: Date.now
+    }
 
 });
     

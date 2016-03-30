@@ -23,6 +23,7 @@ router.post('/:modelName', function(req, res, next) {
 				console.log({
 					err: err
 				});
+				console.log(oneModel);
 				res.status(500).send(err.message);
 				return;
 			}
