@@ -1,0 +1,72 @@
+
+<dom-module id="siva-edit1">
+  <style>
+    :host {
+      margin:10px;
+      display: block;
+      box-sizing: border-box;
+    }
+    :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
+    :host paper-dropdown{display:inline;}
+    :host paper-dropdown .paper-input { font-size:10px; }
+
+    :host .ingredient{width:500px;};
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host paper-card{margin:0px;}
+    :host td:first-child{ background:#f4f4f4; padding:30px;margin-right:20px !important; width:300px !important;}
+  </style>
+
+  <template>
+    <iron-ajax
+    id="totalData"
+      auto
+      url="/crud/QandA"
+      handle-as="json"
+      last-response="{{recipes}}"
+      on-response="gotTotalData"
+      debounce-duration="300"></iron-ajax>
+
+  <aha-table
+    data="{{recipes}}"
+    searchable
+    pagesize="10"
+    pagesizetitle="Page Size:"
+    summarytitle="Viewing">
+
+      <aha-column name="question"
+        type="text"
+        sortable
+        searchable
+        required
+        default=""
+        editable>
+      </aha-column>
+      <aha-column name="answer"
+        type="text"
+        sortable
+        searchable
+        required
+        default=""
+        editable>
+      </aha-column>
+      <aha-column name="Update"
+        required>
+        <paper-button id="create" onclick="themed.create();">Create</paper-button>
+      </aha-column>
+
+    </aha-table>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'siva-edit1',
+    properties: {},
+
+    gotTotalData:function(e){
+      console.log(e.detail.response);
+    }
+  });
+</script>

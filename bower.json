@@ -56,13 +56,16 @@
     "siva-exercise-creation": "https://github.com/sivatumma/exercise-creation.git",
     "iron-localstorage": "PolymerElements/iron-localstorage#^1.0.5",
     "paper-checkbox": "PolymerElements/paper-checkbox#^1.1.3",
-    "paper-badge": "PolymerElements/paper-badge#^1.1.1"
+    "paper-badge": "PolymerElements/paper-badge#^1.1.1",
+    "aha-table": "^2.0.13",
+    "iron-list": "PolymerElements/iron-list#^1.2.8"
   },
   "resolutions": {
     "polymer": "^1.2.4",
     "webcomponentsjs": "0.7.21",
     "paper-styles": "^1.1.2",
     "paper-item": "^1.1.4",
-    "paper-checkbox": "^1.1.3"
+    "paper-checkbox": "^1.1.3",
+    "iron-list": "^1.2.8"
   }
 }

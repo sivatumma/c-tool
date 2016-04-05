@@ -7,6 +7,7 @@ var express = require('express'),
     busboy = require('connect-busboy'),
     bodyParser = require('body-parser'),
     routes = require('./routes/index'),
+    general = require('./routes/general'),
     users = require('./routes/users'),
     data = require('./routes/data'),
     crud = require('./routes/crud'),
@@ -35,6 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname)));
 
 app.use('/', routes);
+app.use('/general', general);
 app.use('/users', users);
 app.use('/data',data);
 app.use('/crud',crud);

@@ -1,11 +1,16 @@
-<link rel="import" href="./nutritives.html"/>
-
 <dom-module id="siva-scaffold">
   <style>
     :host {
       display: block;
       box-sizing: border-box;
     }
+    :host #recipesPage, #exercisesPage ,#tipsPage, #qAndAPage{padding:20px 10px;}
+    #recipesPage table{width:100%;}
+    #recipesPage table tr td{margin:30px;}
+    #recipesPage #recipeName, #recipesPage #servingsPerOnePerson{width:270px;}
+    #recipesPage h1{margin:0;}
+
+
     :host count{padding:10px; margin:10px; border-radius:30px; background:yellow;font-weight:bold; color:green;};
     :host siva-compact-table{padding-top:80px;}
     :host span{display:inline;}
@@ -23,45 +28,53 @@
     :host siva-compact-table{margin-top:50px;}
   </style>
   <template>
+        <iron-ajax
+          id="ajax"
+            auto
+            url="/data/facade"
+            handle-as="json"
+            last-response="{{nutritives}}"
+            on-response="initData"
+            debounce-duration="300"></iron-ajax>
+
     <paper-header-panel mode="waterfall">
       <div class="paper-header">
-        <paper-toolbar class="medium-tall">
-          <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-          <span class="flex">Optimus Prime - Healthcare Personalization</span>
-          <div class="layout horizontal">
+          <paper-toolbar class="medium-tall">
+            <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
+            <span class="flex">Optimus Prime - Healthcare Personalization</span>
+            <div class="layout horizontal">
 
-            <table><tr>
-              <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
-              <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
-              <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
-              <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
-            </tr></table>
-          </div>
-          <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
-
-          <paper-dialog id="signOutDialog">
-            <h2>You wanna Signout ?</h2>
-            <div class="buttons">
-              <paper-button dialog-confirm autofocus on-click="signout">Sing Out</paper-button>
+              <table><tr>
+                <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
+                <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
+                <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
+                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
+              </tr></table>
             </div>
-          </paper-dialog>            
+            <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
+
+            <paper-dialog id="signOutDialog">
+              <h2>You wanna Signout ?</h2>
+              <div class="buttons">
+                <paper-button dialog-confirm autofocus on-click="signout">Sing Out</paper-button>
+              </div>
+            </paper-dialog>            
 
 
-          <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
-            <paper-tab>Food DB</paper-tab>
-            <paper-tab>Exercises</paper-tab>
-            <paper-tab>Tips</paper-tab>
-            <paper-tab>Q &amp; A</paper-tab>
-            <paper-tab>Nutritives</paper-tab>
-          </paper-tabs>
-        </paper-toolbar>
-      </div>
+            <paper-tabs class="pink bottom fit" selected="{{selectedPage}}">
+              <paper-tab>Food DB</paper-tab>
+              <paper-tab>Exercises</paper-tab>
+              <paper-tab>Tips</paper-tab>
+              <paper-tab>Q &amp; A</paper-tab>
+              <paper-tab>Review</paper-tab>
+            </paper-tabs>
+          </paper-toolbar>
+        </div>
     </paper-header-panel>
-
 
     <iron-pages id="pageContents" selected="{{selectedPage}}">
       <div id="recipesPage">
-        <siva-recipe-creation></siva-recipe-creation>
+        <siva-recipe-creation facade="{{nutritives}}"></siva-recipe-creation>
       </div>
       <div id="exercisesPage">
         <siva-exercise-creation></siva-exercise-creation>
@@ -73,15 +86,224 @@
         <siva-qa-creation></siva-qa-creation>
       </div>
       <div id="nutritivesPage">
-        <siva-nutritives></siva-nutritives>
+        <siva-edit></siva-edit>
       </div>
-    </iron-pages>
 
+    </iron-pages>
   </template>
 </dom-module>
 
 <script>
-Polymer({
-  is:"siva-scaffold",
-});
+
+  Polymer({
+
+    is: 'siva-scaffold',
+
+    listeners: {
+      'ajax.onResponse': 'initData'
+    },
+
+    properties: {
+
+      /**
+       * `fancy` indicates that the element should don a monocle and tophat,
+       * while checking its pocket watch.
+       */
+      fancy: Boolean,
+
+      selectedPage:{
+        type:Number,
+        value:0
+      },
+      recipeName:{
+        type:String
+      },
+      servingUnit:{
+        type:String,
+      },
+      diseaseFriendly:{
+        type:String
+      },
+      giIndex:{
+        type:String
+      },
+      foodType:{
+        type:String
+      },
+      mealType:{
+        type:String
+      },
+      cuisine:{
+        type:String
+      },
+      nutritives:{
+        type:Object,
+        notify:true
+      },
+      recipeIngredients:{
+        type:Array,
+        value:[],
+        notify:true
+      },
+      currentCounts:{
+        type:Object,
+        value:{},
+        notify:true
+      },
+      recipeCount:{
+        type:Number,
+        notify:true
+      },
+      exerciseCount:{
+        type:Number,
+        notify:true
+      },
+      currentIngredient:{
+        type:Object,
+        value:function(){
+          return {qty:"",uom:"",servingsPerOnePerson:1};
+        }
+      },
+
+
+    },
+
+    openSignoutDialog:function(e){
+      this.$.signOutDialog.open();
+    },
+    signout:function(e){
+      delete localStorage.loggedIn;
+      location.reload(); 
+    },
+    // Element Lifecycle
+
+    initData:function(e){
+      console.log("Hey ",e.detail.response);
+      this.fire('rendered',{hi:"Siva"});
+      this.ingredientNames = _.pluck(e.detail.response.nutritives,"NAME")
+    },
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    addIngredient: function(e){
+      var that = this;
+      if(this.recipeIngredients.length > 0) this.pop('recipeIngredients');
+      // this.currentIngredient = this.currentIngredient || {};
+      _.extend(this.currentIngredient, _.find(this.nutritives,function(x){
+        return x.NAME == that.$.ingredientsInputCombo.value;
+      }));
+      //  Calculate micro and macro nutrient values according to the current quantity
+      //  The base nutritional values shared from doctors in the form of excel sheets
+      //  are per 100 gm of an ingredient
+      if(this.currentIngredient.qty > 0){
+        var tmpCurrentIngredient = {};
+        _.extend(tmpCurrentIngredient,this.currentIngredient);
+        for (k in this.currentIngredient){
+          if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
+          tmpCurrentIngredient[k] = tmpCurrentIngredient[k] * tmpCurrentIngredient.qty / 100;
+          tmpCurrentIngredient[k] = Math.round(tmpCurrentIngredient[k] * 100) / 100;
+        }
+        this.push('recipeIngredients',tmpCurrentIngredient);
+        this.updateTotals();
+      }
+    },
+    updateTotals:function(){
+      //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
+      //  The actual totals object is the totalsObject below this line
+      var totalsObject = {}
+      var tmpCurrentIngredient = this.recipeIngredients[0];
+      for (k in tmpCurrentIngredient){
+        if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
+        var x = _.pluck(this.recipeIngredients,k);
+        totalsObject[k] = x.reduce((a, b) => a + b);
+        totalsObject[k] = Math.round(totalsObject[k] * 100) / 100;
+      }
+      totalsObject.NAME = "Totals :";
+      this.push('recipeIngredients',totalsObject);
+    },
+    addRecipe: function(e){
+      var recipe = {};
+      recipe.mealType = "";
+      recipe.diseaseFriendly = "";
+
+      var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
+
+      [].forEach.call(mealTypes,function(mealType){
+        recipe.mealType += mealType.innerText + ",";
+      });
+
+
+      var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly > paper-checkbox[active]");
+
+      [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
+        recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
+      });
+
+      console.log(recipe.mealType);
+      console.log(recipe.diseaseFriendly);
+      // recipe.totals = function(){
+      //   recipe.ingredients.forEach(function(x){
+      //   })
+      // }
+
+      recipe.name=this.recipeName;
+      recipe.ingredients = this.recipeIngredients;
+      recipe.servingUnit = this.servingUnit;
+      recipe.giIndex = this.giIndex;
+
+      recipe.foodType = this.foodType;
+      recipe.cuisine = this.cuisine;
+
+
+
+      recipe.createdBy = JSON.parse(localStorage.user).username;
+      console.log(recipe);
+      var xhr = new XMLHttpRequest();
+      var that = this;
+
+      xhr.onload = function(res){
+        console.log(xhr.statusCode,res.statusCode,res, xhr.response);
+        if(res.currentTarget.readyState == 4){
+          that.$.toast.text = xhr.response;
+          that.$.toast.open();
+          that.$.form.reset();
+          that.recipeIngredients = [];
+
+          _.extend(that.currentCounts, JSON.parse(xhr.response));
+          var counts = JSON.parse(xhr.response);
+          that.recipeCount = counts.Recipe;
+
+        }
+      };
+      xhr.open("POST",'/crud/Recipe');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      if(!this.$.recipeName.invalid && !this.$.servingsPerOnePerson.invalid){
+        xhr.send(JSON.stringify(recipe));
+      }
+    }
+  });
+
 </script>

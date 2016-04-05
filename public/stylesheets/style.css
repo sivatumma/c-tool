@@ -23,12 +23,13 @@ paper-tab{font-size:20px;}
 
 vaadin-combo-box{width:70% !important; display:inline; }
 iron-list{height:100px;}
+/* 
 #recipesPage, #exercisesPage ,#tipsPage, #qAndAPage{padding:20px 100px;}
 #recipesPage table{width:100%;}
 #recipesPage table tr td{margin:30px;}
 #recipesPage #recipeName, #recipesPage #servingsPerOnePerson{width:270px;}
 #recipesPage h1{margin:0;}
-
+ */
 .cafe-header { @apply(--paper-font-headline); }
 .cafe-light { color: var(--paper-grey-600); }
 .cafe-location {

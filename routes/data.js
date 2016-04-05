@@ -1,8 +1,10 @@
 var express = require('express'),
+	_ = require('underscore'),
 	fs = require('fs'),
 	n = require('./nutritiveNames');	// n means nutritive Names
 	mc = require('mc'),
 	router = express.Router(),
+	facadeData = require('../core/facadeData')(),
 	Nutritive = require('../core/models/nutritive'),
 	Recipe = require('../core/models/recipe'),
 	QandA = require('../core/models/qAndA');
@@ -19,6 +21,24 @@ router.get('/:kindOfData', function(req, res, next) {
 			Nutritive.find({})
 				.exec(function(err, data) {
 					res.send(data);
+				});
+			break;
+		//	The below option is to respond with complete data that either directly or indirectly 
+		//	rendered in our SPA. All drop down contents will also be sent from this route.
+		case 'facade':
+			var facade = {};
+			Nutritive.find({})
+				.exec(function(err, data) {
+					if(err){res.status(500).send("Error. See console logs for error description: ", err.message);
+						console.log(err);
+					}
+					facade.ingredientNames = _.pluck(data,"NAME");
+					_.extend(facade,facadeData);
+					facade.nutritives = data;
+				    facade.sampleIngredient = _.find(data, function(x) {
+				      return x.NAME == "Brinjal";
+				    });
+					res.status(200).send(JSON.stringify(facade));
 				});
 			break;
 		case 'memcached':

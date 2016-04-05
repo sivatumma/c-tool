@@ -37,20 +37,24 @@ Example:
   </style>
 
   <template>
-    <h1>Create a new Question &amp; Answer</h1>
-    <h2>Question</h2>
-      <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{question}}"></iron-autogrow-textarea>
-      <paper-input id="keywords" value="{{keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
-    <h2>Answer</h2>
-      <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{answer}}"></iron-autogrow-textarea>    
+    <form is="iron-form" id="form" method="post" action="/form/handler">
+      <h1>Create a new Question &amp; Answer</h1>
+      <h2>Question</h2>
+        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value$="{{data.question}}"></iron-autogrow-textarea>
+        <paper-input id="keywords" value$="{{data.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
+      <h2>Answer</h2>
+        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value$="{{data.answer}}"></iron-autogrow-textarea>    
 
-    <br/>
-    <br/>
-    <paper-button raised class="green" on-click="addExercise">Save Exercise Data</paper-button>
-    <paper-toast id="toast_q_and_a" text="">
-      <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
-    </paper-toast>
-
+      <br/>
+      <br/>
+      <template is="dom-if" if$="{{data.nosave}}">
+        <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div>
+      </template>
+      <paper-button raised class="green" on-click="addQandA" disabled$="{{data.nosave}}">Save Q&amp;A</paper-button>
+      <paper-toast id="toast_q_and_a" text="">
+        <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
+      </paper-toast>
+    </form>
   </template>
 </dom-module>
 
@@ -62,7 +66,12 @@ Example:
     properties:{
       doctorName:{
         type:String,
-        value:"Anonymous"
+        value:""
+      },
+      data:{
+        type:Object,
+        notify:true,
+        value:{question:"",answer:""}
       },
       keywords:String,
       question:String,
@@ -94,12 +103,12 @@ Example:
       // Use this to clean up anything you did in `attached`.
     },
 
-    addExercise: function(e){
+    addQandA: function(e){
       var qAndA = {};
       qAndA.doctorName=this.doctorName;
-      qAndA.question = this.question;
-      qAndA.answer = this.answer;
-      qAndA.keywords = this.keywords;
+      qAndA.question = this.$.question.value;
+      qAndA.answer = this.$.answer.value;
+      qAndA.keywords = this.$.keywords.value;
       qAndA.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
@@ -107,6 +116,7 @@ Example:
         console.log(xhr.statusCode,res.statusCode,res, xhr.response);
         that.$.toast_q_and_a.text = xhr.response;
         that.$.toast_q_and_a.open();
+        that.$.form.reset();
       };
       xhr.open("POST",'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

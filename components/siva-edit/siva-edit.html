@@ -1,0 +1,81 @@
+
+<dom-module id="siva-edit">
+  <style>
+    :host {
+      margin:10px;
+      display: block;
+      box-sizing: border-box;
+    }
+    :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
+    :host paper-dropdown{display:inline;}
+    :host paper-dropdown .paper-input { font-size:10px; }
+
+    :host .ingredient{width:500px;};
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host .viewList{display:absolute; width:600px; height:600px; overflow:auto; float:right; padding:20px;background:#f4f4f4;};
+    :host .viewList paper-item{ border-bottom:1px solid silver; }
+    :host paper-card{margin:0px;}
+    :host td:first-child{ background:#f4f4f4; padding:30px;margin-right:20px !important; width:300px !important;}
+  </style>
+
+  <template>
+    <iron-ajax
+    id="totalData"
+      auto
+      url="/crud/QandA?currentUser=true"
+      handle-as="json"
+      last-response="{{qandas}}"
+      on-response="gotTotalData"
+      debounce-duration="300"></iron-ajax>
+
+      <div class="viewList">
+        <template is="dom-repeat" items="{{qandas}}">
+          <paper-card>
+            <paper-item on-click="editThis">{{item.question}}</paper-item> 
+          </paper-card>
+        </template>
+      </div>
+      <siva-qa-creation data="{{currentQandA}}"></siva-qa-creation>
+
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'siva-edit',
+    properties: {
+      currentQandA:{
+        type:Object,
+        notify:true
+      }
+    },
+
+    gotTotalData:function(e){
+      console.log(e.detail.response);
+    },
+
+    editThis:function(e){
+      console.log("Came to Edit",e.model.item._id);
+      console.log(e.model.item);
+      //  For now, disable save button
+      e.model.item.nosave = true;
+      this.currentQandA = e.model.item;
+    },
+
+    update:function(modelName,id){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+
+      xhr.onload = function(res){
+        if(res.currentTarget.readyState == 4){
+          console.log(res);
+        }
+      };
+      xhr.open("POST",'/crud/QAndA');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(recipe));
+    }
+  });
+</script>

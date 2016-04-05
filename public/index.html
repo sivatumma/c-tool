@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="import" href="../bower_components/siva-recipe-creation/siva-recipe-creation.html"/>
-	<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html"/>
-	<link rel="import" href="../bower_components/login-form/login-form.html"/>
-	<style is="custom-style" include="iron-flex"></style>
-	
-<style>
-body{
-	min-width:1100px;
-}
-paper-spinner{
-	position:absolute;
-	top:30%;
-	left:40%;
-}
-</style>
+	<link rel="import" href="../../components/elements.html"/>
+	<style>
+		body{
+			min-width:1100px;
+		}
+		paper-spinner{
+			position:absolute;
+			top:30%;
+			left:40%;
+		}
+	</style>
 </head>
 
 <body>
@@ -25,7 +21,7 @@ paper-spinner{
 
 <div id="totalContent" hidden>
 	<paper-spinner active></paper-spinner>
-	<siva-recipe-creation hidden></siva-recipe-creation>
+	<siva-scaffold hidden></siva-scaffold>
 </div>
 
 </body>
@@ -48,8 +44,8 @@ document.querySelector('login-form').addEventListener('loggedIn', function (e) {
 
 });
 
-document.querySelector('siva-recipe-creation').addEventListener('rendered', function (e) {
+document.querySelector('siva-scaffold').addEventListener('rendered', function (e) {
 	document.querySelector("paper-spinner").active = false;
-    document.querySelector("siva-recipe-creation").hidden = false;
+    document.querySelector("siva-scaffold").hidden = false;
 });
 </script>

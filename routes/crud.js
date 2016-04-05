@@ -11,7 +11,14 @@ var express = require('express'),
 
 router.get('/:modelName', function(req, res, next) {
 	var model = mongoose.model(req.params.modelName);
-	model.find({name:"Some recipe"},function(err,data){
+	model.find({},function(err,data){
+		if(err){res.send({err:err});}
+		res.status(200).send(data);
+	});
+});
+router.get('/dummy/:modelName', function(req, res, next) {
+	var model = mongoose.model(req.params.modelName);
+	model.findOne({},function(err,data){
 		if(err){res.send({err:err});}
 		res.status(200).send(data);
 	});
