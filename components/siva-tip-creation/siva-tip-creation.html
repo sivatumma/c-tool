@@ -41,7 +41,7 @@ Example:
     <div class="card-actions">
       <paper-input id="tip" label="Describe your tip of the day" required auto-validate error-message="Please write some tip" value="{{tip}}" ></paper-input>
 
-      <paper-dropdown-menu label="For" value="{{suitableForDecease}}">
+      <paper-dropdown-menu label="For" value="{{suitableForDisease}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -85,7 +85,7 @@ Example:
     is: 'siva-tip-creation',
     properties:{
       tip:String,
-      suitableForDecease:String,
+      suitableForDisease:String,
       suitableForTime:String
     },
     
@@ -117,7 +117,7 @@ Example:
     addTip: function(e){
       var tip = {};
       tip.tip=this.tip;
-      tip.suitableForDecease = this.suitableForDecease;
+      tip.suitableForDisease = this.suitableForDisease;
       tip.suitableForTime = this.suitableForTime;
       tip.createdBy = JSON.parse(localStorage.user).username;
 

@@ -22,6 +22,8 @@ var tipSchema = new Schema({
 	createdBy:String
 });
 
+tipSchema.add({suitableForTime:String});
+
 tipSchema.add({category:String,subCategory:String,tipDescription:String});
 
 var Tip = mongoose.model('Tip', tipSchema);

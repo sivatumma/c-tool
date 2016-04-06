@@ -22,6 +22,7 @@ Example:
   <style>
   :host {
     box-sizing: border-box;
+    z-index:-1;
   }
   :host .table-header-rotated {
     border-collapse: collapse;
@@ -63,7 +64,7 @@ Example:
 
     <table  class="csstransforms table-header-rotated" data$="{{data}}">
       <!-- <tr hidden="{{!data.length}}"><td colspan="7" center-justified flex>Micro Nutrients</td></tr> -->
-      <tr hidden="{{!data.length}}" valign="top">
+      <tr hidden$="{{!data.length}}" valign="top">
         <!-- First column header is not rotated -->
         <!-- Following headers are rotated -->
 
@@ -98,7 +99,7 @@ Example:
         <th class="rotate"><div><span>PHOSPHOROUS_MG</span></div></th>
       </tr> 
       <tbody>
-          <template is="dom-repeat" items="{{data}}">
+          <template is="dom-repeat" items$="{{data}}">
             <tr valign="top">
               <!--  MICRO Nutrients-->
               <th class="row-header">{{item.NAME}}</th>

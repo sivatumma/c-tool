@@ -46,20 +46,24 @@ router.post('/:modelName', function(req, res, next) {
 				});
 			}
 			//	If this collection is being created by the user for the first time by this user
-			if (!doc.createdCounts[req.params.modelName]) {
-				doc.createdCounts[req.params.modelName] = 1;
-				doc.markModified('createdCounts');
-				doc.save();
-				res.status(200).send({
-					count: user.createdCounts[req.params.modelName]
-				});
-			}
-			//	If this collection is being created non-first time by this user
-			else {
-				doc.createdCounts[req.params.modelName] = doc.createdCounts[req.params.modelName] + 1;
-				doc.markModified('createdCounts');
-				doc.save();
-				res.status(200).send(user.createdCounts);
+			try{
+				if (!doc.createdCounts[req.params.modelName]) {
+					doc.createdCounts[req.params.modelName] = 1;
+					doc.markModified('createdCounts');
+					doc.save();
+					res.status(200).send({
+						count: user.createdCounts[req.params.modelName]
+					});
+				}
+				//	If this collection is being created non-first time by this user
+				else {
+					doc.createdCounts[req.params.modelName] = doc.createdCounts[req.params.modelName] + 1;
+					doc.markModified('createdCounts');
+					doc.save();
+					res.status(200).send(user.createdCounts);
+				}
+			} catch (e){
+				console.log("Error., ", e.message);
 			}
 		});
 	}).catch(function(err) {

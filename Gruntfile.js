@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     vulcanize: {
       dist: {
         options: {
-          abspath: '/home/siva/work/drcontents',
+          abspath: '/home/siva/work/content-tool',
         },
         files: {
           'public/build.html': 'public/index.html'

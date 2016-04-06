@@ -42,6 +42,25 @@ Example:
       <h2>Question</h2>
         <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value$="{{data.question}}"></iron-autogrow-textarea>
         <paper-input id="keywords" value$="{{data.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
+
+      Category: 
+      <paper-dropdown-menu label="Catergory" value="{{category}}">
+        <paper-listbox class="dropdown-content">
+          <paper-item>Diabetes</paper-item>
+          <paper-item>Sub Category</paper-item>
+          <paper-item>Pre-Natal</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      Sub Category: 
+      <paper-dropdown-menu label="Sub Catergory" value="{{subCategory}}">
+        <paper-listbox class="dropdown-content">
+          <paper-item>Diabetes</paper-item>
+          <paper-item>Sub Category</paper-item>
+          <paper-item>Pre-Natal</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+
+
       <h2>Answer</h2>
         <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value$="{{data.answer}}"></iron-autogrow-textarea>    
 
@@ -74,6 +93,8 @@ Example:
         value:{question:"",answer:""}
       },
       keywords:String,
+      category:String,
+      subCategory:String,
       question:String,
       answer:String
     },

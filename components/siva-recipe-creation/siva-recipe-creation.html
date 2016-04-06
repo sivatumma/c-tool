@@ -25,39 +25,49 @@ Example:
       display: block;
       box-sizing: border-box;
     }
+    :host td > #form:200px;
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
     :host paper-dropdown .paper-input { font-size:10px; }
 
-    :host .ingredient{width:500px;};
+    :host .ingredient{width:300px;};
     :host paper-button.green {
       background-color: var(--paper-green-500);
       color: white;
     }
     :host paper-card{margin:0px;}
-    :host td:first-child{ background:#f4f4f4; padding:10px;margin-right:20px !important; width:400px !important;}
+    :host td:first-child{ background:#f4f4f4; padding:10px;margin-right:20px !important; width:300px !important;}
   </style>
 
   <template>
+    <iron-ajax
+      id="ajax"
+        auto
+        url="/data/facade"
+        handle-as="json"
+        last-response="{{facade}}"
+        on-response="initData"
+        debounce-duration="300"></iron-ajax>
+
     <table><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
-      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
+      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value$="[[recipe.name]]"></paper-input>
 
         <div id="mealType">
           <h4>Meal Type</h4>
-            <template is="dom-repeat" items="{{facade.mealTypes}}">
+            <template is="dom-repeat" items$="{{facade.mealTypes}}">
               <paper-checkbox>{{item}}</paper-checkbox>
             </template>
         </div>
         <div id="diseaseFriendly">
           <h4>Friendly for deseases</h4>
-            <template is="dom-repeat" items="{{facade.diseaseFriendlies}}">
+            <template is="dom-repeat" items$="{{facade.diseaseFriendlies}}">
               <paper-checkbox>{{item}}</paper-checkbox>
             </template>
         </div>
         <div class="horizontal">
-        <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{foodType}}">
+        <paper-dropdown-menu id="foodType" label="Food Type ?" value$="{{recipe.foodType}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.foodTypes}}">
               <paper-item>{{item}}</paper-item>
@@ -65,21 +75,21 @@ Example:
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{cuisine}}">
+        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value$="{{recipe.cuisine}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.cusines}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{servingUnit}}">
+        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value$="{{recipe.servingUnit}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.servingUnits}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{giIndex}}">
+        <paper-dropdown-menu id="giIndex" label="GI-Index" value$="{{recipe.giIndex}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.giIndexes}}">
               <paper-item>{{item}}</paper-item>
@@ -92,9 +102,9 @@ Example:
     </form>
     </td>
     <td>
-    <div class="layout horizontal wrap">
+    <div class="layout vertical">
       <paper-card class="ingredient" heading="Add Ingredient" elevation="1">
-        <div class="layout horizontal">
+        <div class="layout vertical">
           <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
           <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
             <paper-listbox class="dropdown-content">
@@ -113,7 +123,7 @@ Example:
 
 
       <h1>&nbsp;</h1><h1>&nbsp;</h1>
-      <siva-compact-table data="{{recipeIngredients}}"></siva-compact-table>
+      <siva-compact-table data$="{{recipeIngredients}}"></siva-compact-table>
     </td></tr></table>  
 
       <paper-card image="images/bbread.png" hidden>
@@ -132,6 +142,10 @@ Polymer({
   is: 'siva-recipe-creation',
   properties: {
     facade:{
+      type:Object,
+      notify:true
+    },
+    recipe:{
       type:Object,
       notify:true
     },
@@ -170,8 +184,7 @@ Polymer({
       value: function() {
         return {
           qty: "",
-          uom: "",
-          servingsPerOnePerson: 1
+          uom: ""
         };
       }
     },
@@ -185,6 +198,11 @@ Polymer({
     delete localStorage.loggedIn;
     location.reload();
   },
+
+  initData:function(e){
+    this.fire('rendered',{hi:"Siva"});
+  },
+
   ready: function() {
   },
 
@@ -202,16 +220,13 @@ Polymer({
   },
 
   addIngredient: function(e) {
-    console.log("Got into addIngredient function");
-    console.log(this.facade);
-    console.log(this.$.ingredientsInputCombo.value);
+
     var that = this;
     if (this.recipeIngredients.length > 0) this.pop('recipeIngredients');
     // this.currentIngredient = this.currentIngredient || {};
     _.extend(this.currentIngredient, _.find(this.facade.nutritives, function(x) {
       return x.NAME == that.$.ingredientsInputCombo.value;
     }));
-    console.log(this.currentIngredient);
     //  Calculate micro and macro nutrient values according to the current quantity
     //  The base nutritional values shared from doctors in the form of excel sheets
     //  are per 100 gm of an ingredient
@@ -246,43 +261,23 @@ Polymer({
   },
 
   addRecipe: function(e){
-    var recipe = {};
-    recipe.mealType = "";
-    recipe.diseaseFriendly = "";
-
+    var that = this;
+    this.recipe.ingredients = this.recipeIngredients;
     var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
 
     [].forEach.call(mealTypes,function(mealType){
-      recipe.mealType += mealType.innerText + ",";
+      that.recipe.mealType += mealType.innerText + ",";
     });
 
 
     var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly > paper-checkbox[active]");
 
     [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
-      recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
+      that.recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
     });
 
-    console.log(recipe.mealType);
-    console.log(recipe.diseaseFriendly);
-    // recipe.totals = function(){
-    //   recipe.ingredients.forEach(function(x){
-    //   })
-    // }
-
-    recipe.name=this.recipeName;
-    console.log(this.recipeName);
-    recipe.ingredients = this.recipeIngredients;
-    recipe.servingUnit = this.servingUnit;
-    recipe.giIndex = this.giIndex;
-
-    recipe.foodType = this.foodType;
-    recipe.cuisine = this.cuisine;
-
-
-
-    recipe.createdBy = JSON.parse(localStorage.user).username;
-    console.log(recipe);
+    this.recipe.createdBy = JSON.parse(localStorage.user).username;
+    console.log(this.recipe);
     var xhr = new XMLHttpRequest();
     var that = this;
 
@@ -292,7 +287,8 @@ Polymer({
         that.$.toast.text = xhr.response;
         that.$.toast.open();
         that.$.form.reset();
-        that.recipeIngredients = [];
+        that.recipe = {};
+        that.recipeIngredients = that.recipe.ingredients = [];
 
         _.extend(that.currentCounts, JSON.parse(xhr.response));
         var counts = JSON.parse(xhr.response);
@@ -302,9 +298,10 @@ Polymer({
     };
     xhr.open("POST",'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    if(!this.$.recipeName.invalid /*  && !this.$.servingsPerOnePerson.invalid  */){
-      xhr.send(JSON.stringify(recipe));
-    }
+    xhr.send(JSON.stringify(this.recipe));
+    // if(!this.$.recipeName.invalid   && !this.$.servingsPerOnePerson.invalid  ){
+    //   xhr.send(JSON.stringify(this.recipe));
+    // }
   }
 }); 
 </script>
