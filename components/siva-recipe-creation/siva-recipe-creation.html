@@ -25,6 +25,7 @@ Example:
       display: block;
       box-sizing: border-box;
     }
+    :host vaadin-combo-box{margin-right:10px;}
     :host td > #form:200px;
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
@@ -36,7 +37,7 @@ Example:
       color: white;
     }
     :host paper-card{margin:0px;}
-    :host td:first-child{ background:#f4f4f4; padding:10px;margin-right:20px !important; width:300px !important;}
+    :host td:first-child{ background:#f4f4f4; padding:0px 10px; margin-right:20px !important; width:300px !important;}
   </style>
 
   <template>
@@ -102,31 +103,23 @@ Example:
     </form>
     </td>
     <td>
-    <div class="layout vertical">
-      <paper-card class="ingredient" heading="Add Ingredient" elevation="1">
-        <div class="layout vertical">
-          <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
-          <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
-            <paper-listbox class="dropdown-content">
-              <template is="dom-repeat" items="{{facade.uoms}}">
-                <paper-item>{{item}}</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
+      <DIV class="flex layout horizontal">
+        <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
+        <paper-dropdown-menu id="uom" label="Unit" value="{{currentIngredient.uom}}">
+          <paper-listbox class="dropdown-content">
+            <template is="dom-repeat" items="{{facade.uoms}}">
+              <paper-item>{{item}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
 
-          <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}"></paper-input>
-          <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
-        </div>
-
-      </paper-card>
-    </div>
+        <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}"></paper-input>
+        <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
+      </DIV>
 
 
-      <h1>&nbsp;</h1><h1>&nbsp;</h1>
+      <h1>&nbsp;</h1><h1>&nbsp;</h1><h1>&nbsp;</h1>
       <siva-compact-table data="{{recipe.ingredients}}"></siva-compact-table>
-      <template is="dom-repeat" items="{{recipe.ingredients}}">
-        <span>{{item.NAME}} -- {{item.qty}} {{item.uom}}</span>
-      </template>
     </td></tr></table>  
 
       <paper-card image="images/bbread.png" hidden>

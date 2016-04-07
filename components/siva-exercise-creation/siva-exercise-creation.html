@@ -40,12 +40,12 @@ Example:
     <form is="iron-form" id="form" method="post" action="/form/handler">
     <paper-card elevation="4">
     <div class="card-actions">
-      <paper-input id="name" required auto-validate error-message="Exercise Name shouldn't be empty" value="{{name}}" label="Name of the Exercise"></paper-input>
-      <paper-input prefix="KG" type="number" value="{{weight}}" label="Weight of a person (KG)"></paper-input>
+      <paper-input id="name" required auto-validate error-message="Exercise Name shouldn't be empty" value="{{exercise.name}}" label="Name of the Exercise"></paper-input>
+      <paper-input prefix="KG" type="number" value="{{exercise.weight}}" label="Weight of a person (KG)"></paper-input>
       <p>Take any weight. This weight will be taken as basemark for creating calorific consumption of a person of any weight</p>
-      <paper-input prefix="Minutes" type="number" value="{{time}}" label="Time (Minutes)"></paper-input>
-      <paper-input prefix="Minutes" type="number" value="{{caloriesBurn}}" label="Calories Burned"></paper-input>
-      <paper-dropdown-menu label="suitableFor" value="{{suitableFor}}">
+      <paper-input prefix="Minutes" type="number" value="{{exercise.time}}" label="Time (Minutes)"></paper-input>
+      <paper-input prefix="Minutes" type="number" value="{{exercise.caloriesBurn}}" label="Calories Burned"></paper-input>
+      <paper-dropdown-menu label="suitableFor" value="{{exercise.suitableFor}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -72,6 +72,17 @@ Example:
 
     is: 'siva-exercise-creation',
     properties:{
+      exercise:{
+        type:Object,
+        notify:true,
+        value:{
+          name:"",
+          weight:0,
+          time:0,
+          caloriesBurn:0,
+          suitableFor:""
+        }
+      },
     },
     
     ready: function() {
@@ -100,12 +111,8 @@ Example:
     },
 
     addExercise: function(e){
-      var exercise = {};
-      exercise.name=this.name;
-      exercise.weight = this.weight;
-      exercise.time = this.time;
-      exercise.caloriesBurn = this.caloriesBurn;
-      exercise.createdBy = JSON.parse(localStorage.user).username;
+      this.exercise.createdBy = JSON.parse(localStorage.user).username;
+      this.exercise.name = this.$.name.value;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -114,12 +121,20 @@ Example:
         that.$.toast_1.open();
         that.$.form.reset();
 
+        that.exercise = {
+          name:"",
+          weight:0,
+          time:0,
+          caloriesBurn:0,
+          suitableFor:""
+        };
+
         that.fire('updateCounters',JSON.parse(xhr.response));
       };
       xhr.open("POST",'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)
-        xhr.send(JSON.stringify(exercise));
+        xhr.send(JSON.stringify(this.exercise));
     }
 
 

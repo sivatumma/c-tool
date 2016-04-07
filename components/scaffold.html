@@ -34,7 +34,6 @@
             <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
             <span class="flex">Optimus Prime - Healthcare Personalization</span>
             <div class="layout horizontal">
-
               <table><tr>
                 <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
                 <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
@@ -68,7 +67,7 @@
         <siva-recipe-creation id="sivaRecipeCreation" recipe="{{dummyRecipe}}"></siva-recipe-creation>
       </div>
       <div id="exercisesPage">
-        <siva-exercise-creation id="sivaExerciseCreation" ></siva-exercise-creation>
+        <siva-exercise-creation id="sivaExerciseCreation" exercise="{{dummyExercise}}"></siva-exercise-creation>
       </div>
       <div id="tipsPage">
         <siva-tip-creation id="sivaTipCreation" ></siva-tip-creation>
@@ -123,6 +122,18 @@
         cusine:"",
         giIndex:"",
         ingredients:[]
+      },
+      dummyExercise:{
+        name:"",
+        weight:0,
+        time:0,
+        caloriesBurn:0,
+        suitableFor:""
+      },
+      dummyTip:{
+        tip:"",
+        suitableForDisease:"",
+        suitableForTime:""
       }
     },
 
@@ -166,19 +177,9 @@
         servingUnit:"",
         ingredients:[]
       };
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
     },
 
     detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
     },
   });
 

@@ -40,11 +40,11 @@ Example:
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <h1>Create a new Question &amp; Answer</h1>
       <h2>Question</h2>
-        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value$="{{data.question}}"></iron-autogrow-textarea>
-        <paper-input id="keywords" value$="{{data.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
+        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{qAndA.question}}"></iron-autogrow-textarea>
+        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
 
       Category: 
-      <paper-dropdown-menu label="Catergory" value="{{category}}">
+      <paper-dropdown-menu label="Catergory" value="{{qAndA.category}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Sub Category</paper-item>
@@ -52,7 +52,7 @@ Example:
         </paper-listbox>
       </paper-dropdown-menu>
       Sub Category: 
-      <paper-dropdown-menu label="Sub Catergory" value="{{subCategory}}">
+      <paper-dropdown-menu label="Sub Catergory" value="{{qAndA.subCategory}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Sub Category</paper-item>
@@ -62,14 +62,14 @@ Example:
 
 
       <h2>Answer</h2>
-        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value$="{{data.answer}}"></iron-autogrow-textarea>    
+        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{qAndA.answer}}"></iron-autogrow-textarea>    
 
       <br/>
       <br/>
-      <template is="dom-if" if$="{{data.nosave}}">
+      <template is="dom-if" if="{{qAndA.nosave}}">
         <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div>
       </template>
-      <paper-button raised class="green" on-click="addQandA" disabled$="{{data.nosave}}">Save Q&amp;A</paper-button>
+      <paper-button raised class="green" on-click="addQAndA" disabled="{{qAndA.nosave}}">Save Q&amp;A</paper-button>
       <paper-toast id="toast_q_and_a" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
@@ -83,54 +83,30 @@ Example:
 
     is: 'siva-qa-creation',
     properties:{
-      doctorName:{
-        type:String,
-        value:""
-      },
-      data:{
+      qAndA:{
         type:Object,
         notify:true,
-        value:{question:"",answer:""}
-      },
-      keywords:String,
-      category:String,
-      subCategory:String,
-      question:String,
-      answer:String
+        value: {
+          question: "",
+          category: "",
+          subCategory: "",
+          keywords: "",
+          answer: ""
+        }
+      }
     },
     
     ready: function() {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
     },
 
     attached: function() {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
     },
 
     detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
     },
 
-    addQandA: function(e){
-      var qAndA = {};
-      qAndA.doctorName=this.doctorName;
-      qAndA.question = this.$.question.value;
-      qAndA.answer = this.$.answer.value;
-      qAndA.keywords = this.$.keywords.value;
-      qAndA.createdBy = JSON.parse(localStorage.user).username;
+    addQAndA: function(e){
+      this.qAndA.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -139,13 +115,21 @@ Example:
         that.$.toast_q_and_a.open();
         that.$.form.reset();
 
+        that.qAndA = {
+          question: "",
+          category: "",
+          subCategory: "",
+          keywords: "",
+          answer: ""
+        };
+
         that.fire('updateCounters',JSON.parse(xhr.response));
 
       };
       xhr.open("POST",'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!(this.$.question.value == ''))
-        xhr.send(JSON.stringify(qAndA));
+        xhr.send(JSON.stringify(this.qAndA));
     }
 
   });

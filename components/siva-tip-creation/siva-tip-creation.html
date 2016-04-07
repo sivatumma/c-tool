@@ -39,9 +39,9 @@ Example:
 
     <paper-card elevation="4">
     <div class="card-actions">
-      <paper-input id="tip" label="Describe your tip of the day" required auto-validate error-message="Please write some tip" value="{{tip}}" ></paper-input>
+      <paper-input id="tip" label="Describe your tip of the day" required auto-validate error-message="Please write some tip" value="{{tip.tip}}" ></paper-input>
 
-      <paper-dropdown-menu label="For" value="{{suitableForDisease}}">
+      <paper-dropdown-menu label="For" value="{{tip.suitableForDisease}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -49,7 +49,7 @@ Example:
         </paper-listbox>
       </paper-dropdown-menu>
 
-      <paper-dropdown-menu label="Tip Category" value="{{suitableForTime}}">
+      <paper-dropdown-menu label="Tip Category" value="{{tip.suitableForTime}}">
         <paper-listbox class="dropdown-content">
           <paper-item>EXERCISE (50)</paper-item>
           <paper-item>FOOD (100)</paper-item>
@@ -84,9 +84,15 @@ Example:
 
     is: 'siva-tip-creation',
     properties:{
-      tip:String,
-      suitableForDisease:String,
-      suitableForTime:String
+      tip:{
+        type:Object,
+        notify:true,
+        value:{
+          tip:"",
+          suitableForDisease:"",
+          suitableForTime:""
+        }
+      }
     },
     
     ready: function() {
@@ -115,11 +121,7 @@ Example:
     },
 
     addTip: function(e){
-      var tip = {};
-      tip.tip=this.tip;
-      tip.suitableForDisease = this.suitableForDisease;
-      tip.suitableForTime = this.suitableForTime;
-      tip.createdBy = JSON.parse(localStorage.user).username;
+      this.tip.createdBy = JSON.parse(localStorage.user).username;
 
       var xhr = new XMLHttpRequest();
       var that = this;
@@ -127,12 +129,18 @@ Example:
         that.$.toast_tip.text = xhr.response;
         that.$.toast_tip.open();
 
+        that.tip = {
+          tip:"",
+          suitableForDisease:"",
+          suitableForTime:""
+        };
+
         that.fire('updateCounters',JSON.parse(xhr.response));
       };
       xhr.open("POST",'/crud/Tip');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.tip.invalid)
-        xhr.send(JSON.stringify(tip));
+        xhr.send(JSON.stringify(this.tip));
     }
 
 
