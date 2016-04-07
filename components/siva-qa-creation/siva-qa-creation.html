@@ -138,6 +138,9 @@ Example:
         that.$.toast_q_and_a.text = xhr.response;
         that.$.toast_q_and_a.open();
         that.$.form.reset();
+
+        that.fire('updateCounters',JSON.parse(xhr.response));
+
       };
       xhr.open("POST",'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

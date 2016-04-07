@@ -114,9 +114,7 @@ Example:
         that.$.toast_1.open();
         that.$.form.reset();
 
-        _.extend(that.currentCounts, JSON.parse(xhr.response));
-        var counts = JSON.parse(xhr.response);
-        that.exerciseCount = counts.Exercise;
+        that.fire('updateCounters',JSON.parse(xhr.response));
       };
       xhr.open("POST",'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

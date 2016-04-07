@@ -52,7 +52,7 @@ Example:
     <table><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
-      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value$="[[recipe.name]]"></paper-input>
+      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value$="{{recipe.name}}"></paper-input>
 
         <div id="mealType">
           <h4>Meal Type</h4>
@@ -123,7 +123,10 @@ Example:
 
 
       <h1>&nbsp;</h1><h1>&nbsp;</h1>
-      <siva-compact-table data$="{{recipeIngredients}}"></siva-compact-table>
+      <siva-compact-table data="{{recipe.ingredients}}"></siva-compact-table>
+      <template is="dom-repeat" items="{{recipe.ingredients}}">
+        <span>{{item.NAME}} -- {{item.qty}} {{item.uom}}</span>
+      </template>
     </td></tr></table>  
 
       <paper-card image="images/bbread.png" hidden>
@@ -147,7 +150,16 @@ Polymer({
     },
     recipe:{
       type:Object,
-      notify:true
+      notify:true,
+      value:{
+        name:"",
+        foodType:"",
+        mealType:"",
+        diseaseFriendly:"",
+        cusine:"",
+        giIndex:"",
+        ingredients:[]
+      }
     },
     recipeNames:{type:Array},
     recipeName: {
@@ -222,7 +234,7 @@ Polymer({
   addIngredient: function(e) {
 
     var that = this;
-    if (this.recipeIngredients.length > 0) this.pop('recipeIngredients');
+    if (this.recipe.ingredients.length > 0) this.pop('recipe.ingredients');
     // this.currentIngredient = this.currentIngredient || {};
     _.extend(this.currentIngredient, _.find(this.facade.nutritives, function(x) {
       return x.NAME == that.$.ingredientsInputCombo.value;
@@ -238,7 +250,7 @@ Polymer({
         tmpCurrentIngredient[k] = tmpCurrentIngredient[k] * tmpCurrentIngredient.qty / 100;
         tmpCurrentIngredient[k] = Math.round(tmpCurrentIngredient[k] * 100) / 100;
       }
-      this.push('recipeIngredients', tmpCurrentIngredient);
+      this.push('recipe.ingredients', tmpCurrentIngredient);
       this.updateTotals();
     }
   },
@@ -247,22 +259,24 @@ Polymer({
     //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
     //  The actual totals object is the totalsObject below this line
     var totalsObject = {}
-    var tmpCurrentIngredient = this.facade.sampleIngredient;
-    console.log(tmpCurrentIngredient);
-    for (k in tmpCurrentIngredient) {
+    for (k in this.facade.sampleIngredient) {
+      console.log(k);
       if (k == "_id" || k == "NAME" || k == "qty" || k == "uom" || k == "servingsPerOnePerson") continue;
-      var x = _.pluck(this.recipeIngredients, k);
+      var x = _.pluck(this.recipe.ingredients, k);
       totalsObject[k] = x.reduce((a, b) => (a + b) || 0);
       totalsObject[k] = Math.round(totalsObject[k] * 100) / 100;
     }
     totalsObject.NAME = "Totals :";
-    console.log(totalsObject);
-    this.push('recipeIngredients', totalsObject);
+    this.push('recipe.ingredients', totalsObject);
   },
 
   addRecipe: function(e){
     var that = this;
-    this.recipe.ingredients = this.recipeIngredients;
+    this.recipe.name = this.$.recipeName.value;
+    this.recipe.foodType = this.$.foodType.value;
+    this.recipe.cuisine = this.$.cuisine.value;
+    this.recipe.servingUnit = this.$.servingUnit.value;
+    this.recipe.giIndex = this.$.giIndex.value;
     var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
 
     [].forEach.call(mealTypes,function(mealType){
@@ -287,21 +301,24 @@ Polymer({
         that.$.toast.text = xhr.response;
         that.$.toast.open();
         that.$.form.reset();
-        that.recipe = {};
-        that.recipeIngredients = that.recipe.ingredients = [];
-
-        _.extend(that.currentCounts, JSON.parse(xhr.response));
-        var counts = JSON.parse(xhr.response);
-        that.recipeCount = counts.Recipe;
+        that.recipe = {
+          name:"",
+          foodType:"",
+          mealType:"",
+          diseaseFriendly:"",
+          cusine:"",
+          giIndex:"",
+          ingredients:[]
+        };
+        that.fire('updateCounters',JSON.parse(xhr.response));
 
       }
     };
     xhr.open("POST",'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify(this.recipe));
-    // if(!this.$.recipeName.invalid   && !this.$.servingsPerOnePerson.invalid  ){
-    //   xhr.send(JSON.stringify(this.recipe));
-    // }
+    if(!this.$.recipeName.invalid  /* && !this.$.servingsPerOnePerson.invalid */){
+      xhr.send(JSON.stringify(this.recipe));
+    }
   }
 }); 
 </script>

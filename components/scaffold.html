@@ -28,7 +28,7 @@
     :host siva-compact-table{margin-top:50px;}
   </style>
   <template>
-    <paper-header-panel mode="waterfall">
+    <paper-header-panel fixed>
       <div class="paper-header">
           <paper-toolbar class="medium-tall">
             <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
@@ -38,8 +38,8 @@
               <table><tr>
                 <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
                 <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
-                <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
-                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
+                <td><span class="flex right">Tips: </span></td><td><count>{{tipCount}}</count></td>
+                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{qaCount}}</count></td>
               </tr></table>
             </div>
             <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
@@ -65,16 +65,16 @@
 
     <iron-pages id="pageContents" selected="{{selectedPage}}">
       <div id="recipesPage">
-        <siva-recipe-creation></siva-recipe-creation>
+        <siva-recipe-creation id="sivaRecipeCreation" recipe="{{dummyRecipe}}"></siva-recipe-creation>
       </div>
       <div id="exercisesPage">
-        <siva-exercise-creation></siva-exercise-creation>
+        <siva-exercise-creation id="sivaExerciseCreation" ></siva-exercise-creation>
       </div>
       <div id="tipsPage">
-        <siva-tip-creation></siva-tip-creation>
+        <siva-tip-creation id="sivaTipCreation" ></siva-tip-creation>
       </div>
       <div id="qAndAPage">
-        <siva-qa-creation></siva-qa-creation>
+        <siva-qa-creation id="sivaQACreation" ></siva-qa-creation>
       </div>
       <div id="nutritivesPage">
         <siva-edit></siva-edit>
@@ -95,19 +95,49 @@
         type:Number,
         value:0
       },
-      currentCounts:{
-        type:Object,
-        value:{},
-        notify:true
-      },
       recipeCount:{
         type:Number,
-        notify:true
+        notify:true,
+        value:"00"
       },
       exerciseCount:{
         type:Number,
-        notify:true
+        notify:true,
+        value:"00"
+      },
+      tipCount:{
+        type:Number,
+        notify:true,
+        value:"00"
+      },
+      qaCount:{
+        type:Number,
+        notify:true,
+        value:"00"
+      },
+      dummyRecipe:{
+        name:"",
+        foodType:"",
+        mealType:"",
+        diseaseFriendly:"",
+        cusine:"",
+        giIndex:"",
+        ingredients:[]
       }
+    },
+
+    listeners: {
+      'sivaRecipeCreation.updateCounters': 'updateCounters',
+      'sivaExerciseCreation.updateCounters': 'updateCounters',
+      'sivaTipCreation.updateCounters': 'updateCounters',
+      'sivaQACreation.updateCounters': 'updateCounters'
+    },
+
+    updateCounters:function(e){
+      this.recipeCount = e.detail.Recipe;
+      this.exerciseCount = e.detail.Exercise;
+      this.tipCount = e.detail.Tip;
+      this.qaCount = e.detail.QandA;
     },
 
     openSignoutDialog:function(e){
