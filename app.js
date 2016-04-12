@@ -1,4 +1,5 @@
 var express = require('express'),
+    mongoose = require('mongoose'),
     path = require('path'),
     favicon = require('serve-favicon'),
     logger = require('morgan'),
@@ -23,8 +24,11 @@ var express = require('express'),
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+
 app.use(expressSession({
-  secret: 'secret',
+  secret: '$!>@#||^^@',
   resave: false,
   saveUninitialized: true
 }));
@@ -32,7 +36,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(busboy());
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname)));
 
 app.use('/', routes);

@@ -53,44 +53,44 @@ Example:
     <table><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
-      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value$="{{recipe.name}}"></paper-input>
+      <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>
 
         <div id="mealType">
           <h4>Meal Type</h4>
-            <template is="dom-repeat" items$="{{facade.mealTypes}}">
+            <template is="dom-repeat" items="{{facade.mealTypes}}">
               <paper-checkbox>{{item}}</paper-checkbox>
             </template>
         </div>
         <div id="diseaseFriendly">
           <h4>Friendly for deseases</h4>
-            <template is="dom-repeat" items$="{{facade.diseaseFriendlies}}">
-              <paper-checkbox>{{item}}</paper-checkbox>
+            <template is="dom-repeat" items="{{facade.diseaseFriendlies}}">
+              <paper-checkbox validator="{{diseaseFriendlyCheckedStatus}}" checked$="{{diseaseFriendlyCheckedStatus}}">{{diseaseFriendlyCheckedStatus}}{{item}}</paper-checkbox>
             </template>
         </div>
         <div class="horizontal">
-        <paper-dropdown-menu id="foodType" label="Food Type ?" value$="{{recipe.foodType}}">
-          <paper-listbox class="dropdown-content">
+        <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{recipe.foodType}}">
+          <paper-menu class="dropdown-content" selected="[[recipe.foodType]]" attr-for-selected="value">
             <template is="dom-repeat" items="{{facade.foodTypes}}">
-              <paper-item>{{item}}</paper-item>
+              <paper-item value="{{item}}">{{item}}</paper-item>
             </template>
-          </paper-listbox>
+          </paper-menu>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value$="{{recipe.cuisine}}">
+        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{recipe.cuisine}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.cusines}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value$="{{recipe.servingUnit}}">
+        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{recipe.servingUnit}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.servingUnits}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="giIndex" label="GI-Index" value$="{{recipe.giIndex}}">
+        <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{recipe.giIndex}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.giIndexes}}">
               <paper-item>{{item}}</paper-item>
@@ -154,6 +154,10 @@ Polymer({
         ingredients:[]
       }
     },
+    diseaseFriendlyChecked:{
+      type:Boolean,
+      computed:'diseaseFriendlyCheckedStatus()'
+    },
     recipeNames:{type:Array},
     recipeName: {
       type: String
@@ -203,7 +207,10 @@ Polymer({
     delete localStorage.loggedIn;
     location.reload();
   },
-
+  diseaseFriendlyCheckedStatus:function(e){
+    console.log("diseaseFriendlyCheckedStatus", e.model);
+    return this.recipe.diseaseFriendly.split.indexOf(e.model.item) > -1;
+  },
   initData:function(e){
     this.fire('rendered',{hi:"Siva"});
   },
@@ -212,13 +219,6 @@ Polymer({
   },
 
   attached: function() {
-  },
-
-  detached: function() {
-    // The analog to `attached`, `detached` fires when the element has been
-    // removed from a document.
-    //
-    // Use this to clean up anything you did in `attached`.
   },
   storeRecipeNames:function(e){
     console.log(e.detail);
@@ -303,11 +303,18 @@ Polymer({
           giIndex:"",
           ingredients:[]
         };
-        that.fire('updateCounters',JSON.parse(xhr.response));
+
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Recipe = user.createdCounts.Recipe + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
 
       }
     };
-    xhr.open("POST",'/crud/Recipe');
+    var method = that.recipe.createdBy == localStorage.username ? "PUT" : "POST";
+    xhr.open(method,'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     if(!this.$.recipeName.invalid  /* && !this.$.servingsPerOnePerson.invalid */){
       xhr.send(JSON.stringify(this.recipe));

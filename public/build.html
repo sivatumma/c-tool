@@ -7546,20 +7546,17 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
     :host siva-compact-table{margin-top:50px;}
   </style>
   <template>
-        <iron-ajax id="ajax" auto="" url="/data/facade" handle-as="json" last-response="{{nutritives}}" on-response="initData" debounce-duration="300"></iron-ajax>
-
-    <paper-header-panel mode="waterfall">
+    <paper-header-panel fixed="">
       <div class="paper-header">
           <paper-toolbar class="medium-tall">
             <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
             <span class="flex">Optimus Prime - Healthcare Personalization</span>
             <div class="layout horizontal">
-
               <table><tbody><tr>
-                <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
-                <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
-                <td><span class="flex right">Tips: </span></td><td><count>{{currentCounts.tip}}</count></td>
-                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{currentCounts.qanda}}</count></td>
+                <td><span class="flex right middle">Recipes:</span></td><td><count>{{user.createdCounts.Recipe}}</count></td>
+                <td><span class="flex right">Exercises: </span></td><td><count>{{user.createdCounts.Exercise}}</count></td>
+                <td><span class="flex right">Tips: </span></td><td><count>{{user.createdCounts.Tip}}</count></td>
+                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{user.createdCounts.QandA}}</count></td>
               </tr></tbody></table>
             </div>
             <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
@@ -7577,7 +7574,8 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
               <paper-tab>Exercises</paper-tab>
               <paper-tab>Tips</paper-tab>
               <paper-tab>Q &amp; A</paper-tab>
-              <paper-tab>Review</paper-tab>
+              <paper-tab>Edit</paper-tab>
+              <paper-tab disabled="">Review</paper-tab>
             </paper-tabs>
           </paper-toolbar>
         </div>
@@ -7585,19 +7583,22 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
 
     <iron-pages id="pageContents" selected="{{selectedPage}}">
       <div id="recipesPage">
-        <siva-recipe-creation facade="{{nutritives}}"></siva-recipe-creation>
+        <siva-recipe-creation id="sivaRecipeCreation" recipe="{{dummyRecipe}}"></siva-recipe-creation>
       </div>
       <div id="exercisesPage">
-        <siva-exercise-creation></siva-exercise-creation>
+        <siva-exercise-creation id="sivaExerciseCreation" exercise="{{dummyExercise}}"></siva-exercise-creation>
       </div>
       <div id="tipsPage">
-        <siva-tip-creation></siva-tip-creation>
+        <siva-tip-creation id="sivaTipCreation"></siva-tip-creation>
       </div>
       <div id="qAndAPage">
-        <siva-qa-creation></siva-qa-creation>
+        <siva-qa-creation id="sivaQACreation" viewtype="create"></siva-qa-creation>
       </div>
-      <div id="nutritivesPage">
+      <div id="editPage">
         <siva-edit></siva-edit>
+      </div>
+      <div id="reviewPage">
+        <siva-review></siva-review>
       </div>
 
     </iron-pages>
@@ -7610,73 +7611,63 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
 
     is: 'siva-scaffold',
 
-    listeners: {
-      'ajax.onResponse': 'initData'
-    },
-
     properties: {
-
-      /**
-       * `fancy` indicates that the element should don a monocle and tophat,
-       * while checking its pocket watch.
-       */
-      fancy: Boolean,
-
       selectedPage:{
         type:Number,
         value:0
       },
-      recipeName:{
-        type:String
-      },
-      servingUnit:{
-        type:String,
-      },
-      diseaseFriendly:{
-        type:String
-      },
-      giIndex:{
-        type:String
-      },
-      foodType:{
-        type:String
-      },
-      mealType:{
-        type:String
-      },
-      cuisine:{
-        type:String
-      },
-      nutritives:{
-        type:Object,
-        notify:true
-      },
-      recipeIngredients:{
-        type:Array,
-        value:[],
-        notify:true
-      },
-      currentCounts:{
-        type:Object,
-        value:{},
-        notify:true
-      },
       recipeCount:{
         type:Number,
-        notify:true
+        notify:true,
+        value:"00"
       },
       exerciseCount:{
         type:Number,
-        notify:true
+        notify:true,
+        value:"00"
       },
-      currentIngredient:{
-        type:Object,
-        value:function(){
-          return {qty:"",uom:"",servingsPerOnePerson:1};
-        }
+      tipCount:{
+        type:Number,
+        notify:true,
+        value:"00"
       },
+      qaCount:{
+        type:Number,
+        notify:true,
+        value:"00"
+      },
+      dummyRecipe:{
+        name:"",
+        foodType:"",
+        mealType:"",
+        diseaseFriendly:"",
+        cusine:"",
+        giIndex:"",
+        ingredients:[]
+      },
+      dummyExercise:{
+        name:"",
+        weight:0,
+        time:0,
+        caloriesBurn:0,
+        suitableFor:""
+      },
+      dummyTip:{
+        tip:"",
+        suitableForDisease:"",
+        suitableForTime:""
+      }
+    },
 
+    listeners: {
+      'sivaRecipeCreation.updateCounters': 'updateCounters',
+      'sivaExerciseCreation.updateCounters': 'updateCounters',
+      'sivaTipCreation.updateCounters': 'updateCounters',
+      'sivaQACreation.updateCounters': 'updateCounters'
+    },
 
+    updateCounters:function(e){
+      this.user = JSON.parse(localStorage.user);
     },
 
     openSignoutDialog:function(e){
@@ -7684,6 +7675,7 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
     },
     signout:function(e){
       delete localStorage.loggedIn;
+      delete localStorage.username;
       location.reload(); 
     },
     // Element Lifecycle
@@ -7695,126 +7687,22 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
     },
 
     ready: function() {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
     },
 
     attached: function() {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
+      document.querySelector("siva-recipe-creation").recipe = {
+        name:"",
+        mealType:"",
+        foodType:"",
+        servingUnit:"",
+        ingredients:[]
+      };
+
+      this.user = JSON.parse(localStorage.user);
     },
 
     detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
     },
-
-    addIngredient: function(e){
-      var that = this;
-      if(this.recipeIngredients.length > 0) this.pop('recipeIngredients');
-      // this.currentIngredient = this.currentIngredient || {};
-      _.extend(this.currentIngredient, _.find(this.nutritives,function(x){
-        return x.NAME == that.$.ingredientsInputCombo.value;
-      }));
-      //  Calculate micro and macro nutrient values according to the current quantity
-      //  The base nutritional values shared from doctors in the form of excel sheets
-      //  are per 100 gm of an ingredient
-      if(this.currentIngredient.qty > 0){
-        var tmpCurrentIngredient = {};
-        _.extend(tmpCurrentIngredient,this.currentIngredient);
-        for (k in this.currentIngredient){
-          if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
-          tmpCurrentIngredient[k] = tmpCurrentIngredient[k] * tmpCurrentIngredient.qty / 100;
-          tmpCurrentIngredient[k] = Math.round(tmpCurrentIngredient[k] * 100) / 100;
-        }
-        this.push('recipeIngredients',tmpCurrentIngredient);
-        this.updateTotals();
-      }
-    },
-    updateTotals:function(){
-      //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
-      //  The actual totals object is the totalsObject below this line
-      var totalsObject = {}
-      var tmpCurrentIngredient = this.recipeIngredients[0];
-      for (k in tmpCurrentIngredient){
-        if(k == "NAME" || k=="qty" || k == "uom" || k == "servingsPerOnePerson") continue;
-        var x = _.pluck(this.recipeIngredients,k);
-        totalsObject[k] = x.reduce((a, b) => a + b);
-        totalsObject[k] = Math.round(totalsObject[k] * 100) / 100;
-      }
-      totalsObject.NAME = "Totals :";
-      this.push('recipeIngredients',totalsObject);
-    },
-    addRecipe: function(e){
-      var recipe = {};
-      recipe.mealType = "";
-      recipe.diseaseFriendly = "";
-
-      var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
-
-      [].forEach.call(mealTypes,function(mealType){
-        recipe.mealType += mealType.innerText + ",";
-      });
-
-
-      var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly > paper-checkbox[active]");
-
-      [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
-        recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
-      });
-
-      console.log(recipe.mealType);
-      console.log(recipe.diseaseFriendly);
-      // recipe.totals = function(){
-      //   recipe.ingredients.forEach(function(x){
-      //   })
-      // }
-
-      recipe.name=this.recipeName;
-      recipe.ingredients = this.recipeIngredients;
-      recipe.servingUnit = this.servingUnit;
-      recipe.giIndex = this.giIndex;
-
-      recipe.foodType = this.foodType;
-      recipe.cuisine = this.cuisine;
-
-
-
-      recipe.createdBy = JSON.parse(localStorage.user).username;
-      console.log(recipe);
-      var xhr = new XMLHttpRequest();
-      var that = this;
-
-      xhr.onload = function(res){
-        console.log(xhr.statusCode,res.statusCode,res, xhr.response);
-        if(res.currentTarget.readyState == 4){
-          that.$.toast.text = xhr.response;
-          that.$.toast.open();
-          that.$.form.reset();
-          that.recipeIngredients = [];
-
-          _.extend(that.currentCounts, JSON.parse(xhr.response));
-          var counts = JSON.parse(xhr.response);
-          that.recipeCount = counts.Recipe;
-
-        }
-      };
-      xhr.open("POST",'/crud/Recipe');
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      if(!this.$.recipeName.invalid && !this.$.servingsPerOnePerson.invalid){
-        xhr.send(JSON.stringify(recipe));
-      }
-    }
   });
 
 </script>
@@ -23475,6 +23363,847 @@ Custom property | Description | Default
     });
   </script>
 </dom-module>
+<script>
+
+  /**
+   * @param {!Function} selectCallback
+   * @constructor
+   */
+  Polymer.IronSelection = function(selectCallback) {
+    this.selection = [];
+    this.selectCallback = selectCallback;
+  };
+
+  Polymer.IronSelection.prototype = {
+
+    /**
+     * Retrieves the selected item(s).
+     *
+     * @method get
+     * @returns Returns the selected item(s). If the multi property is true,
+     * `get` will return an array, otherwise it will return
+     * the selected item or undefined if there is no selection.
+     */
+    get: function() {
+      return this.multi ? this.selection.slice() : this.selection[0];
+    },
+
+    /**
+     * Clears all the selection except the ones indicated.
+     *
+     * @method clear
+     * @param {Array} excludes items to be excluded.
+     */
+    clear: function(excludes) {
+      this.selection.slice().forEach(function(item) {
+        if (!excludes || excludes.indexOf(item) < 0) {
+          this.setItemSelected(item, false);
+        }
+      }, this);
+    },
+
+    /**
+     * Indicates if a given item is selected.
+     *
+     * @method isSelected
+     * @param {*} item The item whose selection state should be checked.
+     * @returns Returns true if `item` is selected.
+     */
+    isSelected: function(item) {
+      return this.selection.indexOf(item) >= 0;
+    },
+
+    /**
+     * Sets the selection state for a given item to either selected or deselected.
+     *
+     * @method setItemSelected
+     * @param {*} item The item to select.
+     * @param {boolean} isSelected True for selected, false for deselected.
+     */
+    setItemSelected: function(item, isSelected) {
+      if (item != null) {
+        if (isSelected !== this.isSelected(item)) {
+          // proceed to update selection only if requested state differs from current
+          if (isSelected) {
+            this.selection.push(item);
+          } else {
+            var i = this.selection.indexOf(item);
+            if (i >= 0) {
+              this.selection.splice(i, 1);
+            }
+          }
+          if (this.selectCallback) {
+            this.selectCallback(item, isSelected);
+          }
+        }
+      }
+    },
+
+    /**
+     * Sets the selection state for a given item. If the `multi` property
+     * is true, then the selected state of `item` will be toggled; otherwise
+     * the `item` will be selected.
+     *
+     * @method select
+     * @param {*} item The item to select.
+     */
+    select: function(item) {
+      if (this.multi) {
+        this.toggle(item);
+      } else if (this.get() !== item) {
+        this.setItemSelected(this.get(), false);
+        this.setItemSelected(item, true);
+      }
+    },
+
+    /**
+     * Toggles the selection state for `item`.
+     *
+     * @method toggle
+     * @param {*} item The item to toggle.
+     */
+    toggle: function(item) {
+      this.setItemSelected(item, !this.isSelected(item));
+    }
+
+  };
+
+</script>
+<script>
+
+  /** @polymerBehavior */
+  Polymer.IronSelectableBehavior = {
+
+      /**
+       * Fired when iron-selector is activated (selected or deselected).
+       * It is fired before the selected items are changed.
+       * Cancel the event to abort selection.
+       *
+       * @event iron-activate
+       */
+
+      /**
+       * Fired when an item is selected
+       *
+       * @event iron-select
+       */
+
+      /**
+       * Fired when an item is deselected
+       *
+       * @event iron-deselect
+       */
+
+      /**
+       * Fired when the list of selectable items changes (e.g., items are
+       * added or removed). The detail of the event is a list of mutation
+       * records that describe what changed.
+       *
+       * @event iron-items-changed
+       */
+
+    properties: {
+
+      /**
+       * If you want to use an attribute value or property of an element for
+       * `selected` instead of the index, set this to the name of the attribute
+       * or property. Hyphenated values are converted to camel case when used to
+       * look up the property of a selectable element. Camel cased values are
+       * *not* converted to hyphenated values for attribute lookup. It's
+       * recommended that you provide the hyphenated form of the name so that
+       * selection works in both cases. (Use `attr-or-property-name` instead of
+       * `attrOrPropertyName`.)
+       */
+      attrForSelected: {
+        type: String,
+        value: null
+      },
+
+      /**
+       * Gets or sets the selected element. The default is to use the index of the item.
+       * @type {string|number}
+       */
+      selected: {
+        type: String,
+        notify: true
+      },
+
+      /**
+       * Returns the currently selected item.
+       *
+       * @type {?Object}
+       */
+      selectedItem: {
+        type: Object,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * The event that fires from items when they are selected. Selectable
+       * will listen for this event from items and update the selection state.
+       * Set to empty string to listen to no events.
+       */
+      activateEvent: {
+        type: String,
+        value: 'tap',
+        observer: '_activateEventChanged'
+      },
+
+      /**
+       * This is a CSS selector string.  If this is set, only items that match the CSS selector
+       * are selectable.
+       */
+      selectable: String,
+
+      /**
+       * The class to set on elements when selected.
+       */
+      selectedClass: {
+        type: String,
+        value: 'iron-selected'
+      },
+
+      /**
+       * The attribute to set on elements when selected.
+       */
+      selectedAttribute: {
+        type: String,
+        value: null
+      },
+
+      /**
+       * The list of items from which a selection can be made.
+       */
+      items: {
+        type: Array,
+        readOnly: true,
+        notify: true,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * The set of excluded elements where the key is the `localName`
+       * of the element that will be ignored from the item list.
+       *
+       * @default {template: 1}
+       */
+      _excludedLocalNames: {
+        type: Object,
+        value: function() {
+          return {
+            'template': 1
+          };
+        }
+      }
+    },
+
+    observers: [
+      '_updateAttrForSelected(attrForSelected)',
+      '_updateSelected(selected)'
+    ],
+
+    created: function() {
+      this._bindFilterItem = this._filterItem.bind(this);
+      this._selection = new Polymer.IronSelection(this._applySelection.bind(this));
+    },
+
+    attached: function() {
+      this._observer = this._observeItems(this);
+      this._updateItems();
+      if (!this._shouldUpdateSelection) {
+        this._updateSelected();
+      }
+      this._addListener(this.activateEvent);
+    },
+
+    detached: function() {
+      if (this._observer) {
+        Polymer.dom(this).unobserveNodes(this._observer);
+      }
+      this._removeListener(this.activateEvent);
+    },
+
+    /**
+     * Returns the index of the given item.
+     *
+     * @method indexOf
+     * @param {Object} item
+     * @returns Returns the index of the item
+     */
+    indexOf: function(item) {
+      return this.items.indexOf(item);
+    },
+
+    /**
+     * Selects the given value.
+     *
+     * @method select
+     * @param {string|number} value the value to select.
+     */
+    select: function(value) {
+      this.selected = value;
+    },
+
+    /**
+     * Selects the previous item.
+     *
+     * @method selectPrevious
+     */
+    selectPrevious: function() {
+      var length = this.items.length;
+      var index = (Number(this._valueToIndex(this.selected)) - 1 + length) % length;
+      this.selected = this._indexToValue(index);
+    },
+
+    /**
+     * Selects the next item.
+     *
+     * @method selectNext
+     */
+    selectNext: function() {
+      var index = (Number(this._valueToIndex(this.selected)) + 1) % this.items.length;
+      this.selected = this._indexToValue(index);
+    },
+
+    /**
+     * Force a synchronous update of the `items` property.
+     *
+     * NOTE: Consider listening for the `iron-items-changed` event to respond to
+     * updates to the set of selectable items after updates to the DOM list and
+     * selection state have been made.
+     *
+     * WARNING: If you are using this method, you should probably consider an
+     * alternate approach. Synchronously querying for items is potentially
+     * slow for many use cases. The `items` property will update asynchronously
+     * on its own to reflect selectable items in the DOM.
+     */
+    forceSynchronousItemUpdate: function() {
+      this._updateItems();
+    },
+
+    get _shouldUpdateSelection() {
+      return this.selected != null;
+    },
+
+    _addListener: function(eventName) {
+      this.listen(this, eventName, '_activateHandler');
+    },
+
+    _removeListener: function(eventName) {
+      this.unlisten(this, eventName, '_activateHandler');
+    },
+
+    _activateEventChanged: function(eventName, old) {
+      this._removeListener(old);
+      this._addListener(eventName);
+    },
+
+    _updateItems: function() {
+      var nodes = Polymer.dom(this).queryDistributedElements(this.selectable || '*');
+      nodes = Array.prototype.filter.call(nodes, this._bindFilterItem);
+      this._setItems(nodes);
+    },
+
+    _updateAttrForSelected: function() {
+      if (this._shouldUpdateSelection) {
+        this.selected = this._indexToValue(this.indexOf(this.selectedItem));        
+      }
+    },
+
+    _updateSelected: function() {
+      this._selectSelected(this.selected);
+    },
+
+    _selectSelected: function(selected) {
+      this._selection.select(this._valueToItem(this.selected));
+    },
+
+    _filterItem: function(node) {
+      return !this._excludedLocalNames[node.localName];
+    },
+
+    _valueToItem: function(value) {
+      return (value == null) ? null : this.items[this._valueToIndex(value)];
+    },
+
+    _valueToIndex: function(value) {
+      if (this.attrForSelected) {
+        for (var i = 0, item; item = this.items[i]; i++) {
+          if (this._valueForItem(item) == value) {
+            return i;
+          }
+        }
+      } else {
+        return Number(value);
+      }
+    },
+
+    _indexToValue: function(index) {
+      if (this.attrForSelected) {
+        var item = this.items[index];
+        if (item) {
+          return this._valueForItem(item);
+        }
+      } else {
+        return index;
+      }
+    },
+
+    _valueForItem: function(item) {
+      var propValue = item[Polymer.CaseMap.dashToCamelCase(this.attrForSelected)];
+      return propValue != undefined ? propValue : item.getAttribute(this.attrForSelected);
+    },
+
+    _applySelection: function(item, isSelected) {
+      if (this.selectedClass) {
+        this.toggleClass(this.selectedClass, isSelected, item);
+      }
+      if (this.selectedAttribute) {
+        this.toggleAttribute(this.selectedAttribute, isSelected, item);
+      }
+      this._selectionChange();
+      this.fire('iron-' + (isSelected ? 'select' : 'deselect'), {item: item});
+    },
+
+    _selectionChange: function() {
+      this._setSelectedItem(this._selection.get());
+    },
+
+    // observe items change under the given node.
+    _observeItems: function(node) {
+      return Polymer.dom(node).observeNodes(function(mutations) {
+        this._updateItems();
+
+        if (this._shouldUpdateSelection) {
+          this._updateSelected();
+        }
+
+        // Let other interested parties know about the change so that
+        // we don't have to recreate mutation observers everywhere.
+        this.fire('iron-items-changed', mutations, {
+          bubbles: false,
+          cancelable: false
+        });
+      });
+    },
+
+    _activateHandler: function(e) {
+      var t = e.target;
+      var items = this.items;
+      while (t && t != this) {
+        var i = items.indexOf(t);
+        if (i >= 0) {
+          var value = this._indexToValue(i);
+          this._itemActivate(value, t);
+          return;
+        }
+        t = t.parentNode;
+      }
+    },
+
+    _itemActivate: function(value, item) {
+      if (!this.fire('iron-activate',
+          {selected: value, item: item}, {cancelable: true}).defaultPrevented) {
+        this.select(value);
+      }
+    }
+
+  };
+
+</script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Radio button](https://www.google.com/design/spec/components/selection-controls.html#selection-controls-radio-button)
+
+`paper-radio-button` is a button that can be either checked or unchecked.
+User can tap the radio button to check or uncheck it.
+
+Use a `<paper-radio-group>` to group a set of radio buttons.  When radio buttons
+are inside a radio group, exactly one radio button in the group can be checked
+at any time.
+
+Example:
+
+    <paper-radio-button></paper-radio-button>
+    <paper-radio-button>Item label</paper-radio-button>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-radio-button-unchecked-background-color` | Radio button background color when the input is not checked | `transparent`
+`--paper-radio-button-unchecked-color` | Radio button color when the input is not checked | `--primary-text-color`
+`--paper-radio-button-unchecked-ink-color` | Selected/focus ripple color when the input is not checked | `--primary-text-color`
+`--paper-radio-button-checked-color` | Radio button color when the input is checked | `--primary-color`
+`--paper-radio-button-checked-ink-color` | Selected/focus ripple color when the input is checked | `--primary-color`
+`--paper-radio-button-label-color` | Label color | `--primary-text-color`
+`--paper-radio-button-label-spacing` | Spacing between the label and the button | `10px`
+
+This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
+In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
+
+@group Paper Elements
+@element paper-radio-button
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<dom-module id="paper-radio-button" assetpath="/bower_components/paper-radio-button/">
+  <template strip-whitespace="">
+    <style>
+      :host {
+        display: inline-block;
+        white-space: nowrap;
+        cursor: pointer;
+        @apply(--paper-font-common-base);
+      }
+
+      :host(:focus) {
+        outline: none;
+      }
+
+      #radioContainer {
+        display: inline-block;
+        position: relative;
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+      }
+
+      #ink {
+        position: absolute;
+        top: -16px;
+        left: -16px;
+        width: 48px;
+        height: 48px;
+        color: var(--paper-radio-button-unchecked-ink-color, --primary-text-color);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      :host-context([dir="rtl"]) #ink {
+        right: -15px;
+        left: auto;
+      }
+
+      #ink[checked] {
+        color: var(--paper-radio-button-checked-ink-color, --primary-color);
+      }
+
+      #offRadio {
+        position: absolute;
+        box-sizing: content-box;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: solid 2px;
+        background-color: var(--paper-radio-button-unchecked-background-color, transparent);
+        border-color: var(--paper-radio-button-unchecked-color, --primary-text-color);
+        transition: border-color 0.28s;
+      }
+
+      #onRadio {
+        position: absolute;
+        box-sizing: content-box;
+        top: 4px;
+        left: 4px;
+        right: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--paper-radio-button-checked-color, --primary-color);
+        -webkit-transform: scale(0);
+        transform: scale(0);
+        transition: -webkit-transform ease 0.28s;
+        transition: transform ease 0.28s;
+        will-change: transform;
+      }
+
+      :host([checked]) #offRadio {
+        border-color: var(--paper-radio-button-checked-color, --primary-color);
+      }
+
+      :host([checked]) #onRadio {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+
+      #radioLabel {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: var(--paper-radio-button-label-spacing, 10px);
+        white-space: normal;
+        color: var(--paper-radio-button-label-color, --primary-text-color);
+      }
+
+      :host-context([dir="rtl"]) #radioLabel {
+        margin-left: 0px;
+        margin-right: var(--paper-radio-button-label-spacing, 10px);
+      }
+
+      #radioLabel[hidden] {
+        display: none;
+      }
+
+      /* disabled state */
+
+      :host([disabled]) #offRadio {
+        border-color: var(--paper-radio-button-unchecked-color, --primary-text-color);
+        opacity: 0.5;
+      }
+
+      :host([disabled][checked]) #onRadio {
+        background-color: var(--paper-radio-button-unchecked-color, --primary-text-color);
+        opacity: 0.5;
+      }
+
+      :host([disabled]) #radioLabel {
+        /* slightly darker than the button, so that it's readable */
+        opacity: 0.65;
+      }
+    </style>
+
+    <div id="radioContainer">
+      <div id="offRadio"></div>
+      <div id="onRadio"></div>
+    </div>
+
+    <div id="radioLabel"><content></content></div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-radio-button',
+
+      behaviors: [
+        Polymer.PaperCheckedElementBehavior
+      ],
+
+      hostAttributes: {
+        role: 'radio',
+        'aria-checked': false,
+        tabindex: 0
+      },
+
+      properties: {
+        /**
+         * Fired when the checked state changes due to user interaction.
+         *
+         * @event change
+         */
+
+        /**
+         * Fired when the checked state changes.
+         *
+         * @event iron-change
+         */
+
+        ariaActiveAttribute: {
+          type: String,
+          value: 'aria-checked'
+        }
+      },
+
+      ready: function() {
+        this._rippleContainer = this.$.radioContainer;
+      }
+    })
+  </script>
+</dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Radio button](https://www.google.com/design/spec/components/selection-controls.html#selection-controls-radio-button)
+
+`paper-radio-group` allows user to select at most one radio button from a set.
+Checking one radio button that belongs to a radio group unchecks any
+previously checked radio button within the same group. Use
+`selected` to get or set the selected radio button.
+
+The <paper-radio-buttons> inside the group must have the `name` attribute
+set.
+
+Example:
+
+    <paper-radio-group selected="small">
+      <paper-radio-button name="small">Small</paper-radio-button>
+      <paper-radio-button name="medium">Medium</paper-radio-button>
+      <paper-radio-button name="large">Large</paper-radio-button>
+    </paper-radio-group>
+
+Radio-button-groups can be made optional, and allow zero buttons to be selected:
+
+    <paper-radio-group selected="small" allow-empty-selection>
+      <paper-radio-button name="small">Small</paper-radio-button>
+      <paper-radio-button name="medium">Medium</paper-radio-button>
+      <paper-radio-button name="large">Large</paper-radio-button>
+    </paper-radio-group>
+
+See <a href="paper-radio-button">paper-radio-button</a> for more
+information about `paper-radio-button`.
+
+@group Paper Elements
+@element paper-radio-group
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<dom-module id="paper-radio-group" assetpath="/bower_components/paper-radio-group/">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host ::content > * {
+        padding: 12px;
+      }
+    </style>
+
+    <content id="items" select="*"></content>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'paper-radio-group',
+
+    behaviors: [
+      Polymer.IronA11yKeysBehavior,
+      Polymer.IronSelectableBehavior
+    ],
+
+    hostAttributes: {
+      role: 'radiogroup',
+      tabindex: 0
+    },
+
+    properties: {
+      /**
+       * Fired when the radio group selection changes.
+       *
+       * @event paper-radio-group-changed
+       */
+
+      /**
+       * Overriden from Polymer.IronSelectableBehavior
+       */
+      attrForSelected: {
+        type: String,
+        value: 'name'
+      },
+
+      /**
+       * Overriden from Polymer.IronSelectableBehavior
+       */
+      selectedAttribute: {
+        type: String,
+        value: 'checked'
+      },
+
+      /**
+       * Overriden from Polymer.IronSelectableBehavior
+       */
+      selectable: {
+        type: String,
+        value: 'paper-radio-button'
+      },
+
+      /**
+       * If true, radio-buttons can be deselected
+       */
+      allowEmptySelection: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    keyBindings: {
+      'left up': 'selectPrevious',
+      'right down': 'selectNext',
+    },
+
+    /**
+     * Selects the given value.
+     */
+     select: function(value) {
+      if (this.selected) {
+        var oldItem = this._valueToItem(this.selected);
+
+        if (this.selected == value) {
+          // If deselecting is allowed we'll have to apply an empty selection.
+          // Otherwise, we should force the selection to stay and make this
+          // action a no-op.
+          if (this.allowEmptySelection) {
+            value = '';
+          } else {
+            if (oldItem)
+              oldItem.checked = true;
+            return;
+          }
+        }
+
+        if (oldItem)
+          oldItem.checked = false;
+      }
+
+      Polymer.IronSelectableBehavior.select.apply(this, [value]);
+      this.fire('paper-radio-group-changed');
+    },
+
+    /**
+     * Selects the previous item. If the previous item is disabled, then it is
+     * skipped, and its previous item is selected
+     */
+    selectPrevious: function() {
+      var length = this.items.length;
+      var newIndex = Number(this._valueToIndex(this.selected));
+
+      do {
+        newIndex = (newIndex - 1 + length) % length;
+      } while (this.items[newIndex].disabled)
+
+      this._itemActivate(this._indexToValue(newIndex), this.items[newIndex]);
+    },
+
+    /**
+     * Selects the next item. If the next item is disabled, then it is
+     * skipped, and the next item after it is selected.
+     */
+    selectNext: function() {
+      var length = this.items.length;
+      var newIndex = Number(this._valueToIndex(this.selected));
+
+      do {
+        newIndex = (newIndex + 1 + length) % length;
+      } while (this.items[newIndex].disabled)
+
+      this._itemActivate(this._indexToValue(newIndex), this.items[newIndex]);
+    },
+  });
+</script>
 <!--
 Material design: [Toolbars](https://www.google.com/design/spec/components/toolbars.html)
 
@@ -24268,458 +24997,15 @@ Custom property | Description | Default
     */
   });
 </script>
-<script>
-
-  /**
-   * @param {!Function} selectCallback
-   * @constructor
-   */
-  Polymer.IronSelection = function(selectCallback) {
-    this.selection = [];
-    this.selectCallback = selectCallback;
-  };
-
-  Polymer.IronSelection.prototype = {
-
-    /**
-     * Retrieves the selected item(s).
-     *
-     * @method get
-     * @returns Returns the selected item(s). If the multi property is true,
-     * `get` will return an array, otherwise it will return
-     * the selected item or undefined if there is no selection.
-     */
-    get: function() {
-      return this.multi ? this.selection.slice() : this.selection[0];
-    },
-
-    /**
-     * Clears all the selection except the ones indicated.
-     *
-     * @method clear
-     * @param {Array} excludes items to be excluded.
-     */
-    clear: function(excludes) {
-      this.selection.slice().forEach(function(item) {
-        if (!excludes || excludes.indexOf(item) < 0) {
-          this.setItemSelected(item, false);
-        }
-      }, this);
-    },
-
-    /**
-     * Indicates if a given item is selected.
-     *
-     * @method isSelected
-     * @param {*} item The item whose selection state should be checked.
-     * @returns Returns true if `item` is selected.
-     */
-    isSelected: function(item) {
-      return this.selection.indexOf(item) >= 0;
-    },
-
-    /**
-     * Sets the selection state for a given item to either selected or deselected.
-     *
-     * @method setItemSelected
-     * @param {*} item The item to select.
-     * @param {boolean} isSelected True for selected, false for deselected.
-     */
-    setItemSelected: function(item, isSelected) {
-      if (item != null) {
-        if (isSelected !== this.isSelected(item)) {
-          // proceed to update selection only if requested state differs from current
-          if (isSelected) {
-            this.selection.push(item);
-          } else {
-            var i = this.selection.indexOf(item);
-            if (i >= 0) {
-              this.selection.splice(i, 1);
-            }
-          }
-          if (this.selectCallback) {
-            this.selectCallback(item, isSelected);
-          }
-        }
-      }
-    },
-
-    /**
-     * Sets the selection state for a given item. If the `multi` property
-     * is true, then the selected state of `item` will be toggled; otherwise
-     * the `item` will be selected.
-     *
-     * @method select
-     * @param {*} item The item to select.
-     */
-    select: function(item) {
-      if (this.multi) {
-        this.toggle(item);
-      } else if (this.get() !== item) {
-        this.setItemSelected(this.get(), false);
-        this.setItemSelected(item, true);
-      }
-    },
-
-    /**
-     * Toggles the selection state for `item`.
-     *
-     * @method toggle
-     * @param {*} item The item to toggle.
-     */
-    toggle: function(item) {
-      this.setItemSelected(item, !this.isSelected(item));
-    }
-
-  };
-
-</script>
-<script>
-
-  /** @polymerBehavior */
-  Polymer.IronSelectableBehavior = {
-
-      /**
-       * Fired when iron-selector is activated (selected or deselected).
-       * It is fired before the selected items are changed.
-       * Cancel the event to abort selection.
-       *
-       * @event iron-activate
-       */
-
-      /**
-       * Fired when an item is selected
-       *
-       * @event iron-select
-       */
-
-      /**
-       * Fired when an item is deselected
-       *
-       * @event iron-deselect
-       */
-
-      /**
-       * Fired when the list of selectable items changes (e.g., items are
-       * added or removed). The detail of the event is a list of mutation
-       * records that describe what changed.
-       *
-       * @event iron-items-changed
-       */
-
-    properties: {
-
-      /**
-       * If you want to use an attribute value or property of an element for
-       * `selected` instead of the index, set this to the name of the attribute
-       * or property. Hyphenated values are converted to camel case when used to
-       * look up the property of a selectable element. Camel cased values are
-       * *not* converted to hyphenated values for attribute lookup. It's
-       * recommended that you provide the hyphenated form of the name so that
-       * selection works in both cases. (Use `attr-or-property-name` instead of
-       * `attrOrPropertyName`.)
-       */
-      attrForSelected: {
-        type: String,
-        value: null
-      },
-
-      /**
-       * Gets or sets the selected element. The default is to use the index of the item.
-       * @type {string|number}
-       */
-      selected: {
-        type: String,
-        notify: true
-      },
-
-      /**
-       * Returns the currently selected item.
-       *
-       * @type {?Object}
-       */
-      selectedItem: {
-        type: Object,
-        readOnly: true,
-        notify: true
-      },
-
-      /**
-       * The event that fires from items when they are selected. Selectable
-       * will listen for this event from items and update the selection state.
-       * Set to empty string to listen to no events.
-       */
-      activateEvent: {
-        type: String,
-        value: 'tap',
-        observer: '_activateEventChanged'
-      },
-
-      /**
-       * This is a CSS selector string.  If this is set, only items that match the CSS selector
-       * are selectable.
-       */
-      selectable: String,
-
-      /**
-       * The class to set on elements when selected.
-       */
-      selectedClass: {
-        type: String,
-        value: 'iron-selected'
-      },
-
-      /**
-       * The attribute to set on elements when selected.
-       */
-      selectedAttribute: {
-        type: String,
-        value: null
-      },
-
-      /**
-       * The list of items from which a selection can be made.
-       */
-      items: {
-        type: Array,
-        readOnly: true,
-        notify: true,
-        value: function() {
-          return [];
-        }
-      },
-
-      /**
-       * The set of excluded elements where the key is the `localName`
-       * of the element that will be ignored from the item list.
-       *
-       * @default {template: 1}
-       */
-      _excludedLocalNames: {
-        type: Object,
-        value: function() {
-          return {
-            'template': 1
-          };
-        }
-      }
-    },
-
-    observers: [
-      '_updateAttrForSelected(attrForSelected)',
-      '_updateSelected(selected)'
-    ],
-
-    created: function() {
-      this._bindFilterItem = this._filterItem.bind(this);
-      this._selection = new Polymer.IronSelection(this._applySelection.bind(this));
-    },
-
-    attached: function() {
-      this._observer = this._observeItems(this);
-      this._updateItems();
-      if (!this._shouldUpdateSelection) {
-        this._updateSelected();
-      }
-      this._addListener(this.activateEvent);
-    },
-
-    detached: function() {
-      if (this._observer) {
-        Polymer.dom(this).unobserveNodes(this._observer);
-      }
-      this._removeListener(this.activateEvent);
-    },
-
-    /**
-     * Returns the index of the given item.
-     *
-     * @method indexOf
-     * @param {Object} item
-     * @returns Returns the index of the item
-     */
-    indexOf: function(item) {
-      return this.items.indexOf(item);
-    },
-
-    /**
-     * Selects the given value.
-     *
-     * @method select
-     * @param {string|number} value the value to select.
-     */
-    select: function(value) {
-      this.selected = value;
-    },
-
-    /**
-     * Selects the previous item.
-     *
-     * @method selectPrevious
-     */
-    selectPrevious: function() {
-      var length = this.items.length;
-      var index = (Number(this._valueToIndex(this.selected)) - 1 + length) % length;
-      this.selected = this._indexToValue(index);
-    },
-
-    /**
-     * Selects the next item.
-     *
-     * @method selectNext
-     */
-    selectNext: function() {
-      var index = (Number(this._valueToIndex(this.selected)) + 1) % this.items.length;
-      this.selected = this._indexToValue(index);
-    },
-
-    /**
-     * Force a synchronous update of the `items` property.
-     *
-     * NOTE: Consider listening for the `iron-items-changed` event to respond to
-     * updates to the set of selectable items after updates to the DOM list and
-     * selection state have been made.
-     *
-     * WARNING: If you are using this method, you should probably consider an
-     * alternate approach. Synchronously querying for items is potentially
-     * slow for many use cases. The `items` property will update asynchronously
-     * on its own to reflect selectable items in the DOM.
-     */
-    forceSynchronousItemUpdate: function() {
-      this._updateItems();
-    },
-
-    get _shouldUpdateSelection() {
-      return this.selected != null;
-    },
-
-    _addListener: function(eventName) {
-      this.listen(this, eventName, '_activateHandler');
-    },
-
-    _removeListener: function(eventName) {
-      this.unlisten(this, eventName, '_activateHandler');
-    },
-
-    _activateEventChanged: function(eventName, old) {
-      this._removeListener(old);
-      this._addListener(eventName);
-    },
-
-    _updateItems: function() {
-      var nodes = Polymer.dom(this).queryDistributedElements(this.selectable || '*');
-      nodes = Array.prototype.filter.call(nodes, this._bindFilterItem);
-      this._setItems(nodes);
-    },
-
-    _updateAttrForSelected: function() {
-      if (this._shouldUpdateSelection) {
-        this.selected = this._indexToValue(this.indexOf(this.selectedItem));        
-      }
-    },
-
-    _updateSelected: function() {
-      this._selectSelected(this.selected);
-    },
-
-    _selectSelected: function(selected) {
-      this._selection.select(this._valueToItem(this.selected));
-    },
-
-    _filterItem: function(node) {
-      return !this._excludedLocalNames[node.localName];
-    },
-
-    _valueToItem: function(value) {
-      return (value == null) ? null : this.items[this._valueToIndex(value)];
-    },
-
-    _valueToIndex: function(value) {
-      if (this.attrForSelected) {
-        for (var i = 0, item; item = this.items[i]; i++) {
-          if (this._valueForItem(item) == value) {
-            return i;
-          }
-        }
-      } else {
-        return Number(value);
-      }
-    },
-
-    _indexToValue: function(index) {
-      if (this.attrForSelected) {
-        var item = this.items[index];
-        if (item) {
-          return this._valueForItem(item);
-        }
-      } else {
-        return index;
-      }
-    },
-
-    _valueForItem: function(item) {
-      var propValue = item[Polymer.CaseMap.dashToCamelCase(this.attrForSelected)];
-      return propValue != undefined ? propValue : item.getAttribute(this.attrForSelected);
-    },
-
-    _applySelection: function(item, isSelected) {
-      if (this.selectedClass) {
-        this.toggleClass(this.selectedClass, isSelected, item);
-      }
-      if (this.selectedAttribute) {
-        this.toggleAttribute(this.selectedAttribute, isSelected, item);
-      }
-      this._selectionChange();
-      this.fire('iron-' + (isSelected ? 'select' : 'deselect'), {item: item});
-    },
-
-    _selectionChange: function() {
-      this._setSelectedItem(this._selection.get());
-    },
-
-    // observe items change under the given node.
-    _observeItems: function(node) {
-      return Polymer.dom(node).observeNodes(function(mutations) {
-        this._updateItems();
-
-        if (this._shouldUpdateSelection) {
-          this._updateSelected();
-        }
-
-        // Let other interested parties know about the change so that
-        // we don't have to recreate mutation observers everywhere.
-        this.fire('iron-items-changed', mutations, {
-          bubbles: false,
-          cancelable: false
-        });
-      });
-    },
-
-    _activateHandler: function(e) {
-      var t = e.target;
-      var items = this.items;
-      while (t && t != this) {
-        var i = items.indexOf(t);
-        if (i >= 0) {
-          var value = this._indexToValue(i);
-          this._itemActivate(value, t);
-          return;
-        }
-        t = t.parentNode;
-      }
-    },
-
-    _itemActivate: function(value, item) {
-      if (!this.fire('iron-activate',
-          {selected: value, item: item}, {cancelable: true}).defaultPrevented) {
-        this.select(value);
-      }
-    }
-
-  };
-
-</script>
-<script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
   /** @polymerBehavior Polymer.IronMultiSelectableBehavior */
   Polymer.IronMultiSelectableBehaviorImpl = {
     properties: {
@@ -24853,15 +25139,7 @@ Custom property | Description | Default
     Polymer.IronMultiSelectableBehaviorImpl
   ];
 
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
+</script>
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -26111,6 +26389,227 @@ Custom property | Description | Default
         return (icon.length > 0) || (src.length > 0);
       }
     });
+  </script>
+</dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`<paper-badge>` is a circular text badge that is displayed on the top right
+corner of an element, representing a status or a notification. It will badge
+the anchor element specified in the `for` attribute, or, if that doesn't exist,
+centered to the parent node containing it.
+
+Badges can also contain an icon by adding the `icon` attribute and setting
+it to the id of the desired icon. Please note that you should still set the
+`label` attribute in order to keep the element accessible. Also note that you will need to import
+the `iron-iconset` that includes the icons you want to use. See [iron-icon](../iron-icon)
+for more information on how to import and use icon sets.
+
+Example:
+
+    <div style="display:inline-block">
+      <span>Inbox</span>
+      <paper-badge label="3"></paper-badge>
+    </div>
+
+    <div>
+      <paper-button id="btn">Status</paper-button>
+      <paper-badge icon="favorite" for="btn" label="favorite icon"></paper-badge>
+    </div>
+
+    <div>
+      <paper-icon-button id="account-box" icon="account-box" alt="account-box"></paper-icon-button>
+      <paper-badge icon="social:mood" for="account-box" label="mood icon"></paper-badge>
+    </div>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-badge-background` | The background color of the badge | `--accent-color`
+`--paper-badge-opacity` | The opacity of the badge | `1.0`
+`--paper-badge-text-color` | The color of the badge text | `white`
+`--paper-badge-width` | The width of the badge circle | `20px`
+`--paper-badge-height` | The height of the badge circle | `20px`
+`--paper-badge-margin-left` | Optional spacing added to the left of the badge. | `0px`
+`--paper-badge-margin-bottom` | Optional spacing added to the bottom of the badge. | `0px`
+`--paper-badge` | Mixin applied to the badge | `{}`
+
+@group Paper Elements
+@element paper-badge
+@demo demo/index.html
+-->
+
+<dom-module id="paper-badge" assetpath="/bower_components/paper-badge/">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: absolute;
+        outline: none;
+      }
+
+      iron-icon {
+        --iron-icon-width: 12px;
+        --iron-icon-height: 12px;
+      }
+
+      .badge {
+        @apply(--layout);
+        @apply(--layout-center-center);
+        @apply(--paper-font-common-base);
+
+        font-weight: normal;
+        font-size: 11px;
+        border-radius: 50%;
+        margin-left: var(--paper-badge-margin-left, 0px);
+        margin-bottom: var(--paper-badge-margin-bottom, 0px);
+        width: var(--paper-badge-width, 20px);
+        height: var(--paper-badge-height, 20px);
+        background-color: var(--paper-badge-background, --accent-color);
+        opacity: var(--paper-badge-opacity, 1.0);
+        color: var(--paper-badge-text-color, white);
+
+        @apply(--paper-badge);
+      }
+    </style>
+
+    <div class="badge">
+      <iron-icon hidden$="{{!_computeIsIconBadge(icon)}}" icon="{{icon}}"></iron-icon>
+      <span id="badge-text" hidden$="{{_computeIsIconBadge(icon)}}">{{label}}</span>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-badge',
+
+      hostAttributes: {
+        tabindex: '0',
+        role: 'status'
+      },
+
+      behaviors: [
+        Polymer.IronResizableBehavior
+      ],
+
+      listeners: {
+        'iron-resize': 'updatePosition'
+      },
+
+      properties: {
+        /**
+         * The id of the element that the badge is anchored to. This element
+         * must be a sibling of the badge.
+         */
+        for: {
+          type: String,
+          observer: '_forChanged'
+        },
+
+        /**
+         * The label displayed in the badge. The label is centered, and ideally
+         * should have very few characters.
+         */
+        label: {
+          type: String,
+          observer: '_labelChanged'
+        },
+
+        /**
+         * An iron-icon ID. When given, the badge content will use an
+         * `<iron-icon>` element displaying the given icon ID rather than the
+         * label text. However, the label text will still be used for
+         * accessibility purposes.
+         */
+        icon: {
+          type: String,
+          value: ''
+        }
+      },
+
+      attached: function() {
+        this._updateTarget();
+      },
+
+      _forChanged: function() {
+        // The first time the property is set is before the badge is attached,
+        // which means we're not ready to position it yet.
+        if (!this.isAttached) {
+          return;
+        }
+        this._updateTarget();
+      },
+
+      _labelChanged: function() {
+        this.setAttribute('aria-label', this.label);
+      },
+
+      _updateTarget: function() {
+        this._target = this.target;
+        this.async(this.notifyResize, 1);
+      },
+
+      _computeIsIconBadge: function(icon) {
+        return icon.length > 0;
+      },
+
+      /**
+       * Returns the target element that this badge is anchored to. It is
+       * either the element given by the `for` attribute, or the immediate parent
+       * of the badge.
+       */
+      get target () {
+        var parentNode = Polymer.dom(this).parentNode;
+        // If the parentNode is a document fragment, then we need to use the host.
+        var ownerRoot = Polymer.dom(this).getOwnerRoot();
+        var target;
+
+        if (this.for) {
+          target = Polymer.dom(ownerRoot).querySelector('#' + this.for);
+        } else {
+          target = parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE ?
+              ownerRoot.host : parentNode;
+        }
+
+        return target;
+      },
+
+      /**
+       * Repositions the badge relative to its anchor element. This is called
+       * automatically when the badge is attached or an `iron-resize` event is
+       * fired (for exmaple if the window has resized, or your target is a
+       * custom element that implements IronResizableBehavior).
+       *
+       * You should call this in all other cases when the achor's position
+       * might have changed (for example, if it's visibility has changed, or
+       * you've manually done a page re-layout).
+       */
+      updatePosition: function() {
+        if (!this._target)
+          return;
+
+        if (!this.offsetParent)
+          return;
+
+        var parentRect = this.offsetParent.getBoundingClientRect();
+        var targetRect = this._target.getBoundingClientRect();
+        var thisRect = this.getBoundingClientRect();
+
+        this.style.left = targetRect.left - parentRect.left +
+            (targetRect.width - thisRect.width / 2) + 'px';
+        this.style.top = targetRect.top - parentRect.top -
+            (thisRect.height / 2) + 'px';
+      }
+    })
   </script>
 </dom-module>
 <!--
@@ -33579,6 +34078,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
   :host {
     box-sizing: border-box;
+    width: 600px; 
+    overflow-x:scroll;  
+    margin-left:5em; 
+    overflow-y:visible;
+    padding-bottom:1px;
+  }
+  :host paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.blue {
+    background-color: var(--paper-blue-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+    padding:3px;
+    margin:0px;
   }
   :host .table-header-rotated {
     border-collapse: collapse;
@@ -33618,9 +34136,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
   </style>
 
-    <table class="csstransforms table-header-rotated" data$="{{data}}">
+    <table class="csstransforms table-header-rotated" data$="[[data]]">
       <!-- <tr hidden="{{!data.length}}"><td colspan="7" center-justified flex>Micro Nutrients</td></tr> -->
-      <tbody><tr hidden="{{!data.length}}" valign="top">
+      <tbody><tr hidden$="{{!data.length}}" valign="top">
         <!-- First column header is not rotated -->
         <!-- Following headers are rotated -->
 
@@ -33655,40 +34173,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <th class="rotate"><div><span>PHOSPHOROUS_MG</span></div></th>
       </tr> 
       </tbody><tbody>
-          <template is="dom-repeat" items="{{data}}">
+          <template is="dom-repeat" items="[[data]]">
             <tr valign="top">
               <!--  MICRO Nutrients-->
               <th class="row-header">{{item.NAME}}</th>
-              <td class="rotate"><div>{{item.qty}}</div></td>
-              <td class="rotate"><div>{{item.uom}}</div></td>
-              <td class="rotate"><div>{{item.CAROTENE_Vit_A_microgram}}</div></td>
-              <td class="rotate"><div>{{item.THIAMINE_Vit_B1_mg}}</div></td>
-              <td class="rotate"><div>{{item.RIBOFLAVIN_VIT_B2_mg}}</div></td>
-              <td class="rotate"><div>{{item.NIACIN_VIT_B3_mg}}</div></td>
-              <td class="rotate"><div>{{item.Folic_Acid_Free}}</div></td>
-              <td class="rotate"><div>{{item.Folic_Acid_Total}}</div></td>
-              <td class="rotate"><div>{{item.CHOLINE_mg}}</div></td>
-              <td class="rotate"><div>{{item.Na_mg}}</div></td>
-              <td class="rotate"><div>{{item.K_mg}}</div></td>
-              <td class="rotate"><div>{{item.Zn_mg}}</div></td>
-              <td class="rotate"><div>{{item.IRON_MG}}</div></td>
-              <td class="rotate"><div>{{item.Total_Saturates_Percent}}</div></td>
-              <td class="rotate"><div>{{item.Total_Monounsaturate_Percent}}</div></td>
-              <td class="rotate"><div>{{item.Total_Polyunsaturate_Percent}}</div></td>
+              <td><div>{{item.qty}}</div></td>
+              <td><div>{{item.uom}}</div></td>
+              <td><div>{{item.CAROTENE_Vit_A_microgram}}</div></td>
+              <td><div>{{item.THIAMINE_Vit_B1_mg}}</div></td>
+              <td><div>{{item.RIBOFLAVIN_VIT_B2_mg}}</div></td>
+              <td><div>{{item.NIACIN_VIT_B3_mg}}</div></td>
+              <td><div>{{item.Folic_Acid_Free}}</div></td>
+              <td><div>{{item.Folic_Acid_Total}}</div></td>
+              <td><div>{{item.CHOLINE_mg}}</div></td>
+              <td><div>{{item.Na_mg}}</div></td>
+              <td><div>{{item.K_mg}}</div></td>
+              <td><div>{{item.Zn_mg}}</div></td>
+              <td><div>{{item.IRON_MG}}</div></td>
+              <td><div>{{item.Total_Saturates_Percent}}</div></td>
+              <td><div>{{item.Total_Monounsaturate_Percent}}</div></td>
+              <td><div>{{item.Total_Polyunsaturate_Percent}}</div></td>
               
               <!--  MACRO Nutrients-->
-              <td class="rotate"><div>{{item.MOISTURE_GM}}</div></td>
-              <td class="rotate"><div>{{item.PROTEIN_GM}}</div></td>
-              <td class="rotate"><div>{{item.FAT_GM}}</div></td>
-              <td class="rotate"><div>{{item.MINERALS_GM}}</div></td>
-              <td class="rotate"><div>{{item.FIBER_GM}}</div></td>
-              <td class="rotate"><div>{{item.CARBOHYDRATES_GM}}</div></td>
-              <td class="rotate"><div>{{item.ENERGY_KCALS}}</div></td>
-              <td class="rotate"><div>{{item.CALCIUM_MG}}</div></td>
-              <td class="rotate"><div>{{item.PHOSPHOROUS_MG}}</div></td>
+              <td><div>{{item.MOISTURE_GM}}</div></td>
+              <td><div>{{item.PROTEIN_GM}}</div></td>
+              <td><div>{{item.FAT_GM}}</div></td>
+              <td><div>{{item.MINERALS_GM}}</div></td>
+              <td><div>{{item.FIBER_GM}}</div></td>
+              <td><div>{{item.CARBOHYDRATES_GM}}</div></td>
+              <td><div>{{item.ENERGY_KCALS}}</div></td>
+              <td><div>{{item.CALCIUM_MG}}</div></td>
+              <td><div>{{item.PHOSPHOROUS_MG}}</div></td>
+              <td><div><paper-button class="red" hidden="{{!index}}" on-click="deleteThisRow">X</paper-button></div></td>
 
             </tr>
           </template>
+
       </tbody>
     </table>
   </template>
@@ -33706,6 +34226,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     listeners: {
       'clear': 'clearSelfData'
+    },
+    deleteThisRow:function(e){
+      console.log(e.model.index,e.model.item);
+      this.splice('data',e.model.index,1);
     },
     ready: function() {
       // `ready` is called after all elements have been configured, but
@@ -33771,12 +34295,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <form is="iron-form" id="form" method="post" action="/form/handler">
     <paper-card elevation="4">
     <div class="card-actions">
-      <paper-input id="name" required="" auto-validate="" error-message="Exercise Name shouldn't be empty" value="{{name}}" label="Name of the Exercise"></paper-input>
-      <paper-input prefix="KG" type="number" value="{{weight}}" label="Weight of a person (KG)"></paper-input>
+      <paper-input id="name" required="" auto-validate="" error-message="Exercise Name shouldn't be empty" value="{{exercise.name}}" label="Name of the Exercise"></paper-input>
+      <paper-input prefix="KG" type="number" value="{{exercise.weight}}" label="Weight of a person (KG)"></paper-input>
       <p>Take any weight. This weight will be taken as basemark for creating calorific consumption of a person of any weight</p>
-      <paper-input prefix="Minutes" type="number" value="{{time}}" label="Time (Minutes)"></paper-input>
-      <paper-input prefix="Minutes" type="number" value="{{caloriesBurn}}" label="Calories Burned"></paper-input>
-      <paper-dropdown-menu label="suitableFor" value="{{suitableFor}}">
+      <paper-input prefix="Minutes" type="number" value="{{exercise.time}}" label="Time (Minutes)"></paper-input>
+      <paper-input prefix="Minutes" type="number" value="{{exercise.caloriesBurn}}" label="Calories Burned"></paper-input>
+      <paper-dropdown-menu label="suitableFor" value="{{exercise.suitableFor}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -33803,6 +34327,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     is: 'siva-exercise-creation',
     properties:{
+      exercise:{
+        type:Object,
+        notify:true,
+        value:{
+          name:"",
+          weight:0,
+          time:0,
+          caloriesBurn:0,
+          suitableFor:""
+        }
+      },
     },
     
     ready: function() {
@@ -33831,12 +34366,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     addExercise: function(e){
-      var exercise = {};
-      exercise.name=this.name;
-      exercise.weight = this.weight;
-      exercise.time = this.time;
-      exercise.caloriesBurn = this.caloriesBurn;
-      exercise.createdBy = JSON.parse(localStorage.user).username;
+      this.exercise.createdBy = JSON.parse(localStorage.user).username;
+      this.exercise.name = this.$.name.value;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -33845,14 +34376,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         that.$.toast_1.open();
         that.$.form.reset();
 
-        _.extend(that.currentCounts, JSON.parse(xhr.response));
-        var counts = JSON.parse(xhr.response);
-        that.exerciseCount = counts.Exercise;
+        that.exercise = {
+          name:"",
+          weight:0,
+          time:0,
+          caloriesBurn:0,
+          suitableFor:""
+        };
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Exercise = user.createdCounts.Exercise + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
+
       };
       xhr.open("POST",'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)
-        xhr.send(JSON.stringify(exercise));
+        xhr.send(JSON.stringify(this.exercise));
     }
 
 
@@ -33888,79 +34430,124 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 
   <template>
-    <form is="iron-form" id="form" method="post" action="/form/handler">
+
+    <template is="dom-if" if="{{isCreateView}}">
+      <iron-localstorage name="username"></iron-localstorage>
+ 
+      <form is="iron-form" id="form" method="post" action="/form/handler">
       <h1>Create a new Question &amp; Answer</h1>
       <h2>Question</h2>
-        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value$="{{data.question}}"></iron-autogrow-textarea>
-        <paper-input id="keywords" value$="{{data.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
+        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{data.question}}"></iron-autogrow-textarea>
+        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords">
+        </paper-input>
+
+      Category: 
+      <paper-dropdown-menu label="Catergory" value="{{data.category}}">
+        <paper-listbox class="dropdown-content">
+          <paper-item>Diabetes</paper-item>
+          <paper-item>Sub Category</paper-item>
+          <paper-item>Pre-Natal</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      Sub Category: 
+      <paper-dropdown-menu label="Sub Catergory" value="{{data.subCategory}}">
+        <paper-listbox class="dropdown-content">
+          <paper-item>Diabetes</paper-item>
+          <paper-item>Sub Category</paper-item>
+          <paper-item>Pre-Natal</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+
+
       <h2>Answer</h2>
-        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value$="{{data.answer}}"></iron-autogrow-textarea>    
+        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{data.answer}}"></iron-autogrow-textarea>    
 
       <br>
       <br>
-      <template is="dom-if" if$="{{data.nosave}}">
-        <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div>
+      <template is="dom-if" if="{{data.nosave}}">
+        <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
       </template>
-      <paper-button raised="" class="green" on-click="addQandA" disabled$="{{data.nosave}}">Save Q&amp;A</paper-button>
+      <paper-button raised="" class="green" on-click="addQAndA" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
       <paper-toast id="toast_q_and_a" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
-    </form>
+    </form> 
   </template>
-</dom-module>
+
+  <template is="dom-if" if="{{!isCreateView}}">
+    <h4>Question</h4>
+    <p>{{data.question}}</p>
+    <h4>Answer</h4>
+    <p>{{data.answer}}</p>
+<!--     
+    <iron-autogrow-textarea id="comment" placeholder="Your comments here" style="height: 150px;" value="{{data.comment}}"></iron-autogrow-textarea><br/>
+    <paper-button class="blue" on-click="postComments">Post your comment</paper-button>
+ -->  </template>
+
+  </template>
+
+  </dom-module>
 
 <script>
 
   Polymer({
-
     is: 'siva-qa-creation',
     properties:{
-      doctorName:{
-        type:String,
-        value:""
-      },
       data:{
         type:Object,
         notify:true,
-        value:{question:"",answer:""}
+        reflectToAttribute:true,
+        value:{
+          createdBy:"",
+          question:"",
+          answer:"",
+          keywords:"",
+          category:"",
+          subCategory:"",
+          nosave:false
+        }
       },
-      keywords:String,
-      question:String,
-      answer:String
+      isCreateView:{
+        type:Boolean,
+        computed:'_isCreateView(data.createdBy)'
+      }
     },
     
     ready: function() {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
     },
 
     attached: function() {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
     },
 
     detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
     },
+    isCurrentUser:function(who){
+      console.log(who);
+      return localStorage.username != who;
+    },
+    _isCreateView:function(who){
+      console.log(who, localStorage.username);
+      return who == '' || who == localStorage.username;
+    },
+    // postComments:function(){
+    //   this.data.createdBy = JSON.parse(localStorage.user).username;
+    //   var xhr = new XMLHttpRequest();
+    //   var that = this;
+    //   xhr.onload = function(res){
+    //     var user = JSON.parse(localStorage.user)
+    //     user.createdCounts.QandA = user.createdCounts.QandA + 1;
+    //     localStorage.user = JSON.stringify(user);
 
-    addQandA: function(e){
-      var qAndA = {};
-      qAndA.doctorName=this.doctorName;
-      qAndA.question = this.$.question.value;
-      qAndA.answer = this.$.answer.value;
-      qAndA.keywords = this.$.keywords.value;
-      qAndA.createdBy = JSON.parse(localStorage.user).username;
+    //     that.fire('updateCounters');
+    //   };
+    //   xhr.open("PUT",'/crud/QandA?comment=' + this.data.comment);
+    //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    //   var question = Polymer.dom(document.querySelector("#question"));
+    //   if(!(question.value == ''))
+    //     xhr.send(JSON.stringify(this.data));
+    // },
+    addQAndA: function(e){
+      this.data.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -33968,11 +34555,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         that.$.toast_q_and_a.text = xhr.response;
         that.$.toast_q_and_a.open();
         that.$.form.reset();
+
+        that.data = {
+          question: "",
+          category: "",
+          subCategory: "",
+          keywords: "",
+          answer: ""
+        };
+
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.QandA = user.createdCounts.QandA + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
       };
-      xhr.open("POST",'/crud/QandA');
+      var method = that.data.createdBy == localStorage.username ? "PUT" : "POST";
+      xhr.open(method,'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      if(!(this.$.question.value == ''))
-        xhr.send(JSON.stringify(qAndA));
+      var question = Polymer.dom(document.querySelector("#question"));
+      if(!(question.value == ''))
+        xhr.send(JSON.stringify(this.data));
     }
 
   });
@@ -34008,9 +34612,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-card elevation="4">
     <div class="card-actions">
-      <paper-input id="tip" label="Describe your tip of the day" required="" auto-validate="" error-message="Please write some tip" value="{{tip}}"></paper-input>
+      <paper-input id="tip" label="Describe your tip of the day" required="" auto-validate="" error-message="Please write some tip" value="{{tip.tip}}"></paper-input>
 
-      <paper-dropdown-menu label="For" value="{{suitableForDisease}}">
+      <paper-dropdown-menu label="For" value="{{tip.suitableForDisease}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Hypertension</paper-item>
@@ -34018,7 +34622,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-listbox>
       </paper-dropdown-menu>
 
-      <paper-dropdown-menu label="Tip Category" value="{{suitableForTime}}">
+      <paper-dropdown-menu label="Tip Category" value="{{tip.suitableForTime}}">
         <paper-listbox class="dropdown-content">
           <paper-item>EXERCISE (50)</paper-item>
           <paper-item>FOOD (100)</paper-item>
@@ -34053,9 +34657,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     is: 'siva-tip-creation',
     properties:{
-      tip:String,
-      suitableForDisease:String,
-      suitableForTime:String
+      tip:{
+        type:Object,
+        notify:true,
+        value:{
+          tip:"",
+          suitableForDisease:"",
+          suitableForTime:""
+        }
+      }
     },
     
     ready: function() {
@@ -34084,22 +34694,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     addTip: function(e){
-      var tip = {};
-      tip.tip=this.tip;
-      tip.suitableForDisease = this.suitableForDisease;
-      tip.suitableForTime = this.suitableForTime;
-      tip.createdBy = JSON.parse(localStorage.user).username;
+      this.tip.createdBy = JSON.parse(localStorage.user).username;
 
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
         that.$.toast_tip.text = xhr.response;
         that.$.toast_tip.open();
+
+        that.tip = {
+          tip:"",
+          suitableForDisease:"",
+          suitableForTime:""
+        };
+
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Tip = user.createdCounts.Tip + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
+
       };
       xhr.open("POST",'/crud/Tip');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.tip.invalid)
-        xhr.send(JSON.stringify(tip));
+        xhr.send(JSON.stringify(this.tip));
     }
 
 
@@ -34121,24 +34741,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: block;
       box-sizing: border-box;
     }
+    :host vaadin-combo-box{margin-right:10px;}
+    :host td > #form:200px;
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
     :host paper-dropdown .paper-input { font-size:10px; }
 
-    :host .ingredient{width:500px;};
+    :host .ingredient{width:300px;};
     :host paper-button.green {
       background-color: var(--paper-green-500);
       color: white;
     }
     :host paper-card{margin:0px;}
-    :host td:first-child{ background:#f4f4f4; padding:10px;margin-right:20px !important; width:400px !important;}
+    :host td:first-child{ background:#f4f4f4; padding:0px 10px; margin-right:20px !important; width:300px !important;}
   </style>
 
   <template>
+    <iron-ajax id="ajax" auto="" url="/data/facade" handle-as="json" last-response="{{facade}}" on-response="initData" debounce-duration="300"></iron-ajax>
+
     <table><tbody><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
-      <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipeName}}"></paper-input>
+      <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>
 
         <div id="mealType">
           <h4>Meal Type</h4>
@@ -34149,33 +34773,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div id="diseaseFriendly">
           <h4>Friendly for deseases</h4>
             <template is="dom-repeat" items="{{facade.diseaseFriendlies}}">
-              <paper-checkbox>{{item}}</paper-checkbox>
+              <paper-checkbox validator="{{diseaseFriendlyCheckedStatus}}" checked$="{{diseaseFriendlyCheckedStatus}}">{{diseaseFriendlyCheckedStatus}}{{item}}</paper-checkbox>
             </template>
         </div>
         <div class="horizontal">
-        <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{foodType}}">
-          <paper-listbox class="dropdown-content">
+        <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{recipe.foodType}}">
+          <paper-menu class="dropdown-content" selected="[[recipe.foodType]]" attr-for-selected="value">
             <template is="dom-repeat" items="{{facade.foodTypes}}">
-              <paper-item>{{item}}</paper-item>
+              <paper-item value="{{item}}">{{item}}</paper-item>
             </template>
-          </paper-listbox>
+          </paper-menu>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{cuisine}}">
+        <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{recipe.cuisine}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.cusines}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{servingUnit}}">
+        <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{recipe.servingUnit}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.servingUnits}}">
               <paper-item>{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{giIndex}}">
+        <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{recipe.giIndex}}">
           <paper-listbox class="dropdown-content">
             <template is="dom-repeat" items="{{facade.giIndexes}}">
               <paper-item>{{item}}</paper-item>
@@ -34188,28 +34812,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </form>
     </td>
     <td>
-    <div class="layout horizontal wrap">
-      <paper-card class="ingredient" heading="Add Ingredient" elevation="1">
-        <div class="layout horizontal">
-          <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
-          <paper-dropdown-menu id="uom" label="U_O_M ?" value="{{currentIngredient.uom}}">
-            <paper-listbox class="dropdown-content">
-              <template is="dom-repeat" items="{{facade.uoms}}">
-                <paper-item>{{item}}</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
+      <div class="flex layout horizontal">
+        <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
+        <paper-dropdown-menu id="uom" label="Unit" value="{{currentIngredient.uom}}">
+          <paper-listbox class="dropdown-content">
+            <template is="dom-repeat" items="{{facade.uoms}}">
+              <paper-item>{{item}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
 
-          <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}"></paper-input>
-          <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
-        </div>
-
-      </paper-card>
-    </div>
+        <paper-input id="recipeQuantities" type="number" label="Quantity" value="{{currentIngredient.qty}}"></paper-input>
+        <paper-fab icon="add" on-click="addIngredient" title="Add this ingredient"></paper-fab>
+      </div>
 
 
-      <h1>&nbsp;</h1><h1>&nbsp;</h1>
-      <siva-compact-table data="{{recipeIngredients}}"></siva-compact-table>
+      <h1>&nbsp;</h1><h1>&nbsp;</h1><h1>&nbsp;</h1>
+      <siva-compact-table data="{{recipe.ingredients}}"></siva-compact-table>
     </td></tr></tbody></table>  
 
       <paper-card image="images/bbread.png" hidden="">
@@ -34230,6 +34849,23 @@ Polymer({
     facade:{
       type:Object,
       notify:true
+    },
+    recipe:{
+      type:Object,
+      notify:true,
+      value:{
+        name:"",
+        foodType:"",
+        mealType:"",
+        diseaseFriendly:"",
+        cusine:"",
+        giIndex:"",
+        ingredients:[]
+      }
+    },
+    diseaseFriendlyChecked:{
+      type:Boolean,
+      computed:'diseaseFriendlyCheckedStatus()'
     },
     recipeNames:{type:Array},
     recipeName: {
@@ -34266,8 +34902,7 @@ Polymer({
       value: function() {
         return {
           qty: "",
-          uom: "",
-          servingsPerOnePerson: 1
+          uom: ""
         };
       }
     },
@@ -34281,33 +34916,31 @@ Polymer({
     delete localStorage.loggedIn;
     location.reload();
   },
+  diseaseFriendlyCheckedStatus:function(e){
+    console.log("diseaseFriendlyCheckedStatus", e.model);
+    return this.recipe.diseaseFriendly.split.indexOf(e.model.item) > -1;
+  },
+  initData:function(e){
+    this.fire('rendered',{hi:"Siva"});
+  },
+
   ready: function() {
   },
 
   attached: function() {
-  },
-
-  detached: function() {
-    // The analog to `attached`, `detached` fires when the element has been
-    // removed from a document.
-    //
-    // Use this to clean up anything you did in `attached`.
   },
   storeRecipeNames:function(e){
     console.log(e.detail);
   },
 
   addIngredient: function(e) {
-    console.log("Got into addIngredient function");
-    console.log(this.facade);
-    console.log(this.$.ingredientsInputCombo.value);
+
     var that = this;
-    if (this.recipeIngredients.length > 0) this.pop('recipeIngredients');
+    if (this.recipe.ingredients.length > 0) this.pop('recipe.ingredients');
     // this.currentIngredient = this.currentIngredient || {};
     _.extend(this.currentIngredient, _.find(this.facade.nutritives, function(x) {
       return x.NAME == that.$.ingredientsInputCombo.value;
     }));
-    console.log(this.currentIngredient);
     //  Calculate micro and macro nutrient values according to the current quantity
     //  The base nutritional values shared from doctors in the form of excel sheets
     //  are per 100 gm of an ingredient
@@ -34319,7 +34952,7 @@ Polymer({
         tmpCurrentIngredient[k] = tmpCurrentIngredient[k] * tmpCurrentIngredient.qty / 100;
         tmpCurrentIngredient[k] = Math.round(tmpCurrentIngredient[k] * 100) / 100;
       }
-      this.push('recipeIngredients', tmpCurrentIngredient);
+      this.push('recipe.ingredients', tmpCurrentIngredient);
       this.updateTotals();
     }
   },
@@ -34328,57 +34961,39 @@ Polymer({
     //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
     //  The actual totals object is the totalsObject below this line
     var totalsObject = {}
-    var tmpCurrentIngredient = this.facade.sampleIngredient;
-    console.log(tmpCurrentIngredient);
-    for (k in tmpCurrentIngredient) {
+    for (k in this.facade.sampleIngredient) {
+      console.log(k);
       if (k == "_id" || k == "NAME" || k == "qty" || k == "uom" || k == "servingsPerOnePerson") continue;
-      var x = _.pluck(this.recipeIngredients, k);
+      var x = _.pluck(this.recipe.ingredients, k);
       totalsObject[k] = x.reduce((a, b) => (a + b) || 0);
       totalsObject[k] = Math.round(totalsObject[k] * 100) / 100;
     }
     totalsObject.NAME = "Totals :";
-    console.log(totalsObject);
-    this.push('recipeIngredients', totalsObject);
+    this.push('recipe.ingredients', totalsObject);
   },
 
   addRecipe: function(e){
-    var recipe = {};
-    recipe.mealType = "";
-    recipe.diseaseFriendly = "";
-
+    var that = this;
+    this.recipe.name = this.$.recipeName.value;
+    this.recipe.foodType = this.$.foodType.value;
+    this.recipe.cuisine = this.$.cuisine.value;
+    this.recipe.servingUnit = this.$.servingUnit.value;
+    this.recipe.giIndex = this.$.giIndex.value;
     var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
 
     [].forEach.call(mealTypes,function(mealType){
-      recipe.mealType += mealType.innerText + ",";
+      that.recipe.mealType += mealType.innerText + ",";
     });
 
 
     var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly > paper-checkbox[active]");
 
     [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
-      recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
+      that.recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
     });
 
-    console.log(recipe.mealType);
-    console.log(recipe.diseaseFriendly);
-    // recipe.totals = function(){
-    //   recipe.ingredients.forEach(function(x){
-    //   })
-    // }
-
-    recipe.name=this.recipeName;
-    console.log(this.recipeName);
-    recipe.ingredients = this.recipeIngredients;
-    recipe.servingUnit = this.servingUnit;
-    recipe.giIndex = this.giIndex;
-
-    recipe.foodType = this.foodType;
-    recipe.cuisine = this.cuisine;
-
-
-
-    recipe.createdBy = JSON.parse(localStorage.user).username;
-    console.log(recipe);
+    this.recipe.createdBy = JSON.parse(localStorage.user).username;
+    console.log(this.recipe);
     var xhr = new XMLHttpRequest();
     var that = this;
 
@@ -34388,18 +35003,29 @@ Polymer({
         that.$.toast.text = xhr.response;
         that.$.toast.open();
         that.$.form.reset();
-        that.recipeIngredients = [];
+        that.recipe = {
+          name:"",
+          foodType:"",
+          mealType:"",
+          diseaseFriendly:"",
+          cusine:"",
+          giIndex:"",
+          ingredients:[]
+        };
 
-        _.extend(that.currentCounts, JSON.parse(xhr.response));
-        var counts = JSON.parse(xhr.response);
-        that.recipeCount = counts.Recipe;
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Recipe = user.createdCounts.Recipe + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
 
       }
     };
     xhr.open("POST",'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    if(!this.$.recipeName.invalid /*  && !this.$.servingsPerOnePerson.invalid  */){
-      xhr.send(JSON.stringify(recipe));
+    if(!this.$.recipeName.invalid  /* && !this.$.servingsPerOnePerson.invalid */){
+      xhr.send(JSON.stringify(this.recipe));
     }
   }
 }); 
@@ -34411,6 +35037,9 @@ Polymer({
       display: block;
       box-sizing: border-box;
     }
+    :host table.normalTable{height:600px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
+
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
     :host paper-dropdown .paper-input { font-size:10px; }
@@ -34420,23 +35049,82 @@ Polymer({
       background-color: var(--paper-green-500);
       color: white;
     }
-    :host .viewList{display:absolute; width:600px; height:600px; overflow:auto; float:right; padding:20px;background:#f4f4f4;};
+    :host .viewList{height:600px; overflow:auto; float:right; padding:20px;background:#f4f4f4;};
+    :host .recipesModuleChecked div.viewList{width:300px !important;};
     :host .viewList paper-item{ border-bottom:1px solid silver; }
     :host paper-card{margin:0px;}
     :host td:first-child{ background:#f4f4f4; padding:30px;margin-right:20px !important; width:300px !important;}
   </style>
 
   <template>
-    <iron-ajax id="totalData" auto="" url="/crud/QandA?currentUser=true" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
 
-      <div class="viewList">
-        <paper-card>
+
+      <paper-radio-group selected="{{currentReviewModule}}">
+        <paper-radio-button name="recipes" checked="{{recipesModuleChecked}}">Recipes</paper-radio-button>
+        <paper-radio-button name="exercises" checked="{{exercisesModuleChecked}}">Exercises</paper-radio-button>
+        <paper-radio-button name="tips" checked="{{tipsModuleChecked}}">Tips</paper-radio-button>
+        <paper-radio-button name="qandas" checked="{{qandasModuleChecked}}">Q &amp; A</paper-radio-button>
+        <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
+      </paper-radio-group>
+
+      <!--  This will be shown when Recipes radio button is Checked   -->
+      <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
+        <iron-ajax id="totalData" auto="" url="/crud/Recipe?username={{username}}" handle-as="json" last-response="{{recipes}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{recipes}}">
+              <paper-item on-click="editThis">{{item.name}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-recipe-creation recipe="{{currentModel}}"></siva-recipe-creation>
+      </template>
+
+      <!--  This will be shown when Exercises radio button is Checked   -->
+      <template is="dom-if" if="{{exercisesModuleChecked}}">
+        <iron-ajax id="totalData" auto="" url="/crud/Exercise?username={{username}}" handle-as="json" last-response="{{exercises}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{exercises}}">
+              <paper-item on-click="editThis">{{item.name}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-exercise-creation exercise="{{currentModel}}"></siva-exercise-creation>
+      </template>
+
+      <!--  This will be shown when Tips radio button is Checked   -->
+      <template is="dom-if" if="{{tipsModuleChecked}}">
+        <iron-ajax id="totalData" auto="" url="/crud/Tip?username={{username}}" handle-as="json" last-response="{{tips}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{tips}}">
+              <paper-item on-click="editThis">{{item.tip}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-tip-creation tip="{{currentModel}}"></siva-tip-creation>
+      </template>
+
+      <!--  This will be shown when Q & As radio button is Checked   -->
+      <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
+        <iron-ajax id="totalData" auto="" url="/crud/QandA?username={{username}}" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+
+        <table class="normalTable"><tbody><tr><th>Question</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{qandas}}">
-            <paper-item on-click="editThis">{{item.question}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> <br>
+          <tr valign="top">
+            <td on-click="editThis">{{item.question}}</td>
+            <td><em><strong>{{item.createdBy}}</strong></em></td>
+          </tr>
           </template>
-        </paper-card>
-      </div>
-      <siva-qa-creation data="{{currentQandA}}"></siva-qa-creation>
+        </tbody></table>
+
+        <siva-qa-creation data="{{currentModel}}"></siva-qa-creation>
+      </template>
+
 
   </template>
 </dom-module>
@@ -34444,10 +35132,17 @@ Polymer({
   Polymer({
     is: 'siva-edit',
     properties: {
-      currentQandA:{
+      username:{
+        type:String,
+        value:function(){
+          return localStorage.username;
+        }
+      },
+      currentModel:{
         type:Object,
         notify:true
-      }
+      },
+      currentReviewModule:{type:Boolean}
     },
 
     gotTotalData:function(e){
@@ -34459,7 +35154,7 @@ Polymer({
       console.log(e.model.item);
       //  For now, disable save button
       e.model.item.nosave = true;
-      this.currentQandA = e.model.item;
+      this.currentModel = e.model.item;
     },
 
     update:function(modelName,id){
@@ -34471,7 +35166,148 @@ Polymer({
           console.log(res);
         }
       };
-      xhr.open("POST",'/crud/QAndA');
+      xhr.open("POST",'/crud/QandA');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(recipe));
+    }
+  });
+</script><dom-module id="siva-review" assetpath="/components/siva-review/">
+  <style>
+    :host {
+      margin:10px;
+      display: block;
+      box-sizing: border-box;
+    }
+    :host table{border-collapse:collapse; border:1px solid silver; width:100%;}
+    :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
+    :host paper-dropdown{display:inline;}
+    :host paper-dropdown .paper-input { font-size:10px; }
+
+    :host .ingredient{width:500px;};
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host paper-button.blue {
+      background-color: var(--paper-blue-500);
+      color: white;
+    }
+    :host paper-button.red {
+      background-color: var(--paper-red-500);
+      color: white;
+    }
+    :host .viewList{height:600px; overflow:auto; padding:20px;};
+    :host .recipesModuleChecked div.viewList{width:300px !important;};
+    :host .viewList paper-item{ border-bottom:1px solid silver; }
+    :host paper-card{margin:0px;}
+    :host td:first-child{ background:#f4f4f4; padding:30px;margin-right:20px !important; width:300px !important;}
+  </style>
+
+  <template>
+    <iron-ajax id="totalData" auto="" url="/crud/QandA?username={{username}}" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+
+      <paper-radio-group selected="{{currentReviewModule}}">
+        <paper-radio-button name="recipes" checked="{{recipesModuleChecked}}">Recipes</paper-radio-button>
+        <paper-radio-button name="exercises" checked="{{exercisesModuleChecked}}">Exercises</paper-radio-button>
+        <paper-radio-button name="tips" checked="{{tipsModuleChecked}}">Tips</paper-radio-button>
+        <paper-radio-button name="qandas" checked="{{qandasModuleChecked}}">Q &amp; A</paper-radio-button>
+        <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
+      </paper-radio-group>
+
+      <!--  This will be shown when Recipes radio button is Checked   -->
+      <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-recipe-creation recipe="{{currentModel}}"></siva-recipe-creation>
+      </template>
+
+      <!--  This will be shown when Exercises radio button is Checked   -->
+      <template is="dom-if" if="{{exercisesModuleChecked}}">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-exercise-creation data="{{currentModel}}"></siva-exercise-creation>
+      </template>
+
+      <!--  This will be shown when Tips radio button is Checked   -->
+      <template is="dom-if" if="{{tipsModuleChecked}}">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br>
+            </template>
+          </paper-card>
+        </div>
+        <siva-tip-creation data="{{currentModel}}"></siva-tip-creation>
+      </template>
+
+      <!--  This will be shown when Q & As radio button is Checked   -->
+      <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
+        <div class="viewList">
+            <table border="1">
+            <template is="dom-repeat" items="{{qandas}}">
+              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td><td><paper-button class="blue">Claim This</paper-button></td><td><paper-button class="red">Duplicate</paper-button></td><td><paper-button class="green">Finalize</paper-button></td></tr>
+            </template>
+            </table>
+        </div>
+        <siva-qa-creation data="{{currentModel}}" viewtype="create"></siva-qa-creation>
+      </template>
+
+
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'siva-review',
+    properties: {
+      username:{
+        type:String,
+        value:function(){
+          return localStorage.username;
+        }
+      },
+      currentModel:{
+        type:Object,
+        notify:true
+      },
+      currentReviewModule:{type:Boolean}
+    },
+
+    gotTotalData:function(e){
+      console.log(e.detail.response);
+    },
+
+    editThis:function(e){
+      document.querySelector("#reviewClick").hidden = false;
+      console.log("Came to Edit",e.model.item._id);
+      console.log(e.model.item);
+      //  For now, disable save button
+      e.model.item.nosave = true;
+      this.currentModel = e.model.item;
+    },
+
+    update:function(modelName,id){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+
+      xhr.onload = function(res){
+        if(res.currentTarget.readyState == 4){
+          console.log(res);
+        }
+      };
+      xhr.open("POST",'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       xhr.send(JSON.stringify(recipe));
     }
@@ -34657,8 +35493,9 @@ Polymer({
           return false;
         } else {
           localStorage.user = e.currentTarget.response;
+          localStorage.username = JSON.parse(e.currentTarget.response).username;
           localStorage.loggedIn = true;
-          that.fire('loggedIn');
+          that.fire('loggedIn',JSON.parse(e.currentTarget.response));
         }
   		};
 
@@ -34697,9 +35534,10 @@ if(localStorage.loggedIn == "true"){
 	document.querySelector("#totalContent").hidden = false;
 }	
 
-document.querySelector('login-form').addEventListener('loggedIn', function (e) {
+document.querySelector('login-form').addEventListener('loggedIn', function (data) {
 	document.querySelector("#loginPage").hidden = true;
 	document.querySelector("#totalContent").hidden = false;
+	document.querySelector("siva-scaffold").user = data.detail;
 	localStorage.loggedIn = true;
 
 });

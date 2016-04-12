@@ -86,8 +86,9 @@
           return false;
         } else {
           localStorage.user = e.currentTarget.response;
+          localStorage.username = JSON.parse(e.currentTarget.response).username;
           localStorage.loggedIn = true;
-          that.fire('loggedIn');
+          that.fire('loggedIn',JSON.parse(e.currentTarget.response));
         }
   		};
 

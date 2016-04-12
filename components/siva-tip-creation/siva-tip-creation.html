@@ -135,7 +135,13 @@ Example:
           suitableForTime:""
         };
 
-        that.fire('updateCounters',JSON.parse(xhr.response));
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Tip = user.createdCounts.Tip + 1;
+        localStorage.user = JSON.stringify(user);
+
+        
+        that.fire('updateCounters');
+
       };
       xhr.open("POST",'/crud/Tip');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

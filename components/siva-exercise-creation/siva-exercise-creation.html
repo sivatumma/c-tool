@@ -128,10 +128,16 @@ Example:
           caloriesBurn:0,
           suitableFor:""
         };
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.Exercise = user.createdCounts.Exercise + 1;
+        localStorage.user = JSON.stringify(user);
 
-        that.fire('updateCounters',JSON.parse(xhr.response));
+        
+        that.fire('updateCounters');
+
       };
-      xhr.open("POST",'/crud/Exercise');
+      var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      xhr.open(method,'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)
         xhr.send(JSON.stringify(this.exercise));

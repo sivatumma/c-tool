@@ -1,0 +1,150 @@
+
+<dom-module id="siva-review">
+  <style>
+    :host {
+      margin:10px;
+      display: block;
+      box-sizing: border-box;
+    }
+    :host table{border-collapse:collapse; border:1px solid silver; width:100%;}
+    :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
+    :host paper-dropdown{display:inline;}
+    :host paper-dropdown .paper-input { font-size:10px; }
+
+    :host .ingredient{width:500px;};
+    :host paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    :host paper-button.blue {
+      background-color: var(--paper-blue-500);
+      color: white;
+    }
+    :host paper-button.red {
+      background-color: var(--paper-red-500);
+      color: white;
+    }
+    :host .viewList{height:600px; overflow:auto; padding:20px;};
+    :host .recipesModuleChecked div.viewList{width:300px !important;};
+    :host .viewList paper-item{ border-bottom:1px solid silver; }
+    :host paper-card{margin:0px;}
+    :host td:first-child{ background:#f4f4f4; padding:30px;margin-right:20px !important; width:300px !important;}
+  </style>
+
+  <template>
+    <iron-ajax
+      id="totalData"
+      auto
+      url="/crud/QandA?username={{username}}"
+      handle-as="json"
+      last-response="{{qandas}}"
+      on-response="gotTotalData"
+      debounce-duration="300"></iron-ajax>
+
+      <paper-radio-group selected="{{currentReviewModule}}">
+        <paper-radio-button name="recipes" checked="{{recipesModuleChecked}}">Recipes</paper-radio-button>
+        <paper-radio-button name="exercises" checked="{{exercisesModuleChecked}}">Exercises</paper-radio-button>
+        <paper-radio-button name="tips" checked="{{tipsModuleChecked}}">Tips</paper-radio-button>
+        <paper-radio-button name="qandas" checked="{{qandasModuleChecked}}">Q &amp; A</paper-radio-button>
+        <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
+      </paper-radio-group>
+
+      <!--  This will be shown when Recipes radio button is Checked   -->
+      <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br/> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br/>
+            </template>
+          </paper-card>
+        </div>
+        <siva-recipe-creation recipe="{{currentModel}}"></siva-recipe-creation>
+      </template>
+
+      <!--  This will be shown when Exercises radio button is Checked   -->
+      <template is="dom-if" if="{{exercisesModuleChecked}}">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br/> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br/>
+            </template>
+          </paper-card>
+        </div>
+        <siva-exercise-creation data="{{currentModel}}"></siva-exercise-creation>
+      </template>
+
+      <!--  This will be shown when Tips radio button is Checked   -->
+      <template is="dom-if" if="{{tipsModuleChecked}}">
+        <div class="viewList">
+          <paper-card>
+            <template is="dom-repeat" items="{{qandas}}">
+              <paper-item on-click="editThis">{{item.question}}<br/> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
+              <br/>
+            </template>
+          </paper-card>
+        </div>
+        <siva-tip-creation data="{{currentModel}}"></siva-tip-creation>
+      </template>
+
+      <!--  This will be shown when Q & As radio button is Checked   -->
+      <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
+        <div class="viewList">
+            <table border="1">
+            <template is="dom-repeat" items="{{qandas}}">
+              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td><td><paper-button class="blue">Claim This</paper-button></td><td><paper-button class="red">Duplicate</paper-button></td><td><paper-button class="green">Finalize</paper-button></td></tr>
+            </template>
+            </table>
+        </div>
+        <siva-qa-creation data="{{currentModel}}" viewType="create"></siva-qa-creation>
+      </template>
+
+
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'siva-review',
+    properties: {
+      username:{
+        type:String,
+        value:function(){
+          return localStorage.username;
+        }
+      },
+      currentModel:{
+        type:Object,
+        notify:true
+      },
+      currentReviewModule:{type:Boolean}
+    },
+
+    gotTotalData:function(e){
+      console.log(e.detail.response);
+    },
+
+    editThis:function(e){
+      document.querySelector("#reviewClick").hidden = false;
+      console.log("Came to Edit",e.model.item._id);
+      console.log(e.model.item);
+      //  For now, disable save button
+      e.model.item.nosave = true;
+      this.currentModel = e.model.item;
+    },
+
+    update:function(modelName,id){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+
+      xhr.onload = function(res){
+        if(res.currentTarget.readyState == 4){
+          console.log(res);
+        }
+      };
+      xhr.open("POST",'/crud/QandA');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(recipe));
+    }
+  });
+</script>

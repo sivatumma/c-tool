@@ -40,6 +40,40 @@ var recipeSchema = new Schema({
 	createdBy: String,
 });
 
+recipeSchema.virtual('totals').get(function () {
+  return {
+		NAME: "Totals",
+		qty: 1,
+		uom: "gm",
+		"MOISTURE_GM": 273.1,
+		"PROTEIN_GM": 273.1,
+		"FAT_GM": 273.1,
+		"MINERALS_GM": 273.1,
+		"FIBER_GM": 273.1,
+		"CARBOHYDRATES_GM": 273.1,
+		"ENERGY_KCALS": 273.1,
+		"CALCIUM_MG": 273.1,
+		"PHOSPHOROUS_MG": 273.1,
+		"IRON_MG": 273.1,
+
+		"CAROTENE_Vit_A_microgram": 273.1,
+		"THIAMINE_Vit_B1_mg": 273.1,
+		"RIBOFLAVIN_VIT_B2_mg": 273.1,
+		"NIACIN_VIT_B3_mg": 273.1,
+		"TOTAL_B6_mg": 273.1,
+		"Folic_Acid_Free": 273.1,
+		"Folic_Acid_Total": 273.1,
+		"VITAMIN_C_mg": 273.1,
+		"CHOLINE_mg": 273.1,
+		"Na_mg": 273.1,
+		"K_mg": 273.1,
+		"Zn_mg": 273.1,
+		"Total_Saturates_Percent": 273.1,
+		"Total_Monounsaturate_Percent": 273.1,
+		"Total_Polyunsaturate_Percent": 273.1,
+	};
+});
+
 recipeSchema.add({
     servingUnit:String,
     diseaseFriendly:String,

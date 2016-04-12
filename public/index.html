@@ -37,9 +37,10 @@ if(localStorage.loggedIn == "true"){
 	document.querySelector("#totalContent").hidden = false;
 }	
 
-document.querySelector('login-form').addEventListener('loggedIn', function (e) {
+document.querySelector('login-form').addEventListener('loggedIn', function (data) {
 	document.querySelector("#loginPage").hidden = true;
 	document.querySelector("#totalContent").hidden = false;
+	document.querySelector("siva-scaffold").user = data.detail;
 	localStorage.loggedIn = true;
 
 });

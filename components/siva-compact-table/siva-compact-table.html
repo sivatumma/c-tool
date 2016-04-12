@@ -22,7 +22,25 @@ Example:
   <style>
   :host {
     box-sizing: border-box;
-    z-index:-1;
+    width: 600px; 
+    overflow-x:scroll;  
+    margin-left:5em; 
+    overflow-y:visible;
+    padding-bottom:1px;
+  }
+  :host paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.blue {
+    background-color: var(--paper-blue-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+    padding:3px;
+    margin:0px;
   }
   :host .table-header-rotated {
     border-collapse: collapse;
@@ -103,36 +121,38 @@ Example:
             <tr valign="top">
               <!--  MICRO Nutrients-->
               <th class="row-header">{{item.NAME}}</th>
-              <td class="rotate"><div>{{item.qty}}</div></td>
-              <td class="rotate"><div>{{item.uom}}</div></td>
-              <td class="rotate"><div>{{item.CAROTENE_Vit_A_microgram}}</div></td>
-              <td class="rotate"><div>{{item.THIAMINE_Vit_B1_mg}}</div></td>
-              <td class="rotate"><div>{{item.RIBOFLAVIN_VIT_B2_mg}}</div></td>
-              <td class="rotate"><div>{{item.NIACIN_VIT_B3_mg}}</div></td>
-              <td class="rotate"><div>{{item.Folic_Acid_Free}}</div></td>
-              <td class="rotate"><div>{{item.Folic_Acid_Total}}</div></td>
-              <td class="rotate"><div>{{item.CHOLINE_mg}}</div></td>
-              <td class="rotate"><div>{{item.Na_mg}}</div></td>
-              <td class="rotate"><div>{{item.K_mg}}</div></td>
-              <td class="rotate"><div>{{item.Zn_mg}}</div></td>
-              <td class="rotate"><div>{{item.IRON_MG}}</div></td>
-              <td class="rotate"><div>{{item.Total_Saturates_Percent}}</div></td>
-              <td class="rotate"><div>{{item.Total_Monounsaturate_Percent}}</div></td>
-              <td class="rotate"><div>{{item.Total_Polyunsaturate_Percent}}</div></td>
+              <td><div>{{item.qty}}</div></td>
+              <td><div>{{item.uom}}</div></td>
+              <td><div>{{item.CAROTENE_Vit_A_microgram}}</div></td>
+              <td><div>{{item.THIAMINE_Vit_B1_mg}}</div></td>
+              <td><div>{{item.RIBOFLAVIN_VIT_B2_mg}}</div></td>
+              <td><div>{{item.NIACIN_VIT_B3_mg}}</div></td>
+              <td><div>{{item.Folic_Acid_Free}}</div></td>
+              <td><div>{{item.Folic_Acid_Total}}</div></td>
+              <td><div>{{item.CHOLINE_mg}}</div></td>
+              <td><div>{{item.Na_mg}}</div></td>
+              <td><div>{{item.K_mg}}</div></td>
+              <td><div>{{item.Zn_mg}}</div></td>
+              <td><div>{{item.IRON_MG}}</div></td>
+              <td><div>{{item.Total_Saturates_Percent}}</div></td>
+              <td><div>{{item.Total_Monounsaturate_Percent}}</div></td>
+              <td><div>{{item.Total_Polyunsaturate_Percent}}</div></td>
               
               <!--  MACRO Nutrients-->
-              <td class="rotate"><div>{{item.MOISTURE_GM}}</div></td>
-              <td class="rotate"><div>{{item.PROTEIN_GM}}</div></td>
-              <td class="rotate"><div>{{item.FAT_GM}}</div></td>
-              <td class="rotate"><div>{{item.MINERALS_GM}}</div></td>
-              <td class="rotate"><div>{{item.FIBER_GM}}</div></td>
-              <td class="rotate"><div>{{item.CARBOHYDRATES_GM}}</div></td>
-              <td class="rotate"><div>{{item.ENERGY_KCALS}}</div></td>
-              <td class="rotate"><div>{{item.CALCIUM_MG}}</div></td>
-              <td class="rotate"><div>{{item.PHOSPHOROUS_MG}}</div></td>
+              <td><div>{{item.MOISTURE_GM}}</div></td>
+              <td><div>{{item.PROTEIN_GM}}</div></td>
+              <td><div>{{item.FAT_GM}}</div></td>
+              <td><div>{{item.MINERALS_GM}}</div></td>
+              <td><div>{{item.FIBER_GM}}</div></td>
+              <td><div>{{item.CARBOHYDRATES_GM}}</div></td>
+              <td><div>{{item.ENERGY_KCALS}}</div></td>
+              <td><div>{{item.CALCIUM_MG}}</div></td>
+              <td><div>{{item.PHOSPHOROUS_MG}}</div></td>
+              <td><div><paper-button class="red" hidden="{{!index}}" on-click="deleteThisRow">X</paper-button></div></td>
 
             </tr>
           </template>
+
       </tbody>
     </table>
   </template>
@@ -150,6 +170,10 @@ Example:
     
     listeners: {
       'clear': 'clearSelfData'
+    },
+    deleteThisRow:function(e){
+      console.log(e.model.index,e.model.item);
+      this.splice('data',e.model.index,1);
     },
     ready: function() {
       // `ready` is called after all elements have been configured, but

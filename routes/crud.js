@@ -1,6 +1,7 @@
 var express = require('express'),
 	fs = require('fs'),
 	mongoose = require('mongoose'),
+	ObjectId = mongoose.Schema.Types.ObjectId,
 	mc = require('mc'),
 	router = express.Router(),
 	db = require('../core/dbModule'),
@@ -10,8 +11,13 @@ var express = require('express'),
 	Tip = require('../core/models/tip');
 
 router.get('/:modelName', function(req, res, next) {
+	console.log(req.session, req.sessionID);
+	console.log(req.query);
+	var filter = (req.query.username && req.query.username!="") ? {createdBy:req.query.username} : {};
 	var model = mongoose.model(req.params.modelName);
-	model.find({},function(err,data){
+	model.find(filter).sort({
+        createdBy: 1 //Sort by Date Added DESC
+    }).exec(function(err,data){
 		if(err){res.send({err:err});}
 		res.status(200).send(data);
 	});
@@ -24,7 +30,21 @@ router.get('/dummy/:modelName', function(req, res, next) {
 	});
 });
 
+router.put('/:modelName', function(req, res, next) {
+	console.log(req.session);
+	var model = mongoose.model(req.params.modelName);
+	var _id = req.body._id;
+	console.log(req.query);
+	delete req.body._id;
+	console.log(req.body.question, req.body.answer);
+	model.update({_id:_id},req.body,{multi:true},function(err,data) {
+		if(err){res.status(500).send(err.message);}
+		else res.status(200).send(data);
+	});
+});
+
 router.post('/:modelName', function(req, res, next) {
+	console.log(req.session);
 	var model = mongoose.model(req.params.modelName);
 	model(req.body).save().then(function(data) {
 		console.log(data.createdBy);

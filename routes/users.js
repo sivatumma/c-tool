@@ -3,6 +3,7 @@ var _ = require('lodash');
 var uuid = require('node-uuid');
 var express = require('express');
 var router = express.Router();
+var expressSession = require('express-session');
 
 var User = require('../core/models/user')(mongoose);
 
@@ -68,6 +69,7 @@ router.post('/login', function(req, res, next) {
             delete user.active;
             res.set(token_object);
             console.log(user);
+            expressSession.user = user;
             res.send(user)
         })
 

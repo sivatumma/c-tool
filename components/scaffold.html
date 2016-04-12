@@ -35,10 +35,10 @@
             <span class="flex">Optimus Prime - Healthcare Personalization</span>
             <div class="layout horizontal">
               <table><tr>
-                <td><span class="flex right middle">Recipes:</span></td><td><count>{{recipeCount}}</count></td>
-                <td><span class="flex right">Exercises: </span></td><td><count>{{exerciseCount}}</count></td>
-                <td><span class="flex right">Tips: </span></td><td><count>{{tipCount}}</count></td>
-                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{qaCount}}</count></td>
+                <td><span class="flex right middle">Recipes:</span></td><td><count>{{user.createdCounts.Recipe}}</count></td>
+                <td><span class="flex right">Exercises: </span></td><td><count>{{user.createdCounts.Exercise}}</count></td>
+                <td><span class="flex right">Tips: </span></td><td><count>{{user.createdCounts.Tip}}</count></td>
+                <td><span class="flex right">Q &amp; A: </span></td><td><count>{{user.createdCounts.QandA}}</count></td>
               </tr></table>
             </div>
             <paper-icon-button id="morebutton" on-click="openSignoutDialog" icon="more-vert"></paper-icon-button>
@@ -56,7 +56,8 @@
               <paper-tab>Exercises</paper-tab>
               <paper-tab>Tips</paper-tab>
               <paper-tab>Q &amp; A</paper-tab>
-              <paper-tab>Review</paper-tab>
+              <paper-tab>Edit</paper-tab>
+              <paper-tab disabled>Review</paper-tab>
             </paper-tabs>
           </paper-toolbar>
         </div>
@@ -73,10 +74,13 @@
         <siva-tip-creation id="sivaTipCreation" ></siva-tip-creation>
       </div>
       <div id="qAndAPage">
-        <siva-qa-creation id="sivaQACreation" ></siva-qa-creation>
+        <siva-qa-creation id="sivaQACreation" viewtype="create"></siva-qa-creation>
       </div>
-      <div id="nutritivesPage">
+      <div id="editPage">
         <siva-edit></siva-edit>
+      </div>
+      <div id="reviewPage">
+        <siva-review></siva-review>
       </div>
 
     </iron-pages>
@@ -145,10 +149,7 @@
     },
 
     updateCounters:function(e){
-      this.recipeCount = e.detail.Recipe;
-      this.exerciseCount = e.detail.Exercise;
-      this.tipCount = e.detail.Tip;
-      this.qaCount = e.detail.QandA;
+      this.user = JSON.parse(localStorage.user);
     },
 
     openSignoutDialog:function(e){
@@ -156,6 +157,7 @@
     },
     signout:function(e){
       delete localStorage.loggedIn;
+      delete localStorage.username;
       location.reload(); 
     },
     // Element Lifecycle
@@ -177,6 +179,8 @@
         servingUnit:"",
         ingredients:[]
       };
+
+      this.user = JSON.parse(localStorage.user);
     },
 
     detached: function() {

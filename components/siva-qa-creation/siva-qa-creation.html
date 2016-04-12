@@ -37,14 +37,19 @@ Example:
   </style>
 
   <template>
-    <form is="iron-form" id="form" method="post" action="/form/handler">
+
+    <template is="dom-if" if="{{isCreateView}}">
+      <iron-localstorage name="username"></iron-localstorage>
+ 
+      <form is="iron-form" id="form" method="post" action="/form/handler">
       <h1>Create a new Question &amp; Answer</h1>
       <h2>Question</h2>
-        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{qAndA.question}}"></iron-autogrow-textarea>
-        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords"></paper-input>
+        <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{data.question}}"></iron-autogrow-textarea>
+        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords">
+        </paper-input>
 
       Category: 
-      <paper-dropdown-menu label="Catergory" value="{{qAndA.category}}">
+      <paper-dropdown-menu label="Catergory" value="{{data.category}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Sub Category</paper-item>
@@ -52,7 +57,7 @@ Example:
         </paper-listbox>
       </paper-dropdown-menu>
       Sub Category: 
-      <paper-dropdown-menu label="Sub Catergory" value="{{qAndA.subCategory}}">
+      <paper-dropdown-menu label="Sub Catergory" value="{{data.subCategory}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
           <paper-item>Sub Category</paper-item>
@@ -62,37 +67,56 @@ Example:
 
 
       <h2>Answer</h2>
-        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{qAndA.answer}}"></iron-autogrow-textarea>    
+        <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{data.answer}}"></iron-autogrow-textarea>    
 
       <br/>
       <br/>
-      <template is="dom-if" if="{{qAndA.nosave}}">
-        <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div>
+      <template is="dom-if" if="{{data.nosave}}">
+        <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
       </template>
-      <paper-button raised class="green" on-click="addQAndA" disabled="{{qAndA.nosave}}">Save Q&amp;A</paper-button>
+      <paper-button raised class="green" on-click="addQAndA" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
       <paper-toast id="toast_q_and_a" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
-    </form>
+    </form> 
   </template>
-</dom-module>
+
+  <template is="dom-if" if="{{!isCreateView}}">
+    <h4>Question</h4>
+    <p>{{data.question}}</p>
+    <h4>Answer</h4>
+    <p>{{data.answer}}</p>
+<!--     
+    <iron-autogrow-textarea id="comment" placeholder="Your comments here" style="height: 150px;" value="{{data.comment}}"></iron-autogrow-textarea><br/>
+    <paper-button class="blue" on-click="postComments">Post your comment</paper-button>
+ -->  </template>
+
+  </template>
+
+  </dom-module>
 
 <script>
 
   Polymer({
-
     is: 'siva-qa-creation',
     properties:{
-      qAndA:{
+      data:{
         type:Object,
         notify:true,
-        value: {
-          question: "",
-          category: "",
-          subCategory: "",
-          keywords: "",
-          answer: ""
+        reflectToAttribute:true,
+        value:{
+          createdBy:"",
+          question:"",
+          answer:"",
+          keywords:"",
+          category:"",
+          subCategory:"",
+          nosave:false
         }
+      },
+      isCreateView:{
+        type:Boolean,
+        computed:'_isCreateView(data.createdBy)'
       }
     },
     
@@ -104,9 +128,33 @@ Example:
 
     detached: function() {
     },
+    isCurrentUser:function(who){
+      console.log(who);
+      return localStorage.username != who;
+    },
+    _isCreateView:function(who){
+      console.log(who, localStorage.username);
+      return who == '' || who == localStorage.username;
+    },
+    // postComments:function(){
+    //   this.data.createdBy = JSON.parse(localStorage.user).username;
+    //   var xhr = new XMLHttpRequest();
+    //   var that = this;
+    //   xhr.onload = function(res){
+    //     var user = JSON.parse(localStorage.user)
+    //     user.createdCounts.QandA = user.createdCounts.QandA + 1;
+    //     localStorage.user = JSON.stringify(user);
 
+    //     that.fire('updateCounters');
+    //   };
+    //   xhr.open("PUT",'/crud/QandA?comment=' + this.data.comment);
+    //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    //   var question = Polymer.dom(document.querySelector("#question"));
+    //   if(!(question.value == ''))
+    //     xhr.send(JSON.stringify(this.data));
+    // },
     addQAndA: function(e){
-      this.qAndA.createdBy = JSON.parse(localStorage.user).username;
+      this.data.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -115,7 +163,7 @@ Example:
         that.$.toast_q_and_a.open();
         that.$.form.reset();
 
-        that.qAndA = {
+        that.data = {
           question: "",
           category: "",
           subCategory: "",
@@ -123,13 +171,19 @@ Example:
           answer: ""
         };
 
-        that.fire('updateCounters',JSON.parse(xhr.response));
+        var user = JSON.parse(localStorage.user)
+        user.createdCounts.QandA = user.createdCounts.QandA + 1;
+        localStorage.user = JSON.stringify(user);
 
+        
+        that.fire('updateCounters');
       };
-      xhr.open("POST",'/crud/QandA');
+      var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      xhr.open(method,'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      if(!(this.$.question.value == ''))
-        xhr.send(JSON.stringify(this.qAndA));
+      var question = Polymer.dom(document.querySelector("#question"));
+      if(!(question.value == ''))
+        xhr.send(JSON.stringify(this.data));
     }
 
   });
