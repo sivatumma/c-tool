@@ -42,23 +42,23 @@ Example:
       <paper-input id="tip" label="Describe your tip of the day" required auto-validate error-message="Please write some tip" value="{{tip.tip}}" ></paper-input>
 
       <paper-dropdown-menu label="For" value="{{tip.suitableForDisease}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Hypertension</paper-item>
-          <paper-item>Both</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{tip.suitableForDisease}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Hypertension">Hypertension</paper-item>
+          <paper-item value="Both">Both</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
       <paper-dropdown-menu label="Tip Category" value="{{tip.suitableForTime}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>EXERCISE (50)</paper-item>
-          <paper-item>FOOD (100)</paper-item>
-          <paper-item>STRESS (50)</paper-item>
-          <paper-item>DO THIS NOT THAT (50)</paper-item>
-          <paper-item>TRY A RECIPE (50)</paper-item>
-          <paper-item>GO NATURAL (50)</paper-item>
-          <paper-item>RATE YOUR DAY(10)</paper-item>
-          <paper-item>QUIZ(50)</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{tip.suitableForTime}}" attr-for-selected="value">
+          <paper-item value="EXERCISE (50)">EXERCISE (50)</paper-item>
+          <paper-item value="FOOD (100)">FOOD (100)</paper-item>
+          <paper-item value="STRESS (50)<">STRESS (50)</paper-item>
+          <paper-item value="DO THIS NOT THAT (50)">DO THIS NOT THAT (50)</paper-item>
+          <paper-item value="TRY A RECIPE (50)">TRY A RECIPE (50)</paper-item>
+          <paper-item value="GO NATURAL (50)">GO NATURAL (50)</paper-item>
+          <paper-item value="RATE YOUR DAY(10)">RATE YOUR DAY(10)</paper-item>
+          <paper-item value="QUIZ(50)">QUIZ(50)</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 

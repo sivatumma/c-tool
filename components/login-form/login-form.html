@@ -87,6 +87,7 @@
         } else {
           localStorage.user = e.currentTarget.response;
           localStorage.username = JSON.parse(e.currentTarget.response).username;
+          localStorage.userShortName = localStorage.username.split('.')[0];
           localStorage.loggedIn = true;
           that.fire('loggedIn',JSON.parse(e.currentTarget.response));
         }

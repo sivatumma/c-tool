@@ -7550,7 +7550,7 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
       <div class="paper-header">
           <paper-toolbar class="medium-tall">
             <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-            <span class="flex">Optimus Prime - Healthcare Personalization</span>
+            <span class="flex">Optimus Prime - Healthcare Personalization<br><strong> Hi {{userShortName}}, Welcome.</strong></span>
             <div class="layout horizontal">
               <table><tbody><tr>
                 <td><span class="flex right middle">Recipes:</span></td><td><count>{{user.createdCounts.Recipe}}</count></td>
@@ -7612,6 +7612,12 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
     is: 'siva-scaffold',
 
     properties: {
+      userShortName:{
+        type:String,
+        value:function(){
+          return localStorage.userShortName;
+        }
+      },
       selectedPage:{
         type:Number,
         value:0
@@ -7658,14 +7664,15 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
         suitableForTime:""
       }
     },
-
     listeners: {
       'sivaRecipeCreation.updateCounters': 'updateCounters',
       'sivaExerciseCreation.updateCounters': 'updateCounters',
       'sivaTipCreation.updateCounters': 'updateCounters',
       'sivaQACreation.updateCounters': 'updateCounters'
     },
-
+    getUserShortName:function(){
+      this.userShortName = localStorage.userShortName;
+    },
     updateCounters:function(e){
       this.user = JSON.parse(localStorage.user);
     },
@@ -7676,6 +7683,7 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
     signout:function(e){
       delete localStorage.loggedIn;
       delete localStorage.username;
+      delete localStorage.userShortName;
       location.reload(); 
     },
     // Element Lifecycle
@@ -7699,6 +7707,8 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
       };
 
       this.user = JSON.parse(localStorage.user);
+      this.userShortName = localStorage.userShortName;
+
     },
 
     detached: function() {
@@ -34600,23 +34610,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-input id="tip" label="Describe your tip of the day" required="" auto-validate="" error-message="Please write some tip" value="{{tip.tip}}"></paper-input>
 
       <paper-dropdown-menu label="For" value="{{tip.suitableForDisease}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Hypertension</paper-item>
-          <paper-item>Both</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{tip.suitableForDisease}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Hypertension">Hypertension</paper-item>
+          <paper-item value="Both">Both</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
       <paper-dropdown-menu label="Tip Category" value="{{tip.suitableForTime}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>EXERCISE (50)</paper-item>
-          <paper-item>FOOD (100)</paper-item>
-          <paper-item>STRESS (50)</paper-item>
-          <paper-item>DO THIS NOT THAT (50)</paper-item>
-          <paper-item>TRY A RECIPE (50)</paper-item>
-          <paper-item>GO NATURAL (50)</paper-item>
-          <paper-item>RATE YOUR DAY(10)</paper-item>
-          <paper-item>QUIZ(50)</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{tip.suitableForTime}}" attr-for-selected="value">
+          <paper-item value="EXERCISE (50)">EXERCISE (50)</paper-item>
+          <paper-item value="FOOD (100)">FOOD (100)</paper-item>
+          <paper-item value="STRESS (50)<">STRESS (50)</paper-item>
+          <paper-item value="DO THIS NOT THAT (50)">DO THIS NOT THAT (50)</paper-item>
+          <paper-item value="TRY A RECIPE (50)">TRY A RECIPE (50)</paper-item>
+          <paper-item value="GO NATURAL (50)">GO NATURAL (50)</paper-item>
+          <paper-item value="RATE YOUR DAY(10)">RATE YOUR DAY(10)</paper-item>
+          <paper-item value="QUIZ(50)">QUIZ(50)</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
@@ -35502,6 +35512,7 @@ Polymer({
         } else {
           localStorage.user = e.currentTarget.response;
           localStorage.username = JSON.parse(e.currentTarget.response).username;
+          localStorage.userShortName = localStorage.username.split('.')[0];
           localStorage.loggedIn = true;
           that.fire('loggedIn',JSON.parse(e.currentTarget.response));
         }

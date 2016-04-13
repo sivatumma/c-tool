@@ -32,7 +32,7 @@
       <div class="paper-header">
           <paper-toolbar class="medium-tall">
             <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-            <span class="flex">Optimus Prime - Healthcare Personalization</span>
+            <span class="flex">Optimus Prime - Healthcare Personalization<br/><strong> Hi {{userShortName}}, Welcome.</strong></span>
             <div class="layout horizontal">
               <table><tr>
                 <td><span class="flex right middle">Recipes:</span></td><td><count>{{user.createdCounts.Recipe}}</count></td>
@@ -94,6 +94,12 @@
     is: 'siva-scaffold',
 
     properties: {
+      userShortName:{
+        type:String,
+        value:function(){
+          return localStorage.userShortName;
+        }
+      },
       selectedPage:{
         type:Number,
         value:0
@@ -140,14 +146,15 @@
         suitableForTime:""
       }
     },
-
     listeners: {
       'sivaRecipeCreation.updateCounters': 'updateCounters',
       'sivaExerciseCreation.updateCounters': 'updateCounters',
       'sivaTipCreation.updateCounters': 'updateCounters',
       'sivaQACreation.updateCounters': 'updateCounters'
     },
-
+    getUserShortName:function(){
+      this.userShortName = localStorage.userShortName;
+    },
     updateCounters:function(e){
       this.user = JSON.parse(localStorage.user);
     },
@@ -158,6 +165,7 @@
     signout:function(e){
       delete localStorage.loggedIn;
       delete localStorage.username;
+      delete localStorage.userShortName;
       location.reload(); 
     },
     // Element Lifecycle
@@ -181,6 +189,8 @@
       };
 
       this.user = JSON.parse(localStorage.user);
+      this.userShortName = localStorage.userShortName;
+
     },
 
     detached: function() {
