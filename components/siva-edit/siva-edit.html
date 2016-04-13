@@ -6,7 +6,7 @@
       display: block;
       box-sizing: border-box;
     }
-    :host table.normalTable{max-height:600px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host div.normalTable{max-height:400px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
     :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
 
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
@@ -46,6 +46,7 @@
           last-response="{{recipes}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
+          <div class='normalTable'>
         <table class="normalTable"><tr><th>Name of Recipe</th><th>Serving Unit</th><th>Total KCals</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{recipes}}">
           <tr valign="top">
@@ -56,6 +57,7 @@
           </tr>
           </template>
         </table>
+        </div>
         <siva-recipe-creation recipe="{{currentModel}}"></siva-recipe-creation>
       </template>
 
@@ -69,17 +71,18 @@
           last-response="{{exercises}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
-
-        <table class="normalTable"><tr><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
-          <template is="dom-repeat" items="{{exercises}}">
-          <tr valign="top">
-            <td on-click="editThis">{{item.name}}</td>
-            <td on-click="editThis">{{item.time}}</td>
-            <td on-click="editThis">{{item.caloriesBurnt}}</td>
-            <td><em><strong>{{item.createdBy}}</strong></em></td>
-          </tr>
-          </template>
-        </table>
+        <div class='normalTable'>
+          <table class="normalTable"><tr><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
+            <template is="dom-repeat" items="{{exercises}}">
+            <tr valign="top">
+              <td on-click="editThis">{{item.name}}</td>
+              <td on-click="editThis">{{item.time}}</td>
+              <td on-click="editThis">{{item.caloriesBurnt}}</td>
+              <td><em><strong>{{item.createdBy}}</strong></em></td>
+            </tr>
+            </template>
+          </table>
+        </div>
         <siva-exercise-creation exercise="{{currentModel}}"></siva-exercise-creation>
       </template>
 
@@ -93,7 +96,7 @@
           last-response="{{tips}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
-
+        <div class='normalTable'>
         <table class="normalTable"><tr><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{tips}}">
           <tr valign="top">
@@ -104,6 +107,7 @@
           </tr>
           </template>
         </table>
+        </div>
         <siva-tip-creation tip="{{currentModel}}"></siva-tip-creation>
       </template>
 
@@ -117,7 +121,7 @@
           last-response="{{qandas}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
-
+        <div class='normalTable'>
         <table class="normalTable"><tr><th>Question</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{qandas}}">
           <tr valign="top">
@@ -126,6 +130,7 @@
           </tr>
           </template>
         </table>
+        </div>
 
         <siva-qa-creation data="{{currentModel}}"></siva-qa-creation>
       </template>
@@ -155,7 +160,7 @@
     },
 
     editThis:function(e){
-      console.log("Came to Edit",e.model.item._id);
+      console.log("You clicked an item to Edit : ",e.model.item._id);
       console.log(e.model.item);
       //  For now, disable save button
       e.model.item.nosave = true;

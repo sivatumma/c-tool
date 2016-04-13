@@ -46,7 +46,7 @@ module.exports = function(env) {
         },
 
         modelsFolder: 'core/models',
-        database: 'mongodb://' + process.argv[2] || 'localhost' + ':' + '27017/' + process.argv[3] || 'nutritives',
+        database: 'mongodb://' + (process.argv[2] || 'localhost') + ':' + '27017/' + (process.argv[3] || 'nutritives'),
         memcache_host: 'http://172.16.2.113:8081/AutoSuggestion/rest',
         app_name: 'Pricing Engine',
         app_root: root_path,
@@ -77,13 +77,13 @@ module.exports = function(env) {
         ]
     };
     var dev = {
-        database: 'mongodb://' + process.argv[2] || 'localhost' + ':' + '27017/' + process.argv[3] || 'nutritives',
+        database: 'mongodb://' + (process.argv[2] || 'localhost') + ':' + '27017/' + (process.argv[3] || 'nutritives'),
         old_pricing_engine_app_root: path.join('C:', 'work', 'PricingEngine', 'baseUI'),
         pricing_engine_app_root: path.join('C:', 'work', 'chpe', 'src-ui', 'html'),
         services_json_path: path.join('C:', 'work', 'chpe', 'src-ui', 'services.json')
     };
     var prod = {
-        database: 'mongodb://' + process.argv[2] || 'localhost' + ':' + '27017/' + process.argv[3] || 'nutritives',
+        database: 'mongodb://' + (process.argv[2] || 'localhost') + ':' + '27017/' + (process.argv[3] || 'nutritives'),
         temp: path.join('/', 'tmp'),
         certificates_dir: path.join('/', 'etc', 'ssl', 'self-signed'),
         pricing_engine_app_root: path.join('/', 'root', 'siva', 'chpe', 'src-ui'),

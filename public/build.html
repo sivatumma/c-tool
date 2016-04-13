@@ -34391,7 +34391,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         that.fire('updateCounters');
 
       };
-      xhr.open("POST",'/crud/Exercise');
+      var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      xhr.open(method,'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)
         xhr.send(JSON.stringify(this.exercise));
@@ -34438,23 +34439,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h1>Create a new Question &amp; Answer</h1>
       <h2>Question</h2>
         <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{data.question}}"></iron-autogrow-textarea>
-        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords">
+        <paper-input id="keywords" value="{{data.keywords}}" placeholder="Space or comma limited Keywords">
         </paper-input>
 
       Category: 
       <paper-dropdown-menu label="Catergory" value="{{data.category}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Sub Category</paper-item>
-          <paper-item>Pre-Natal</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{data.category}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Sub Category">Sub Category</paper-item>
+          <paper-item value="Pre-Natal">Pre-Natal</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
       Sub Category: 
       <paper-dropdown-menu label="Sub Catergory" value="{{data.subCategory}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Sub Category</paper-item>
-          <paper-item>Pre-Natal</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{data.subCategory}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Sub Category">Sub Category</paper-item>
+          <paper-item value="Pre-Natal">Pre-Natal</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
@@ -34467,7 +34468,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <template is="dom-if" if="{{data.nosave}}">
         <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
       </template>
-      <paper-button raised="" class="green" on-click="addQAndA" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
+      <paper-button raised="" class="green" on-click="adddata" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
       <paper-toast id="toast_q_and_a" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
@@ -34496,7 +34497,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       data:{
         type:Object,
         notify:true,
-        reflectToAttribute:true,
         value:{
           createdBy:"",
           question:"",
@@ -34529,32 +34529,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       console.log(who, localStorage.username);
       return who == '' || who == localStorage.username;
     },
-    // postComments:function(){
-    //   this.data.createdBy = JSON.parse(localStorage.user).username;
-    //   var xhr = new XMLHttpRequest();
-    //   var that = this;
-    //   xhr.onload = function(res){
-    //     var user = JSON.parse(localStorage.user)
-    //     user.createdCounts.QandA = user.createdCounts.QandA + 1;
-    //     localStorage.user = JSON.stringify(user);
-
-    //     that.fire('updateCounters');
-    //   };
-    //   xhr.open("PUT",'/crud/QandA?comment=' + this.data.comment);
-    //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    //   var question = Polymer.dom(document.querySelector("#question"));
-    //   if(!(question.value == ''))
-    //     xhr.send(JSON.stringify(this.data));
-    // },
-    addQAndA: function(e){
+    adddata: function(e){
       this.data.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
         console.log(xhr.statusCode,res.statusCode,res, xhr.response);
-        that.$.toast_q_and_a.text = xhr.response;
-        that.$.toast_q_and_a.open();
-        that.$.form.reset();
+
+        var toast = document.querySelector("paper-toast");
+        toast.text = xhr.response;
+        toast.open();
+        // that.$.form.reset();
 
         that.data = {
           question: "",
@@ -34571,7 +34556,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         
         that.fire('updateCounters');
       };
-      var method = that.data.createdBy == localStorage.username ? "PUT" : "POST";
+      var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
       xhr.open(method,'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       var question = Polymer.dom(document.querySelector("#question"));
@@ -34778,31 +34763,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="horizontal">
         <paper-dropdown-menu id="foodType" label="Food Type ?" value="{{recipe.foodType}}">
-          <paper-menu class="dropdown-content" selected="[[recipe.foodType]]" attr-for-selected="value">
+          <paper-listbox class="dropdown-content" selected="{{recipe.foodType}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{facade.foodTypes}}">
               <paper-item value="{{item}}">{{item}}</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
 
         <paper-dropdown-menu id="cuisine" label="Cuisine ?" value="{{recipe.cuisine}}">
-          <paper-listbox class="dropdown-content">
-            <template is="dom-repeat" items="{{facade.cusines}}">
-              <paper-item>{{item}}</paper-item>
+          <paper-listbox class="dropdown-content" selected="{{recipe.cuisine}}" attr-for-selected="value">
+            <template is="dom-repeat" items="[[facade.cusines]]">
+              <paper-item value="{{item}}">[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu id="servingUnit" label="Serving Unit ?" value="{{recipe.servingUnit}}">
-          <paper-listbox class="dropdown-content">
+          <paper-listbox class="dropdown-content" selected="{{recipe.servingUnit}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{facade.servingUnits}}">
-              <paper-item>{{item}}</paper-item>
+              <paper-item value="{{item}}">{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu id="giIndex" label="GI-Index" value="{{recipe.giIndex}}">
-          <paper-listbox class="dropdown-content">
+          <paper-listbox class="dropdown-content" selected="{{recipe.giIndex}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{facade.giIndexes}}">
-              <paper-item>{{item}}</paper-item>
+              <paper-item value="{{item}}">{{item}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -34850,6 +34835,7 @@ Polymer({
       type:Object,
       notify:true
     },
+    foodType:String,
     recipe:{
       type:Object,
       notify:true,
@@ -34908,7 +34894,13 @@ Polymer({
     },
 
   },
-
+  observers: [
+    'onFoodTypeChanged(recipe.foodType)'
+  ],
+  onFoodTypeChanged: function(foodType) {
+    console.log('new foodType: ' + foodType);
+    this.foodType = this.recipe.foodType;
+  },
   openSignoutDialog: function(e) {
     this.$.signOutDialog.open();
   },
@@ -34928,6 +34920,8 @@ Polymer({
   },
 
   attached: function() {
+    this.foodType = this.recipe.foodType;
+    console.log(this.recipe.foodType);
   },
   storeRecipeNames:function(e){
     console.log(e.detail);
@@ -35022,7 +35016,8 @@ Polymer({
 
       }
     };
-    xhr.open("POST",'/crud/Recipe');
+    var method = that.recipe.createdBy == localStorage.username ? "PUT" : "POST";
+    xhr.open(method,'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     if(!this.$.recipeName.invalid  /* && !this.$.servingsPerOnePerson.invalid */){
       xhr.send(JSON.stringify(this.recipe));
@@ -35037,7 +35032,7 @@ Polymer({
       display: block;
       box-sizing: border-box;
     }
-    :host table.normalTable{height:600px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host div.normalTable{max-height:400px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
     :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
 
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
@@ -35070,13 +35065,17 @@ Polymer({
       <!--  This will be shown when Recipes radio button is Checked   -->
       <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
         <iron-ajax id="totalData" auto="" url="/crud/Recipe?username={{username}}" handle-as="json" last-response="{{recipes}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
-        <div class="viewList">
-          <paper-card>
-            <template is="dom-repeat" items="{{recipes}}">
-              <paper-item on-click="editThis">{{item.name}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
-              <br>
-            </template>
-          </paper-card>
+          <div class="normalTable">
+        <table class="normalTable"><tbody><tr><th>Name of Recipe</th><th>Serving Unit</th><th>Total KCals</th><th>Doctor</th></tr>
+          <template is="dom-repeat" items="{{recipes}}">
+          <tr valign="top">
+            <td on-click="editThis">{{item.name}}</td>
+            <td on-click="editThis">{{item.servingUnit}}</td>
+            <td on-click="editThis">{{item.totalKCals}}</td>
+            <td><em><strong>{{item.createdBy}}</strong></em></td>
+          </tr>
+          </template>
+        </tbody></table>
         </div>
         <siva-recipe-creation recipe="{{currentModel}}"></siva-recipe-creation>
       </template>
@@ -35084,13 +35083,17 @@ Polymer({
       <!--  This will be shown when Exercises radio button is Checked   -->
       <template is="dom-if" if="{{exercisesModuleChecked}}">
         <iron-ajax id="totalData" auto="" url="/crud/Exercise?username={{username}}" handle-as="json" last-response="{{exercises}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
-        <div class="viewList">
-          <paper-card>
+        <div class="normalTable">
+          <table class="normalTable"><tbody><tr><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
             <template is="dom-repeat" items="{{exercises}}">
-              <paper-item on-click="editThis">{{item.name}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
-              <br>
+            <tr valign="top">
+              <td on-click="editThis">{{item.name}}</td>
+              <td on-click="editThis">{{item.time}}</td>
+              <td on-click="editThis">{{item.caloriesBurnt}}</td>
+              <td><em><strong>{{item.createdBy}}</strong></em></td>
+            </tr>
             </template>
-          </paper-card>
+          </tbody></table>
         </div>
         <siva-exercise-creation exercise="{{currentModel}}"></siva-exercise-creation>
       </template>
@@ -35098,13 +35101,17 @@ Polymer({
       <!--  This will be shown when Tips radio button is Checked   -->
       <template is="dom-if" if="{{tipsModuleChecked}}">
         <iron-ajax id="totalData" auto="" url="/crud/Tip?username={{username}}" handle-as="json" last-response="{{tips}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
-        <div class="viewList">
-          <paper-card>
-            <template is="dom-repeat" items="{{tips}}">
-              <paper-item on-click="editThis">{{item.tip}}<br> - <em><strong>Doctor : {{item.createdBy}}</strong></em></paper-item> 
-              <br>
-            </template>
-          </paper-card>
+        <div class="normalTable">
+        <table class="normalTable"><tbody><tr><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
+          <template is="dom-repeat" items="{{tips}}">
+          <tr valign="top">
+            <td on-click="editThis">{{item.tip}}</td>
+            <td on-click="editThis">{{item.suitableForDisease}}</td>
+            <td on-click="editThis">{{item.createdBy}}</td>
+            <td><em><strong>{{item.createdBy}}</strong></em></td>
+          </tr>
+          </template>
+        </tbody></table>
         </div>
         <siva-tip-creation tip="{{currentModel}}"></siva-tip-creation>
       </template>
@@ -35112,7 +35119,7 @@ Polymer({
       <!--  This will be shown when Q & As radio button is Checked   -->
       <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
         <iron-ajax id="totalData" auto="" url="/crud/QandA?username={{username}}" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
-
+        <div class="normalTable">
         <table class="normalTable"><tbody><tr><th>Question</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{qandas}}">
           <tr valign="top">
@@ -35121,6 +35128,7 @@ Polymer({
           </tr>
           </template>
         </tbody></table>
+        </div>
 
         <siva-qa-creation data="{{currentModel}}"></siva-qa-creation>
       </template>
@@ -35150,7 +35158,7 @@ Polymer({
     },
 
     editThis:function(e){
-      console.log("Came to Edit",e.model.item._id);
+      console.log("You clicked an item to Edit : ",e.model.item._id);
       console.log(e.model.item);
       //  For now, disable save button
       e.model.item.nosave = true;

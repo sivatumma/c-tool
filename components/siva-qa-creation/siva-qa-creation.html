@@ -45,23 +45,23 @@ Example:
       <h1>Create a new Question &amp; Answer</h1>
       <h2>Question</h2>
         <iron-autogrow-textarea id="question" rows="4" placeholder="Type the Question Here" value="{{data.question}}"></iron-autogrow-textarea>
-        <paper-input id="keywords" value="{{qAndA.keywords}}" placeholder="Space or comma limited Keywords">
+        <paper-input id="keywords" value="{{data.keywords}}" placeholder="Space or comma limited Keywords">
         </paper-input>
 
       Category: 
       <paper-dropdown-menu label="Catergory" value="{{data.category}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Sub Category</paper-item>
-          <paper-item>Pre-Natal</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{data.category}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Sub Category">Sub Category</paper-item>
+          <paper-item value="Pre-Natal">Pre-Natal</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
       Sub Category: 
       <paper-dropdown-menu label="Sub Catergory" value="{{data.subCategory}}">
-        <paper-listbox class="dropdown-content">
-          <paper-item>Diabetes</paper-item>
-          <paper-item>Sub Category</paper-item>
-          <paper-item>Pre-Natal</paper-item>
+        <paper-listbox class="dropdown-content" selected="{{data.subCategory}}" attr-for-selected="value">
+          <paper-item value="Diabetes">Diabetes</paper-item>
+          <paper-item value="Sub Category">Sub Category</paper-item>
+          <paper-item value="Pre-Natal">Pre-Natal</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
 
@@ -74,7 +74,7 @@ Example:
       <template is="dom-if" if="{{data.nosave}}">
         <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
       </template>
-      <paper-button raised class="green" on-click="addQAndA" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
+      <paper-button raised class="green" on-click="adddata" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
       <paper-toast id="toast_q_and_a" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
@@ -103,7 +103,6 @@ Example:
       data:{
         type:Object,
         notify:true,
-        reflectToAttribute:true,
         value:{
           createdBy:"",
           question:"",
@@ -136,32 +135,17 @@ Example:
       console.log(who, localStorage.username);
       return who == '' || who == localStorage.username;
     },
-    // postComments:function(){
-    //   this.data.createdBy = JSON.parse(localStorage.user).username;
-    //   var xhr = new XMLHttpRequest();
-    //   var that = this;
-    //   xhr.onload = function(res){
-    //     var user = JSON.parse(localStorage.user)
-    //     user.createdCounts.QandA = user.createdCounts.QandA + 1;
-    //     localStorage.user = JSON.stringify(user);
-
-    //     that.fire('updateCounters');
-    //   };
-    //   xhr.open("PUT",'/crud/QandA?comment=' + this.data.comment);
-    //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    //   var question = Polymer.dom(document.querySelector("#question"));
-    //   if(!(question.value == ''))
-    //     xhr.send(JSON.stringify(this.data));
-    // },
-    addQAndA: function(e){
+    adddata: function(e){
       this.data.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
         console.log(xhr.statusCode,res.statusCode,res, xhr.response);
-        that.$.toast_q_and_a.text = xhr.response;
-        that.$.toast_q_and_a.open();
-        that.$.form.reset();
+
+        var toast = document.querySelector("paper-toast");
+        toast.text = xhr.response;
+        toast.open();
+        // that.$.form.reset();
 
         that.data = {
           question: "",
