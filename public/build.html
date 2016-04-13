@@ -7575,7 +7575,7 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
               <paper-tab>Tips</paper-tab>
               <paper-tab>Q &amp; A</paper-tab>
               <paper-tab>Edit</paper-tab>
-              <paper-tab disabled="">Review</paper-tab>
+              <paper-tab>Review</paper-tab>
             </paper-tabs>
           </paper-toolbar>
         </div>
@@ -34442,7 +34442,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <template is="dom-if" if="{{isCreateView}}">
+    <template is="dom-if" if="{{viewType=='create'}}" hidden="{{viewType=='view'}}">
       <iron-localstorage name="username"></iron-localstorage>
  
       <form is="iron-form" id="form" method="post" action="/form/handler">
@@ -34485,7 +34485,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </form> 
   </template>
 
-  <template is="dom-if" if="{{!isCreateView}}">
+  <template is="dom-if" if="{{viewType=='view'}}">
     <h4>Question</h4>
     <p>{{data.question}}</p>
     <h4>Answer</h4>
@@ -34504,6 +34504,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer({
     is: 'siva-qa-creation',
     properties:{
+      viewType:String,
       data:{
         type:Object,
         notify:true,
@@ -35196,6 +35197,11 @@ Polymer({
       display: block;
       box-sizing: border-box;
     }
+    :host #qaDialog{width:600px; text-align:left;padding:30px auto;height:400px; overflow:auto;}
+
+    :host div.normalTable{max-height:400px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
+
     :host table{border-collapse:collapse; border:1px solid silver; width:100%;}
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
@@ -35273,14 +35279,25 @@ Polymer({
 
       <!--  This will be shown when Q & As radio button is Checked   -->
       <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
-        <div class="viewList">
-            <table border="1">
+        <div class="normalTable">
+            <table border="1" class="normalTable">
+            <tbody><tr><th>Question</th><th>Doctor</th><th>Reviewd ?</th></tr>
             <template is="dom-repeat" items="{{qandas}}">
-              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td><td><paper-button class="blue">Claim This</paper-button></td><td><paper-button class="red">Duplicate</paper-button></td><td><paper-button class="green">Finalize</paper-button></td></tr>
+              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td>
+<!--               <td><paper-button class="blue">Claim This</paper-button></td>
+              <td><paper-button class="red">Duplicate</paper-button></td>
+ -->              <td><paper-button class="green">Finalize</paper-button></td></tr>
             </template>
-            </table>
+            </tbody></table>
         </div>
-        <siva-qa-creation data="{{currentModel}}" viewtype="create"></siva-qa-creation>
+        <paper-dialog id="qaDialog">
+          <paper-dialog-scrollable>
+            <siva-qa-creation data="{{currentModel}}" viewtype="view"></siva-qa-creation>
+             <h2>Comments</h2>
+        <iron-autogrow-textarea id="answer" placeholder="Type your comments here" style="height: 150px;" value="{{qAndAcomment}}"></iron-autogrow-textarea>  
+
+          </paper-dialog-scrollable>
+        </paper-dialog>
       </template>
 
 
@@ -35308,12 +35325,13 @@ Polymer({
     },
 
     editThis:function(e){
-      document.querySelector("#reviewClick").hidden = false;
+      // document.querySelector("#reviewClick").hidden = false;
       console.log("Came to Edit",e.model.item._id);
       console.log(e.model.item);
       //  For now, disable save button
       e.model.item.nosave = true;
       this.currentModel = e.model.item;
+      document.querySelector("#qaDialog").open();
     },
 
     update:function(modelName,id){

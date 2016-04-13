@@ -38,7 +38,7 @@ Example:
 
   <template>
 
-    <template is="dom-if" if="{{isCreateView}}">
+    <template is="dom-if" if="{{viewType=='create'}}" hidden="{{viewType=='view'}}">
       <iron-localstorage name="username"></iron-localstorage>
  
       <form is="iron-form" id="form" method="post" action="/form/handler">
@@ -81,7 +81,7 @@ Example:
     </form> 
   </template>
 
-  <template is="dom-if" if="{{!isCreateView}}">
+  <template is="dom-if" if="{{viewType=='view'}}">
     <h4>Question</h4>
     <p>{{data.question}}</p>
     <h4>Answer</h4>
@@ -100,6 +100,7 @@ Example:
   Polymer({
     is: 'siva-qa-creation',
     properties:{
+      viewType:String,
       data:{
         type:Object,
         notify:true,

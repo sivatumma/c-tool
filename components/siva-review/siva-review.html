@@ -6,6 +6,11 @@
       display: block;
       box-sizing: border-box;
     }
+    :host #qaDialog{width:600px; text-align:left;padding:30px auto;height:400px; overflow:auto;}
+
+    :host div.normalTable{max-height:400px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
+
     :host table{border-collapse:collapse; border:1px solid silver; width:100%;}
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
@@ -90,14 +95,25 @@
 
       <!--  This will be shown when Q & As radio button is Checked   -->
       <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
-        <div class="viewList">
-            <table border="1">
+        <div class="normalTable">
+            <table border="1" class="normalTable">
+            <tr><th>Question</th><th>Doctor</th><th>Reviewd ?</th></tr>
             <template is="dom-repeat" items="{{qandas}}">
-              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td><td><paper-button class="blue">Claim This</paper-button></td><td><paper-button class="red">Duplicate</paper-button></td><td><paper-button class="green">Finalize</paper-button></td></tr>
+              <tr><td on-click="editThis">{{item.question}}</td><td>{{item.createdBy}}</td>
+<!--               <td><paper-button class="blue">Claim This</paper-button></td>
+              <td><paper-button class="red">Duplicate</paper-button></td>
+ -->              <td><paper-button class="green">Finalize</paper-button></td></tr>
             </template>
             </table>
         </div>
-        <siva-qa-creation data="{{currentModel}}" viewType="create"></siva-qa-creation>
+        <paper-dialog id="qaDialog">
+          <paper-dialog-scrollable>
+            <siva-qa-creation data="{{currentModel}}" viewType="view"></siva-qa-creation>
+             <h2>Comments</h2>
+        <iron-autogrow-textarea id="answer" placeholder="Type your comments here" style="height: 150px;" value="{{qAndAcomment}}"></iron-autogrow-textarea>  
+
+          </paper-dialog-scrollable>
+        </paper-dialog>
       </template>
 
 
@@ -125,12 +141,13 @@
     },
 
     editThis:function(e){
-      document.querySelector("#reviewClick").hidden = false;
+      // document.querySelector("#reviewClick").hidden = false;
       console.log("Came to Edit",e.model.item._id);
       console.log(e.model.item);
       //  For now, disable save button
       e.model.item.nosave = true;
       this.currentModel = e.model.item;
+      document.querySelector("#qaDialog").open();
     },
 
     update:function(modelName,id){
