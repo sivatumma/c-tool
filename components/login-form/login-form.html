@@ -81,7 +81,7 @@
   		xhr.onload = function(e) {
         var response = JSON.parse(e.currentTarget.response);
 
-        if(response.status == 'fail'){
+        if(xhr.status != 200 || response.status == 'fail'){
           that.$.msg.innerHTML = response.message;
           return false;
         } else {

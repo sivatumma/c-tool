@@ -111,7 +111,6 @@ Example:
     },
 
     addExercise: function(e){
-      this.exercise.createdBy = JSON.parse(localStorage.user).username;
       this.exercise.name = this.$.name.value;
       var xhr = new XMLHttpRequest();
       var that = this;
@@ -137,6 +136,7 @@ Example:
 
       };
       var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      this.exercise.createdBy = JSON.parse(localStorage.user).username;
       xhr.open(method,'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)

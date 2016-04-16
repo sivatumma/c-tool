@@ -7575,7 +7575,7 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
               <paper-tab>Tips</paper-tab>
               <paper-tab>Q &amp; A</paper-tab>
               <paper-tab>Edit</paper-tab>
-              <paper-tab>Review</paper-tab>
+              <paper-tab disabled="">Review</paper-tab>
             </paper-tabs>
           </paper-toolbar>
         </div>
@@ -34376,7 +34376,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     addExercise: function(e){
-      this.exercise.createdBy = JSON.parse(localStorage.user).username;
       this.exercise.name = this.$.name.value;
       var xhr = new XMLHttpRequest();
       var that = this;
@@ -34402,6 +34401,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       };
       var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      this.exercise.createdBy = JSON.parse(localStorage.user).username;
       xhr.open(method,'/crud/Exercise');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.name.invalid)
@@ -34478,23 +34478,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <template is="dom-if" if="{{data.nosave}}">
         <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
       </template>
-      <paper-button raised="" class="green" on-click="adddata" disabled="{{isCurrentUser(data.createdBy)}}">Save Q&amp;A</paper-button>
-      <paper-toast id="toast_q_and_a" text="">
+      <paper-button raised="" class="green" on-click="adddata">Save Q&amp;A</paper-button>
+      <paper-toast id="toast_q_and_a" duration="0" text="">
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
     </form> 
   </template>
-
+<!--  
   <template is="dom-if" if="{{viewType=='view'}}">
     <h4>Question</h4>
     <p>{{data.question}}</p>
     <h4>Answer</h4>
     <p>{{data.answer}}</p>
-<!--     
+   
     <iron-autogrow-textarea id="comment" placeholder="Your comments here" style="height: 150px;" value="{{data.comment}}"></iron-autogrow-textarea><br/>
     <paper-button class="blue" on-click="postComments">Post your comment</paper-button>
- -->  </template>
-
+  </template>
+ -->
   </template>
 
   </dom-module>
@@ -34541,15 +34541,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return who == '' || who == localStorage.username;
     },
     adddata: function(e){
-      this.data.createdBy = JSON.parse(localStorage.user).username;
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
         console.log(xhr.statusCode,res.statusCode,res, xhr.response);
 
-        var toast = document.querySelector("paper-toast");
-        toast.text = xhr.response;
-        toast.open();
+        var toast = Polymer.dom(that.$.toast_q_and_a || document.querySelector("paper-toast"));
+        console.log(toast);
+        document.querySelector("paper-toast").text = xhr.response;
+        document.querySelector("paper-toast").open();
+        if(res.currentTarget.readyState == 4 && xhr.status == 200){
+          alert("Successfully Saved Q&A \n", res)
+        }
+        // that.$.form.reset();
         // that.$.form.reset();
 
         that.data = {
@@ -34568,6 +34572,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         that.fire('updateCounters');
       };
       var method = this.data.createdBy == localStorage.username ? "PUT" : "POST";
+      this.data.createdBy = JSON.parse(localStorage.user).username;
       xhr.open(method,'/crud/QandA');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       var question = Polymer.dom(document.querySelector("#question"));
@@ -34690,7 +34695,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     addTip: function(e){
-      this.tip.createdBy = JSON.parse(localStorage.user).username;
 
       var xhr = new XMLHttpRequest();
       var that = this;
@@ -34712,7 +34716,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         that.fire('updateCounters');
 
       };
-      xhr.open("POST",'/crud/Tip');
+      var method = (this.tip.createdBy === localStorage.username) ? "PUT" : "POST";
+      this.tip.createdBy = JSON.parse(localStorage.user).username;
+      xhr.open(method,'/crud/Tip');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       if(!this.$.tip.invalid)
         xhr.send(JSON.stringify(this.tip));
@@ -34979,11 +34985,6 @@ Polymer({
 
   addRecipe: function(e){
     var that = this;
-    this.recipe.name = this.$.recipeName.value;
-    this.recipe.foodType = this.$.foodType.value;
-    this.recipe.cuisine = this.$.cuisine.value;
-    this.recipe.servingUnit = this.$.servingUnit.value;
-    this.recipe.giIndex = this.$.giIndex.value;
     var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
 
     [].forEach.call(mealTypes,function(mealType){
@@ -34997,7 +34998,6 @@ Polymer({
       that.recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
     });
 
-    this.recipe.createdBy = JSON.parse(localStorage.user).username;
     console.log(this.recipe);
     var xhr = new XMLHttpRequest();
     var that = this;
@@ -35009,6 +35009,7 @@ Polymer({
         that.$.toast.open();
         that.$.form.reset();
         that.recipe = {
+          createdBy:"",
           name:"",
           foodType:"",
           mealType:"",
@@ -35027,10 +35028,13 @@ Polymer({
 
       }
     };
-    var method = that.recipe.createdBy == localStorage.username ? "PUT" : "POST";
+    console.log(this.recipe.createdBy, localStorage.username);
+    var method = (this.recipe.createdBy === localStorage.username) ? "PUT" : "POST";
+    this.recipe.createdBy = JSON.parse(localStorage.user).username;
     xhr.open(method,'/crud/Recipe');
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     if(!this.$.recipeName.invalid  /* && !this.$.servingsPerOnePerson.invalid */){
+      console.log(this.recipe);
       xhr.send(JSON.stringify(this.recipe));
     }
   }

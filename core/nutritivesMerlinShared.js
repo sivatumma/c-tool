@@ -1,0 +1,112 @@
+var nutritivesMerlinShared = {
+  "Mackerel" : {
+    "NAME" : "Mackerel",
+    "MOISTURE_GM" : 77.3,
+    "PROTEIN_GM" : 18.9,
+    "FAT_GM" : 1.7,
+    "FIBER_GM" : 0,
+    "CARBOHYDRATES_GM" : 0.5,
+    "ENERGY_KCALS" : 93,
+    "CALCIUM_MG" : 429,
+    "PHOSPHOROUS_MG" : 305,
+    "IRON_MG" : 4.5,
+    "CAROTENE_Vit_A_microgram" : 0,
+    "THIAMINE_Vit_B1_mg" : 0,
+    "RIBOFLAVIN_VIT_B2_mg" : 0,
+    "NIACIN_VIT_B3_mg" : 0,
+    "Folic_Acid_Free" : 0,
+    "Folic_Acid_Total" : 0,
+    "VITAMIN_C_mg" : 0,
+    "Na_mg" : 0,
+    "K_mg" : 0,
+    "Zn_mg" : 0,
+    "Total_Saturates_Percent" : 0,
+    "Total_Monounsaturate_Percent" : 0,
+    "Total_Polyunsaturate_Percent" : 0
+  },
+  "Oatmeal" : {
+    "NAME" : "Oatmeal",
+    "MOISTURE_GM" : 10.7,
+    "PROTEIN_GM" : 13.6,
+    "FAT_GM" : 7.6,
+    "FIBER_GM" : 3.5,
+    "CARBOHYDRATES_GM" : 62.8,
+    "ENERGY_KCALS" : 374,
+    "CALCIUM_MG" : 50,
+    "PHOSPHOROUS_MG" : 380,
+    "IRON_MG" : 3.8,
+    "CAROTENE_Vit_A_microgram" : 0,
+    "THIAMINE_Vit_B1_mg" : 0.98,
+    "RIBOFLAVIN_VIT_B2_mg" : 0.16,
+    "NIACIN_VIT_B3_mg" : 1.1,
+    "Folic_Acid_Free" : 32,
+    "Folic_Acid_Total" : 34,
+    "VITAMIN_C_mg" : 0,
+    "Na_mg" : 0,
+    "K_mg" : 0,
+    "Zn_mg" : 0,
+    "Total_Saturates_Percent" : 0,
+    "Total_Monounsaturate_Percent" : 0,
+    "Total_Polyunsaturate_Percent" : 0
+  },
+  "Bamboo Tender Shoots" : {
+    "NAME" : "Bamboo Tender Shoots",
+    "MOISTURE_GM" : 88.8,
+    "PROTEIN_GM" : 3.9,
+    "FAT_GM" : 0.5,
+    "FIBER_GM" : 0,
+    "CARBOHYDRATES_GM" : 5.7,
+    "ENERGY_KCALS" : 43,
+    "CALCIUM_MG" : 20,
+    "PHOSPHOROUS_MG" : 65,
+    "IRON_MG" : 0.1,
+    "CAROTENE_Vit_A_microgram" : 0,
+    "THIAMINE_Vit_B1_mg" : 0.08,
+    "RIBOFLAVIN_VIT_B2_mg" : 0.19,
+    "NIACIN_VIT_B3_mg" : 0.2,
+    "Folic_Acid_Free" : 0,
+    "Folic_Acid_Total" : 0,
+    "VITAMIN_C_mg" : 5,
+    "Na_mg" : 0,
+    "K_mg" : 0,
+    "Zn_mg" : 0,
+    "Total_Saturates_Percent" : 0,
+    "Total_Monounsaturate_Percent" : 0,
+    "Total_Polyunsaturate_Percent" : 0
+  },
+  "Mushroom" : {
+    "NAME" : "Mushroom",
+    "MOISTURE_GM" : 88.5,
+    "PROTEIN_GM" : 3.1,
+    "FAT_GM" : 0.8,
+    "FIBER_GM" : 0.4,
+    "CARBOHYDRATES_GM" : 4.3,
+    "ENERGY_KCALS" : 43,
+    "CALCIUM_MG" : 6,
+    "PHOSPHOROUS_MG" : 110,
+    "IRON_MG" : 1.5,
+    "CAROTENE_Vit_A_microgram" : 0,
+    "THIAMINE_Vit_B1_mg" : 0,
+    "RIBOFLAVIN_VIT_B2_mg" : 0,
+    "NIACIN_VIT_B3_mg" : 0,
+    "Folic_Acid_Free" : 0,
+    "Folic_Acid_Total" : 0,
+    "VITAMIN_C_mg" : 0,
+    "Na_mg" : 0,
+    "K_mg" : 0,
+    "Zn_mg" : 0,
+    "Total_Saturates_Percent" : 0,
+    "Total_Monounsaturate_Percent" : 0,
+    "Total_Polyunsaturate_Percent" : 0
+  }
+};
+
+var x = [];
+
+for (n in nutritivesMerlinShared){
+	x.push(nutritivesMerlinShared[n]);
+}
+
+module.exports = exports = function() {
+    return x;
+};
