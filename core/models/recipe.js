@@ -84,7 +84,9 @@ recipeSchema.add({
     createdAt:{
         type: Date,
         default: Date.now
-    }
+    },
+    weightOfServingUnitGrams:String,
+    standardizationSize:String
 
 });
     

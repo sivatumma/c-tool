@@ -204,8 +204,8 @@ Polymer({
     'onFoodTypeChanged(recipe.foodType)'
   ],
   onFoodTypeChanged: function(foodType) {
-    console.log('new foodType: ' + foodType);
-    this.foodType = this.recipe.foodType;
+    // console.log('new foodType: ' + foodType);
+    // this.foodType = this.recipe.foodType;
   },
   openSignoutDialog: function(e) {
     this.$.signOutDialog.open();
@@ -226,8 +226,8 @@ Polymer({
   },
 
   attached: function() {
-    this.foodType = this.recipe.foodType;
-    console.log(this.recipe.foodType);
+    // this.foodType = this.recipe.foodType;
+    // console.log(this.recipe.foodType);
   },
   storeRecipeNames:function(e){
     console.log(e.detail);

@@ -7069,7 +7069,7 @@ for (key in recipes1){
     temp.diseaseFriendly = "";
     temp.diseaseFriendly += recipes1[key].diseaseFriendly1 ? "Hypertension" : "";
     temp.diseaseFriendly += recipes1[key].diseaseFriendly2 ? ",Cholesterol" : "";
-    temp.diseaseFriendly += recipes1[key].diseaseFriendly2 ? ",Diabetes" : "";
+    temp.diseaseFriendly += recipes1[key].diseaseFriendly3 ? ",Diabetes" : "";
 
     delete recipes1[key].name;
     delete recipes1[key].foodType;

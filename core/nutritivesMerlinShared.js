@@ -98,6 +98,31 @@ var nutritivesMerlinShared = {
     "Total_Saturates_Percent" : 0,
     "Total_Monounsaturate_Percent" : 0,
     "Total_Polyunsaturate_Percent" : 0
+  },
+  "Rajmah" : {
+    "NAME" : "Rajmah",
+    "MOISTURE_GM" : 12,
+    "PROTEIN_GM" : 22.9,
+    "FAT_GM" : 1.3,
+    "FIBER_GM" : 4.8,
+    "CARBOHYDRATES_GM" : 60.6,
+    "ENERGY_KCALS" : 346,
+    "CALCIUM_MG" : 260,
+    "PHOSPHOROUS_MG" : 410,
+    "IRON_MG" : 5.1,
+    "CAROTENE_Vit_A_microgram" : 0,
+    "THIAMINE_Vit_B1_mg" : 0,
+    "RIBOFLAVIN_VIT_B2_mg" : 0,
+    "NIACIN_VIT_B3_mg" : 0,
+    "Folic_Acid_Free" : 0,
+    "Folic_Acid_Total" : 0,
+    "VITAMIN_C_mg" : 0,
+    "Na_mg" : 0,
+    "K_mg" : 0,
+    "Zn_mg" : 0,
+    "Total_Saturates_Percent" : 0,
+    "Total_Monounsaturate_Percent" : 0,
+    "Total_Polyunsaturate_Percent" : 0
   }
 };
 
