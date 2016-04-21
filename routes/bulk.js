@@ -45,11 +45,9 @@ router.delete('/:modelName', function(req, res, next) {
 			question: modelStaticData[0].question,
 			answer: modelStaticData[0].answer,
 			createdBy: req.body.createdBy
-		}, function(err, response) {
-			if(err) {res.status(500).send("ERROR: ", err.message); console.log(err);return;}
 		});
 	});
-	res.status(200).send("Successfully saved all models");
+	res.status(200).send("Successfully removed all models");
 });
 
 module.exports = router;
