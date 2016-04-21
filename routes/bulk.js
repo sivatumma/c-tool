@@ -11,14 +11,14 @@ var express = require('express'),
 
 router.post('/:modelName', function(req, res, next) {
 	var model = mongoose.model(req.params.modelName);
-	if(!req.body.fileName || !req.body.createdBy) res.status(403).send("fileName to process, createdBy params are necessary for bulk processing of data. Files must be put in 'core' folder");
+	if (!req.body.fileName || !req.body.createdBy) res.status(403).send("fileName to process, createdBy params are necessary for bulk processing of data. Files must be put in 'core' folder");
 	var modelStaticData = require('../core/' + req.body.fileName)();
 	console.log("Going to parse modelStaticData");
 	console.log(typeof modelStaticData);
 
 	modelStaticData.forEach(function(oneModel) {
 		oneModel.createdBy = req.body.createdBy;
-		model(oneModel).save(function(err,data) {
+		model(oneModel).save(function(err, data) {
 			if (err) {
 				console.log({
 					err: err
@@ -27,6 +27,26 @@ router.post('/:modelName', function(req, res, next) {
 				res.status(500).send(err.message);
 				return;
 			}
+		});
+	});
+	res.status(200).send("Successfully saved all models");
+});
+
+router.delete('/:modelName', function(req, res, next) {
+	var model = mongoose.model(req.params.modelName);
+	if (!req.body.fileName || !req.body.createdBy) res.status(403).send("fileName to process, createdBy params are necessary for bulk processing of data. Files must be put in 'core' folder");
+	var modelStaticData = require('../core/' + req.body.fileName)();
+	console.log("Going to parse modelStaticData");
+	console.log(typeof modelStaticData);
+
+	modelStaticData.forEach(function(oneModel) {
+		oneModel.createdBy = req.body.createdBy;
+		model().remove({
+			question: modelStaticData[0].question,
+			answer: modelStaticData[0].answer,
+			createdBy: req.body.createdBy
+		}, function(err, response) {
+			if(err) {res.status(500).send("ERROR: ", err.message); console.log(err);return;}
 		});
 	});
 	res.status(200).send("Successfully saved all models");

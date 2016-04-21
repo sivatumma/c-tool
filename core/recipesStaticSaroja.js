@@ -9999,9 +9999,10 @@ var recipes =
     "Folic_Acid_Free" : 0
   }
 };
-
+var names = ["Idli","Oats Idly","Vegetable idly","Ragi idly","Button idly","Tawa Idly","Multi grain idly","Dosa","Onion dosa","Masala dosa","Vegetable dosa","Rava dosa","Egg dosa","Green gram dal dosa/Pesarattu","Upma pesarattu","Oats dosa","Wheat dosa","Maida dosa","Ragi dosa","Steam dosa","Utappam","Vada","Masala vada","Mysore bajji","Puri","Chapati","Multi grain chapati","Jowar roti","Bajra roti","Ragi roti","Wheat pongal","Rice pongal","Kichidi","Tomato rice","Vegetable rice","Pulao","Lemon rice","Tamarind rice","Curd rice","Dalia upma","Semolina upma","Vermicelli upma","Tomato bath","Idli upma","Oats Upma","Rice flakes upma","Puffed rice upma","Sprouts upma","Bread upma","Sandwich","Omelet","Masala omelet","Egg burji","French toast","Ragi malt","Bajra malt","Jowar malt","Ragi sankati","Jonna sankati","Corn flakes","Jowar flakes","Ragi flakes","Oats porridge","Muesli","Noodles","Ground nut chutney","Coconut chutney","Roasted bengal gram chutney","Mint chutney","Coriander leaf chutney","Tomato chutney","Ginger chutney","Chilli powder","Curry leaf powder","Flax seed powder","Red gram dal powder","Sesame seed powder","Sambar","Chicken curry","Onion curry","Rasam","Onion raitha","Cucumber raitha","Tomato raitha","Mixed veg raitha","Curd","Boondi raitha","Potato kurma","Mango Jam","Pineapple Jam","Mixed fruit jam","Orange Marmalade","Amul Butter","Honey","Sugar","Sauce","Mayonnaise","Peanut butter","Nutella","Ghee","Potato curry","Potato tomato curry","Potato cutlet","French fries","Potato chat","Potato chips","Tomato curry","Tomato dal","Tomato chutney","Tomato soup","Tomato rice","Ladies finger curry/Bendakai kura","Ladies finger fry/Bendakai vepudu","Ladies finger in tamarind gravy/Bendakai pulusu","Ladies tomato curry/Bendakai tamata kura","Bottle gourd chutney/sorakai pachadi","Bottle gourd curry/Sorakai kura","Bottle gourd dal/Sorakai pappu","Bottle gourd in seasoned curd/Sorakai perugu kura","Bottle gourd moong dal curry/Sorakai pesara pappu kura","Snake gourd curry/Potlakai kura","Snake gourd fry/Potlakai vepudu","Snake gourd curry with milk/Potlakai paalu kura","Snake gourd and sesame seed powder curry/Potlakai nuvvula podi kura","Gherkin curry/Dondakai kura","Gherkin and tomato curry/Dondakai tamata kura","Ridge gourd curry/Beerakai kura","Ridge gourd and bengal gram curry/Beerakai senaga pappu kura","Ridge gourd peel chutney/Beerakai tokku pachadi","Ridge gourd tomato curry/Beerakai tamata kura","Carrot curry/Carrot kura","Carrot and green peas curry/Carrot pachi batani kura","Carrot fry/Carrot vepudu","Carrot halwa","Beet root curry","Beet root halwa","Plantain curry/Aratikai kura","Plantain fry/Aratikai vepudu","Spinach curry/Totakura kura","Spinach dal/Totakura pappu","Spinach fry/Totakura vepudu","Fenugreek leaves curry/Menthi kura","Fenugreek leaves dal/Menthi kura pappu","Brinjal curry/Vankai kura","Brinjal chutney/Vankai pachadi","Brinjal kurma/Vankai kurma","Branjal and potato curry/Vankai alugadda kura","Capsicum curry","Capsicum and moong dal curry/Capsicum pesarapappu kura","Capsicum masala","Cabbage curry","Cabbage and bengal gram curry/Cabbage senaga pappu kura","Cabbage and tomato curry","Cauliflower curry","Cauliflower and tomato curry/Cauliflower tamata kura","Cauliflower and potato curry/Cauliflower aloo kura","Cauliflower potato and green peas curry/Cauliflower aloo batani kura","Cauliflower masala","Beans curry/Beans kura","Beans tomato curry/Beans tomato kura","Beans and moong dal curry/Beans pesarapappu kura","Beans and coconut curry/Beans kobbari kura","Beans potato and green peas curry/Beans aloo batani kura","Mushroom curry/Puttagodugu kura","Mushroom and green peas curry/Puttagodugu batani kura","Bitter gourd curry/Kakarakai kura","Bitter gourd fry/kakarakai vepudu","Bitter gourd tomato curry","Bitter gourd masala/Kakarakai masala","Cucumber curry/Dosakai kura","Cucumber dal/Dosakai pappu","Cucumber chutney/Dosakai pachadi","Cucumber and tomato curry/Dosakai tamata kura","Pumpkin curry/Gummadi kai kura","Pumpkin papad/Gummadikai vadiyalu","Cluster beans curry/Goru chikkudu kura","Cluster beans and tomato curry/Goruchikkudu tamata kura","Cluster beans fry/Goru chikkudu vepudu","Bajri na rotla","Makai na rotla","Bhakri","Phulka rotli","Juvar no rotlo","Parotha","Thepla/dhebra","Daal Dhokli","Dhokla","Handva","Khandvi","Khakra","Khamman","Gathiya","Sev Usal","Sev Tameta nu Shaak","Matla Undhiyu","Undhiyu","Farsi Falafel","Khichu","Chorafali","Jolada Roti","Ragi Rotti","Akki Rotti","Bhakri/ Sajje rotti","Avarekalu Rotti","Ubbu Rotti","Kajjaya","Chambat Poli (Puran poli)","Pongal","Broken wheat pongal","Khara Pongal","Sakkarai Pongal","Semige/ Shyavige","Uppittu (upma)","Neer Dosa","Patrode","Nool Puttu","Mangalore Bonda","Paddu","Maddur Vade","Khichdi","Coconut Nool Puttu","Kempu Khara (Red chilli chutney)","Ellu chutney","Kadalekaayi chutney (peanut)","Hurali Chutney","Kaayi chutney (Coconut)","Kaayi Chutney (red) (Coconut )","Kaayi chutney (green)","Maavina Chutney","Heerekai Chutney","Eerulli Chutney","Uddina Bele Chutney","Chutney Podi","Pudina chutney podi","Karibevu chutney podi","Agase chutney podi","Karakali","Uchchellu Chutney","kadalebele chutney","Kosambari","Maaldi","Bimbale Curry","Rasa Kai","Pineapple Menaskai","Avarekalu Palya","Beetroot Palya","Udipi Sambhar","Madahagalakayi Palya","Udipi Rasam","Siru Keerai Coconut Poriyal","Sabbaki Soppu Saar","Jowar Chaklis","Dharwad Peda","Kashi Halwa","Karjura Payasa","Shavige Payasa","Kodubale","Mysore Pak","Chiroti/ Phenori. Pathir Pheni","Gase Gase Halwa","Ellu Bella","Benna Chakkuli"];
 
 for (key in recipes) {
+    // if(recipes[key].name === "Tomato chutney")
     try {
         var temp = {};
         temp.name = recipes[key].name;
@@ -10032,14 +10033,19 @@ for (key in recipes) {
         if (recipes[key].Total_Saturates_Percent == 'o') console.log(key, recipes[key].Total_Saturates_Percent);
 
         recipeModels.push(temp);
-        console.log(temp);
-        counter++;
+        // console.log(temp);
+
+        names.splice(names.indexOf(temp.name),1);
+
     } catch (e) {
         console.log("ERROR !!!",e.message, temp.name);
         process.exit(1);
     }
-    console.log("Total Recipes : ", recipeModels.length);
 }
+console.log("Total Recipes : ", recipeModels.length);
+console.log("Remaining names :",names);
+
+
 
 module.exports = function() {
     return recipeModels;
