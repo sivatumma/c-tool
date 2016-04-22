@@ -43,7 +43,7 @@ router.post('/login', function(req, res, next) {
                     message = "Maximum login attempts."
                     break;
             }
-            return res.send(403, {
+            return res.status(403).send({
                 message: message
             });
         }
