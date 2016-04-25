@@ -1,4 +1,4 @@
-[ { tip: 'Have some more healthy Salad ! Splash spoonful of vinegar over salads and cooked vegetables as it inhibits starch digestion…. Consuming 1-2 tablespoons of vinegar before a meal may help slow the “postmeal surge in blood glucose by as much as 40 percent,” experts say. But that\'s not a license to go carb crazy. Vinegar may inhibit starch digestion and hold food in the stomach a little longer. By delaying emptying of the stomach, vinegar may help to blunt the rise of blood sugar in response to eating.',
+var tips = [ { tip: 'Have some more healthy Salad ! Splash spoonful of vinegar over salads and cooked vegetables as it inhibits starch digestion…. Consuming 1-2 tablespoons of vinegar before a meal may help slow the “postmeal surge in blood glucose by as much as 40 percent,” experts say. But that\'s not a license to go carb crazy. Vinegar may inhibit starch digestion and hold food in the stomach a little longer. By delaying emptying of the stomach, vinegar may help to blunt the rise of blood sugar in response to eating.',
     category: 'FOOD',
     createdBy: 'priyanka.g@callhealth.co.in',
     suitableForDisease: 'Diabetes' },
@@ -773,4 +773,4 @@
   { tip: 'Give a kick start to your day with cereal and low fat milk! Choose a cereal low in sugar, low in fat and high in fibre ex. Rolled oats, porridge, Weet-Bix, Wholegrain high fibre breads Look for ingredients that indicate fibre such as barley, bran, grains, oat bran, oats, psyllium, rye, seeds, wheat germ, wholegrain and whole wheat.',
     category: 'FOOD',
     createdBy: 'priyanka.g@callhealth.co.in',
-    suitableForDisease: 'Diabetes' } ]
+    suitableForDisease: 'Diabetes' } ];

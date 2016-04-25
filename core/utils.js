@@ -37,3 +37,17 @@ var cusineCodes = [undefined,
 	"Uttarakhand",
 	"WB"
 ];
+
+var reviewerMappings = {
+	"naazia.kauser":"sarojanandama.mattagunja",
+	"sarojanandama.mattagunja":"merlin.annieraj",
+	"merlin.annieraj":"naazia.kauser",
+	"rajasekhar.vanapalli":"solomon.ch",
+	"solomon.ch":"kalpana.payagulla",
+	"kalpana.payagulla":"krishna.swathi",
+	"krishna.swathi":"priyanka.gupta",
+	"priyanka.gupta":"rajasekhar.vanapalli"
+};
+
+module.exports.cusineCodes = cusineCodes;
+module.exports.reviewerMappings = reviewerMappings;
