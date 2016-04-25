@@ -13,6 +13,7 @@ var express = require('express'),
     data = require('./routes/data'),
     crud = require('./routes/crud'),
     bulk = require('./routes/bulk'),
+    mobileapp = require('./routes/mobileapp'),
     expressSession = require('express-session'),
     passport = require('passport'),
     app = express();
@@ -44,7 +45,8 @@ app.use('/users', users);
 app.use('/data',data);
 app.use('/crud',crud);
 app.use('/bulk',bulk);
-app.use('/users',users)
+app.use('/users',users);
+app.use('/mobileapp',mobileapp);
 
 
 // view engine setup
