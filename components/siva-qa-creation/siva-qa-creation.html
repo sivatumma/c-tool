@@ -71,6 +71,8 @@ Example:
         <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{data.answer}}"></iron-autogrow-textarea>    
 
       <br/>
+      <h2>Suggestions:</h2>
+      <p>{{data.suggestions}}</p>
       <br/>
       <template is="dom-if" if="{{data.nosave}}">
         <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
