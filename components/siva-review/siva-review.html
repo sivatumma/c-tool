@@ -62,11 +62,10 @@
               <p>{{item.question}}</p>
               <h4>Answer</h4>
               <p>{{item.answer}}</p>
-              <h4>Comments ?</h4>
-              <iron-autogrow-textarea>
-                <textarea></textarea>
+              <h4>Comments ?</h4> <em>Disabled for now</em>
+              <iron-autogrow-textarea id="comments_{{item._id}}" disabled>
               </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
+              <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
               <p>{{item.comments}}</p>
               <hr/>
               <strip>
@@ -80,14 +79,14 @@
     </template>
 
     <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
-        <iron-ajax
-          id="ajax"
-            auto
-            url="/reviews/Recipe"
-            handle-as="json"
-            last-response="{{recipes}}"
-            on-response="initData"
-            debounce-duration="300"></iron-ajax>
+      <iron-ajax
+        id="ajax"
+          auto
+          url="/reviews/Recipe"
+          handle-as="json"
+          last-response="{{recipes}}"
+          on-response="initData"
+          debounce-duration="300"></iron-ajax>
 
         <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
           <ul><li>Junk</li>
@@ -106,11 +105,10 @@
               <template is="dom-repeat" items="{{item.ingredients}}" as="ingredient">
                 <p>{{ingredient.NAME}} = {{ingredient.qty}} {{ingredient.uom}}</p>
               </template>
-              <h4>Comments ?</h4>
-              <iron-autogrow-textarea>
-                <textarea></textarea>
+              <h4>Comments ?</h4> <em>Disabled for now</em>
+              <iron-autogrow-textarea disabled>
               </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
+              <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
               <p>{{item.comments}}</p>
               <hr/>
               <strip>
@@ -124,86 +122,82 @@
     </template>
 
     <template is="dom-if" if="{{exercisesModuleChecked}}" class="exercisesModuleChecked">
-        <iron-ajax
-          id="ajax"
-            auto
-            url="/reviews/Exercise"
-            handle-as="json"
-            last-response="{{exercises}}"
-            on-response="initData"
-            debounce-duration="300"></iron-ajax>
+      <iron-ajax
+        id="ajax"
+          auto
+          url="/reviews/Exercise"
+          handle-as="json"
+          last-response="{{exercises}}"
+          on-response="initData"
+          debounce-duration="300"></iron-ajax>
 
-        <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
-          <ul><li>Junk</li>
-              <li>100% Duplicate of some other entry</li>
-              <li>or, Finalize to release it.</li>
-          </ul>
-          Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
-          </div>
-          <template is="dom-if" if="{{exercises.length}}">Total: {{exercises.length}}</template>
-<!--           <template is="dom-if" if="{{exercises.length <= 0}}"><span style="color:red;">This user did not created any items in this kind</span></template>
- -->        <iron-swipeable-container>
-          <template is="dom-repeat" items="{{exercises}}">
-            <paper-card class="reviewItem" elevation="3">
-              <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
-              <h2>{{item.name}}</h3>
-              <h4>Comments ?</h4>
-              <iron-autogrow-textarea>
-                <textarea></textarea>
-              </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
-              <p>{{item.comments}}</p>
-              <hr/>
-              <strip>
-                <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
-                <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
-                <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
-              </strip>
-            </paper-card>  
-          </template>
-        </iron-swipeable-container>
+      <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
+        <ul><li>Junk</li>
+            <li>100% Duplicate of some other entry</li>
+            <li>or, Finalize to release it.</li>
+        </ul>
+        Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
+      </div>
+      <template is="dom-if" if="{{exercises.length}}">Total: {{exercises.length}}</template>
+      <iron-swipeable-container>
+        <template is="dom-repeat" items="{{exercises}}">
+          <paper-card class="reviewItem" elevation="3">
+            <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
+            <h2>{{item.name}}</h3>
+            <h4>Comments ?</h4> <em>Disabled for now</em>
+            <iron-autogrow-textarea disabled>
+            </iron-autogrow-textarea>
+            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
+            <p>{{item.comments}}</p>
+            <hr/>
+            <strip>
+              <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
+              <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
+              <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
+            </strip>
+          </paper-card>  
+        </template>
+      </iron-swipeable-container>
     </template>
 
     <template is="dom-if" if="{{tipsModuleChecked}}" class="tipsModuleChecked">
-        <iron-ajax
-          id="ajax"
-            auto
-            url="/reviews/Tip"
-            handle-as="json"
-            last-response="{{tips}}"
-            on-response="initData"
-            debounce-duration="300"></iron-ajax>
+      <iron-ajax
+        id="ajax"
+          auto
+          url="/reviews/Tip"
+          handle-as="json"
+          last-response="{{tips}}"
+          on-response="initData"
+          debounce-duration="300"></iron-ajax>
 
-        <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
-          <ul><li>Junk</li>
-              <li>100% Duplicate of some other entry</li>
-              <li>or, Finalize to release it.</li>
-          </ul>
-          Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
-          </div>
-          <template is="dom-if" if="{{tips.length}}">Total: {{tips.length}}</template>
-<!--           <template is="dom-if" if="{{tips.length <= 0}}"><span style="color:red;">This user did not created any items in this kind</span></template>
- -->        <iron-swipeable-container>
-          <template is="dom-repeat" items="{{tips}}">
-            <paper-card class="reviewItem" elevation="3">
-              <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
-              <h3> Tip:</h3>
-              <p>{{item.tip}}</p>
-              <h4>Comments ?</h4>
-              <iron-autogrow-textarea>
-                <textarea></textarea>
-              </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
-              <p>{{item.comments}}</p>
-              <hr/>
-              <strip>
-                <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
-                <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
-                <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
-              </strip>
-            </paper-card>  
-          </template>
-        </iron-swipeable-container>
+      <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
+        <ul><li>Junk</li>
+            <li>100% Duplicate of some other entry</li>
+            <li>or, Finalize to release it.</li>
+        </ul>
+        Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
+      </div>
+      <template is="dom-if" if="{{tips.length}}">Total: {{tips.length}}</template>
+      <iron-swipeable-container>
+        <template is="dom-repeat" items="{{tips}}">
+          <paper-card class="reviewItem" elevation="3">
+            <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
+            <h3> Tip:</h3>
+            <p>{{item.tip}}</p>
+            <h4>Comments ?</h4> <em>Disabled for now</em>
+            <iron-autogrow-textarea id="item._id" disabled>
+            </iron-autogrow-textarea>
+            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
+            <p>{{item.comments}}</p>
+            <hr/>
+            <strip>
+              <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
+              <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
+              <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
+            </strip>
+          </paper-card>  
+        </template>
+      </iron-swipeable-container>
     </template>
 
 
@@ -233,19 +227,28 @@
       console.log(e.detail.response);
     },
     handleButtonClick:function(e){
+      var putBody = {
+        _id:e.model.item._id,
+      };
       console.log(e.model.item._id);
+      console.log(this.$["comments_"+e.model.item._id]);
       switch(e.target.icon){
         case "communication:comment":
           console.log("You are about to comment ",e.model.item.question);
+          putBody.reviewerFlag = "";
+          // putBody.reviewerSuggestions = 
           break;
         case "delete":
           console.log("You are about to mark this as junk entry ",e.model.item.question);
+          putBody.reviewerFlag = "delete";
           break;
         case "check":
           console.log("You are about to mark this as final entry ",e.model.item.question);
+          putBody.reviewerFlag = "final"
           break;
         case "image:control-point-duplicate":
           console.log("You are about to mark this as duplicate ",e.model.item.question);
+          putBody.reviewerFlag = "duplicate";
           break;
       }
       var xhr = new XMLHttpRequest();
@@ -257,10 +260,20 @@
         }
       };
 
-      xhr.open("GET",'/reviews/QandA');
+      var modelRadioMapping = {
+        exercises:"Exercise",
+        recipes:"Recipe",
+        tips:"Tip",
+        qandas:"QandA"
+      };
+
+      xhr.open("PUT",'/reviews/' + modelRadioMapping[this.currentReviewModule]);
+      console.log("Current Clicked Radio Button : ", this.currentReviewModule );
+      console.log('/reviews/' + modelRadioMapping[this.currentReviewModule]);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhr.send(null);
+      xhr.send(JSON.stringify(putBody));
     },
+
     editThis:function(e){
       // document.querySelector("#reviewClick").hidden = false;
       console.log("Came to Edit",e.model.item._id);

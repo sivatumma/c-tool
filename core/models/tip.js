@@ -26,5 +26,17 @@ tipSchema.add({suitableForTime:String});
 
 tipSchema.add({category:String,subCategory:String,tipDescription:String});
 
+tipSchema.add({
+    reviews: [{
+        reviewer: String,
+        reviewerFlag: {
+            type: String,
+            enum: "Junk,Duplicate,Final".split(',')
+        },
+        reviewerSuggestions: String,
+        reviewAcknowledged: Boolean
+    }]
+});
+
 var Tip = mongoose.model('Tip', tipSchema);
 module.exports = Tip;
