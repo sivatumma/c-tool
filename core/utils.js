@@ -39,14 +39,14 @@ var cusineCodes = [undefined,
 ];
 
 var reviewerMappings = {
-	"naazia.kauser":"sarojanandama.mattagunja",
-	"sarojanandama.mattagunja":"merlin.annieraj",
-	"merlin.annieraj":"naazia.kauser",
-	"rajasekhar.vanapalli":"solomon.ch",
-	"solomon.ch":"kalpana.payagulla",
-	"kalpana.payagulla":"krishna.swathi",
-	"krishna.swathi":"priyanka.gupta",
-	"priyanka.gupta":"rajasekhar.vanapalli"
+	"naazia.kauser":{reviewee:"sarojanandam.mattagunja"},
+	"sarojanandama.mattagunja":{reviewee:"merlin.annieraj"},
+	"merlin.annieraj":{reviewee:"naazia.kauser"},
+	"rajasekhar.vanapalli":{reviewee:"solomon.ch"},
+	"solomon.ch":{reviewee:"kalpana.payagulla"},
+	"kalpana.payagulla":{reviewee:"krishna.swathi"},
+	"krishna.swathi":{reviewee:"priyanka.gupta"},
+	"priyanka.gupta":{reviewee:"rajasekhar.vanapalli"}
 };
 
 module.exports.cusineCodes = cusineCodes;

@@ -11,8 +11,8 @@ var express = require('express'),
 	Tip = require('../core/models/tip');
 
 router.get('/:modelName', function(req, res, next) {
-	console.log(req.session, req.sessionID);
-	console.log(req.query);
+	console.log(req.session);
+
 	var filter = (req.query.username && req.query.username!="") ? {createdBy:req.query.username} : {};
 	var model = mongoose.model(req.params.modelName);
 	model.find(filter).sort({

@@ -12,6 +12,7 @@ var express = require('express'),
     users = require('./routes/users'),
     data = require('./routes/data'),
     crud = require('./routes/crud'),
+    reviews = require('./routes/reviews'),
     bulk = require('./routes/bulk'),
     mobileapp = require('./routes/mobileapp'),
     expressSession = require('express-session'),
@@ -33,8 +34,6 @@ app.use(expressSession({
   resave: false,
   saveUninitialized: true
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(busboy());
 app.use(express.static(path.join(__dirname)));
@@ -46,6 +45,7 @@ app.use('/data',data);
 app.use('/crud',crud);
 app.use('/bulk',bulk);
 app.use('/users',users);
+app.use('/reviews',reviews);
 app.use('/mobileapp',mobileapp);
 
 
@@ -78,6 +78,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
+  console.log(err.message, err.stack);
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

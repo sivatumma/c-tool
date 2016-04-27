@@ -167,9 +167,17 @@
       delete localStorage.username;
       delete localStorage.userShortName;
       location.reload(); 
-    },
-    // Element Lifecycle
 
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status);
+      };
+      xhr.open("GET",'/users/logout');
+      xhr.send(null);
+    },
+
+    // Element Lifecycle
     initData:function(e){
       console.log("Hey ",e.detail.response);
       this.fire('rendered',{hi:"Siva"});

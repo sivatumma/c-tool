@@ -11,8 +11,9 @@
       margin-bottom:20px;
       display:block;
     }
-    :host paper-card.reviewItem::active{
-      background:#f4f4f4;
+    :host paper-card.reviewItem h5{
+      line-height:90%;
+      margin-bottom:0px;
     }
     :host iron-swipeable-container{
       width:500px;
@@ -21,41 +22,56 @@
       color:maroon;
       font-weight:bold;
     }
+    :host span.capitalize{
+      text-transform:capitalize;
+    }
   </style>
 
   <template>
-    <iron-ajax
-      id="ajax"
-        auto
-        url="/crud/QandA?username=kalpana.payagulla@callhealth.co.in"
-        handle-as="json"
-        last-response="{{qandas}}"
-        on-response="initData"
-        debounce-duration="300"></iron-ajax>
-    <div><h3> You are currently reviewing Q&amp;A of Kalpana</h3> TOTAL: {{qandas.length}}</div>
-    <iron-swipeable-container>
-      <template is="dom-repeat" items="{{qandas}}">
-        <paper-card class="reviewItem" elevation="3">
-          <div>DOCTOR: {{item.createdBy}}</div>
-          <h4>Question</h4>
-          <p>{{item.question}}</p>
-          <h4>Answer</h4>
-          <p>{{item.answer}}</p>
-          <h4>Comments ?</h4>
-          <iron-autogrow-textarea>
-            <textarea></textarea>
-          </iron-autogrow-textarea>
-          <paper-icon-button icon="communication:forum"></paper-icon-button>
-          <p>{{item.comments}}</p>
-          <hr/>
-          <strip>
-            <paper-icon-button icon="delete"></paper-icon-button><span>Junk</span>
-            <paper-icon-button icon="image:control-point-duplicate"></paper-icon-button><span>Duplicate</span>
-            <paper-icon-button icon="check"></paper-icon-button><span>Finalize</span>
-          </strip>
-        </paper-card>  
-      </template>
-    </iron-swipeable-container>
+    <p>Tap on a radio button to fetch respective contents authored by your reviewee</p>
+    <paper-radio-group selected="{{currentReviewModule}}">
+      <paper-radio-button name="recipes" checked="{{recipesModuleChecked}}">Recipes</paper-radio-button>
+      <paper-radio-button name="exercises" checked="{{exercisesModuleChecked}}">Exercises</paper-radio-button>
+      <paper-radio-button name="tips" checked="{{tipsModuleChecked}}">Tips</paper-radio-button>
+      <paper-radio-button name="qandas" checked="{{qandasModuleChecked}}">Q &amp; A</paper-radio-button>
+      <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
+    </paper-radio-group>
+      <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
+        <iron-ajax
+          id="ajax"
+            auto
+            url="/reviews/QandA"
+            handle-as="json"
+            last-response="{{qandas}}"
+            on-response="initData"
+            debounce-duration="300"></iron-ajax>
+
+        <div><h3> Your reviewee is  reviewing Q&amp;A of Kalpana</h3> TOTAL: {{qandas.length}}</div>
+        <iron-swipeable-container>
+          <template is="dom-repeat" items="{{qandas}}">
+            <paper-card class="reviewItem" elevation="3">
+              <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
+              <h4>Question</h4>
+              <p>{{item.question}}</p>
+              <h4>Answer</h4>
+              <p>{{item.answer}}</p>
+              <h4>Comments ?</h4>
+              <iron-autogrow-textarea>
+                <textarea></textarea>
+              </iron-autogrow-textarea>
+              <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
+              <p>{{item.comments}}</p>
+              <hr/>
+              <strip>
+                <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
+                <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
+                <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
+              </strip>
+            </paper-card>  
+          </template>
+        </iron-swipeable-container>
+    </template>
+
   </template>
 </dom-module>
 <script>
@@ -75,10 +91,41 @@
       currentReviewModule:{type:Boolean}
     },
 
+    shortName:function(email){
+      return email.split("@")[0].replace("."," ");
+    },
     gotTotalData:function(e){
       console.log(e.detail.response);
     },
+    handleButtonClick:function(e){
+      console.log(e.model.item._id);
+      switch(e.target.icon){
+        case "communication:comment":
+          console.log("You are about to comment ",e.model.item.question);
+          break;
+        case "delete":
+          console.log("You are about to mark this as junk entry ",e.model.item.question);
+          break;
+        case "check":
+          console.log("You are about to mark this as final entry ",e.model.item.question);
+          break;
+        case "image:control-point-duplicate":
+          console.log("You are about to mark this as duplicate ",e.model.item.question);
+          break;
+      }
+      var xhr = new XMLHttpRequest();
+      var that = this;
 
+      xhr.onload = function(res){
+        if(res.currentTarget.readyState == 4){
+          console.log(res);
+        }
+      };
+
+      xhr.open("GET",'/reviews/QandA');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(null);
+    },
     editThis:function(e){
       // document.querySelector("#reviewClick").hidden = false;
       console.log("Came to Edit",e.model.item._id);

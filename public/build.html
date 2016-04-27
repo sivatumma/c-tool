@@ -7685,9 +7685,17 @@ t=t.parentNode||t.nodeType===Node.DOCUMENT_FRAGMENT_NODE&&t.host}}function h(e){
       delete localStorage.username;
       delete localStorage.userShortName;
       location.reload(); 
-    },
-    // Element Lifecycle
 
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status);
+      };
+      xhr.open("GET",'/users/logout');
+      xhr.send(null);
+    },
+
+    // Element Lifecycle
     initData:function(e){
       console.log("Hey ",e.detail.response);
       this.fire('rendered',{hi:"Siva"});
@@ -35692,6 +35700,9 @@ Polymer({
       color:maroon;
       font-weight:bold;
     }
+    :host span.capitalize{
+      text-transform:capitalize;
+    }
   </style>
 
   <template>
@@ -35700,7 +35711,7 @@ Polymer({
     <iron-swipeable-container>
       <template is="dom-repeat" items="{{qandas}}">
         <paper-card class="reviewItem" elevation="3">
-          <div>DOCTOR: {{item.createdBy}}</div>
+          <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
           <h4>Question</h4>
           <p>{{item.question}}</p>
           <h4>Answer</h4>
@@ -35709,13 +35720,13 @@ Polymer({
           <iron-autogrow-textarea>
             <textarea></textarea>
           </iron-autogrow-textarea>
-          <paper-icon-button icon="communication:forum"></paper-icon-button>
+          <paper-icon-button icon="communication:comment" on-tap="handleButtonClick" type="suggestion"></paper-icon-button>
           <p>{{item.comments}}</p>
           <hr>
           <strip>
-            <paper-icon-button icon="delete"></paper-icon-button><span>Junk</span>
-            <paper-icon-button icon="image:control-point-duplicate"></paper-icon-button><span>Duplicate</span>
-            <paper-icon-button icon="check"></paper-icon-button><span>Finalize</span>
+            <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
+            <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
+            <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
           </strip>
         </paper-card>  
       </template>
@@ -35739,10 +35750,29 @@ Polymer({
       currentReviewModule:{type:Boolean}
     },
 
+    shortName:function(email){
+      return email.split("@")[0].replace("."," ");
+    },
     gotTotalData:function(e){
       console.log(e.detail.response);
     },
-
+    handleButtonClick:function(e){
+      console.log(e.model.item._id);
+      switch(e.target.icon){
+        case "communication:comment":
+          console.log("You are about to comment ",e.model.item.question);
+          break;
+        case "delete":
+          console.log("You are about to mark this as junk entry ",e.model.item.question);
+          break;
+        case "check":
+          console.log("You are about to mark this as final entry ",e.model.item.question);
+          break;
+        case "image:control-point-duplicate":
+          console.log("You are about to mark this as duplicate ",e.model.item.question);
+          break;
+      }
+    },
     editThis:function(e){
       // document.querySelector("#reviewClick").hidden = false;
       console.log("Came to Edit",e.model.item._id);

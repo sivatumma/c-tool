@@ -68,10 +68,12 @@ router.post('/login', function(req, res, next) {
             delete user.loginAttempts;
             delete user.active;
             res.set(token_object);
-            console.log(user);
-            expressSession.user = user;
-            res.send(user)
-        })
+
+            var session = req.session;
+            session.user = user;
+
+            res.send(user);
+        });
 
 
     })
@@ -91,7 +93,8 @@ router.get('/userlist', function(req, res) {
 });
 
 router.get('/logout', function(req, res) {
-    console.log("/logout request...\n\n", req.user);
+    console.log("/logout request...\n\n", req.session.user);
+
     req.user.tokens.pull({
         token: req.headers['token']
     });
@@ -100,11 +103,19 @@ router.get('/logout', function(req, res) {
         if (err) return res.send(500, {
             message: err.stack
         });
-        res.send({
-            message: 'Ok',
-            status: 200
+
+        req.session.destroy(function(err) {
+          if(err) {
+            res.status(500).send(err.message);
+          } else {
+            res.status(200).send({
+                message: 'Ok'
+            });
+          }
         });
-    })
+        
+        
+    });
 });
 
 router.post('/session/save', function(req, res) {
