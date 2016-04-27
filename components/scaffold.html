@@ -163,11 +163,6 @@
       this.$.signOutDialog.open();
     },
     signout:function(e){
-      delete localStorage.loggedIn;
-      delete localStorage.username;
-      delete localStorage.userShortName;
-      location.reload(); 
-
       var xhr = new XMLHttpRequest();
       var that = this;
       xhr.onload = function(res){
@@ -175,6 +170,12 @@
       };
       xhr.open("GET",'/users/logout');
       xhr.send(null);
+
+      //  The following must be put inside the callback. Let us see...
+      delete localStorage.loggedIn;
+      delete localStorage.username;
+      delete localStorage.userShortName;
+      location.reload(); 
     },
 
     // Element Lifecycle

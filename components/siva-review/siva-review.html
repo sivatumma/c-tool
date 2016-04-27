@@ -25,6 +25,9 @@
     :host span.capitalize{
       text-transform:capitalize;
     }
+    :host paper-chip{
+      background:#fbfbfb;
+      padding:3px; border-radius:4px;};
   </style>
 
   <template>
@@ -103,7 +106,10 @@
               <h2>{{item.name}}</h3>
               <h4>Ingredients</h4>
               <template is="dom-repeat" items="{{item.ingredients}}" as="ingredient">
-                <p>{{ingredient.NAME}} = {{ingredient.qty}} {{ingredient.uom}}</p>
+                <paper-chip disabled>
+                  <iron-icon class="icon" icon="settings-input-svideo"></iron-icon>
+                  <h1>{{ingredient.NAME}} {{ingredient.qty}} {{ingredient.uom}}</h1>
+                </paper-chip>
               </template>
               <h4>Comments ?</h4> <em>Disabled for now</em>
               <iron-autogrow-textarea disabled>
@@ -230,6 +236,9 @@
       var putBody = {
         _id:e.model.item._id,
       };
+
+      console.log(e);
+      e.target.parent.appendChild(document.createTextNode("Reviewed !"));
       console.log(e.model.item._id);
       console.log(this.$["comments_"+e.model.item._id]);
       switch(e.target.icon){
