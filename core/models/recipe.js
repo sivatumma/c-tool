@@ -89,7 +89,18 @@ recipeSchema.add({
     standardizationSize:String
 
 });
-    
+
+recipeSchema.add({
+    reviews: [{
+        reviewer: String,
+        reviewerFlag: {
+            type: String,
+            enum: "Junk,Duplicate,Final".split(',')
+        },
+        reviewerSuggestions: String,
+        reviewAcknowledged: Boolean
+    }]
+});    
 
 recipeSchema.methods.totalEnergy = function() {
 

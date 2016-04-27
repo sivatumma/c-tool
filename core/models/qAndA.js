@@ -13,6 +13,17 @@ var questionAndAnswerSchema = new Schema({
 });
 
 questionAndAnswerSchema.add({category:String, subCategory:String, consultNow:Boolean,consultDoctorType:String});
+questionAndAnswerSchema.add({
+    reviews: [{
+        reviewer: String,
+        reviewerFlag: {
+            type: String,
+            enum: "Junk,Duplicate,Final".split(',')
+        },
+        reviewerSuggestions: String,
+        reviewAcknowledged: Boolean
+    }]
+});
 
 var QandA = mongoose.model('QandA', questionAndAnswerSchema);
 module.exports = QandA;
