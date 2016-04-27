@@ -8785,7 +8785,7 @@ var macroNutrients = {
         "ENERGY_KCALS": 330,
         "CALCIUM_MG": 70,
         "PHOSPHOROUS_MG": 440,
-        "IRON_MG": "2.4`"
+        "IRON_MG": 2.4
     },
     "Almond": {
         "name": "Almond",
