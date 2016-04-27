@@ -35751,7 +35751,7 @@ Polymer({
     </template>
 
     <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
-      <iron-ajax id="ajax" auto="" url="/reviews/Recipe" handle-as="json" last-response="{{recipes}}" on-response="initData" debounce-duration="300"></iron-ajax>
+	    <iron-ajax id="ajax" auto="" url="/reviews/Recipe" handle-as="json" last-response="{{recipes}}" on-response="initData" debounce-duration="300"></iron-ajax>
 
         <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
           </p><ul><li>Junk</li>
@@ -35910,7 +35910,6 @@ Polymer({
           console.log(res);
         }
       };
-
       var modelRadioMapping = {
         exercises:"Exercise",
         recipes:"Recipe",
