@@ -59,7 +59,9 @@ var cusines = ["Maharastra",
       uoms = ["ml",
             "mg",
             "gm",
-            "µg"
+            "µg",
+            "Pinch",
+            "Number"
       ];
 
 module.exports = exports = function(){

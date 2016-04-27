@@ -7,31 +7,32 @@ var express = require('express'),
 
 var reviewerMappings = {
 	"naazia.kauser":{reviewee:"sarojanandam.mattagunja"},
-	"sarojanandama.mattagunja":{reviewee:"merlin.annieraj"},
+	"sarojanandam.mattagunja":{reviewee:"merlin.annieraj"},
 	"merlin.annieraj":{reviewee:"naazia.kauser"},
 	"rajasekhar.vanapalli":{reviewee:"solomon.ch"},
 	"solomon.ch":{reviewee:"kalpana.payagulla"},
 	"kalpana.payagulla":{reviewee:"krishna.swathi"},
 	"krishna.swathi":{reviewee:"priyanka.gupta"},
 	"priyanka.gupta":{reviewee:"rajasekhar.vanapalli"},
-	"siva.tumma@callhealth.co.in":{"reviewee":"rajasekhar.vanapalli"}
+	"siva.tumma":{"reviewee":"rajasekhar.vanapalli"}
 };
 
 router.get('/:modelName', function(req, res, next) {
 	var model = mongoose.model(req.params.modelName),
-		session = req.session,
-		currentUser = session.user.username,
-		reviewee = reviewerMappings[currentUser].reviewee,
-		url = '/crud/' + req.params.modelName + "?username=" + reviewee,
-		proxy = request.get({uri:url,qa:req.query,header:{},timeout:TIMEOUT},function(error, response, body){
-                if(error)return res.status(500).send(error);
-            });
+		currentUser,reviewee,
+		session = req.session;
 
-	req.pipe(proxy).pipe(res);
+	if(session.user){ currentUser = session.user.username; }
+	if(!currentUser) {return res.status(401).send("You are not authorized to use the current API");}
+	reviewee = reviewerMappings[currentUser.split("@")[0]].reviewee,
+	url = '/crud/' + req.params.modelName + "?username=" + reviewee;
 	
-	console.log("Here in reviews");
-
-
+	var filter = (currentUser) ? {createdBy: new RegExp('^'+reviewee, "i")} : {};
+	model.find(filter, function(err, data) {
+		if(err){res.send({err:err});}
+		res.status(200).send(data);
+	  //Do your action here..
+	});
 });
 
 
