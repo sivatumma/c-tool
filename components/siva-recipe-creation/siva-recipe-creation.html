@@ -26,6 +26,12 @@ Example:
       box-sizing: border-box;
     }
     :host vaadin-combo-box{margin-right:10px;}
+    :host iron-list {
+      height:100px;
+      --iron-list-items-container: {
+        margin: auto;
+      };
+    }
     :host td > #form:200px;
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
     :host paper-dropdown{display:inline;}
@@ -104,6 +110,7 @@ Example:
     </td>
     <td>
       <DIV class="flex layout horizontal">
+<!--        <paper-autocomplete id="fruits" label="Ingredients" source="{{facade.ingredientNames}}"></paper-autocomplete> -->       
         <vaadin-combo-box id="ingredientsInputCombo" label="Add Ingredients" items="{{facade.ingredientNames}}"></vaadin-combo-box>
         <paper-dropdown-menu id="uom" label="Unit" value="{{currentIngredient.uom}}">
           <paper-listbox class="dropdown-content">
@@ -219,13 +226,17 @@ Polymer({
     return this.recipe.diseaseFriendly.split.indexOf(e.model.item) > -1;
   },
   initData:function(e){
+    console.log(e);
     this.fire('rendered',{hi:"Siva"});
+    // var inames = e.detail.response.ingredientNames;
+    // document.getElementById("fruits").source = inames;
   },
 
   ready: function() {
   },
 
   attached: function() {
+     // this.$.fruits.source = ["Bajra","bijaour","cat"];
     // this.foodType = this.recipe.foodType;
     // console.log(this.recipe.foodType);
   },

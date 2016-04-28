@@ -33,6 +33,7 @@ router.get('/:kindOfData', function(req, res, next) {
 						console.log(err);
 					}
 					facade.ingredientNames = _.pluck(data,"NAME");
+					console.log(facade.ingredientNames);
 					_.extend(facade,facadeData);
 					facade.nutritives = data;
 				    facade.sampleIngredient = _.find(data, function(x) {

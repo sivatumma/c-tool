@@ -12419,7 +12419,7 @@ var macroNutrients = {
 console.log(Object.keys(microNutrients).length, Object.keys(macroNutrients).length);
 
 // for(k in microNutrients) if(macroNutrients[k] == undefined) console.log(k);
-for (var k in macroNutrients) { // Each [k] is an object
+for (var k in microNutrients) { // Each [k] is an object
     var temp = {};
     _.extend(temp, microNutrients[k], macroNutrients[k]);
     delete temp.name;
