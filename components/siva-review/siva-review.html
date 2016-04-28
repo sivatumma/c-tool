@@ -93,6 +93,7 @@
           auto
           url="/reviews/Recipe"
           handle-as="json"
+          last-response="{{recipes}}"
           on-response="initData"
           on-error="initData"
           debounce-duration="300"></iron-ajax>
@@ -103,7 +104,7 @@
               <li>or, Finalize to release it.</li>
           </ul>
           Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
-          </div>
+        </div>
           Total: {{recipes.length}}
         <iron-swipeable-container>
           <template is="dom-repeat" items="{{recipes}}">
@@ -112,8 +113,8 @@
               <h2>{{item.name}}</h3>
               <h4>Ingredients</h4>
               <template is="dom-repeat" items="{{item.ingredients}}" as="ingredient">
-                <paper-chip disabled>
-                  <iron-icon class="icon" icon="settings-input-svideo"></iron-icon>
+                <paper-chip>
+                  <iron-icon class="icon" icon=""></iron-icon>
                   <h1>{{ingredient.NAME}} {{ingredient.qty}} {{ingredient.uom}}</h1>
                 </paper-chip>
               </template>
