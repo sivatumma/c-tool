@@ -61,6 +61,11 @@
         <iron-swipeable-container>
           <template is="dom-repeat" items="{{qandas}}">
             <paper-card class="reviewItem" elevation="3">
+              
+              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
+                <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>
+              </template>
+
               <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
               <h4>Question</h4>
               <p>{{item.question}}</p>
@@ -230,7 +235,11 @@
         type:Object,
         notify:true
       },
-      currentReviewModule:{type:Boolean}
+      currentReviewModule:{type:Boolean},
+      qandas:Array,
+      tips:Array,
+      exercises:Array,
+      recipes:Array
     },
     initData:function(e){
       if(e.type == 'error'){
@@ -259,13 +268,16 @@
     gotTotalData:function(e){
       console.log(e.detail.response);
     },
+    greaterThanZero:function(n){
+      return n>0;
+    },
     handleButtonClick:function(e){
       var putBody = {
         _id:e.model.item._id,
       };
 
       console.log(e);
-      e.target.parent.appendChild(document.createTextNode("Reviewed !"));
+      // e.target.parent.appendChild(document.createTextNode("Reviewed !"));
       console.log(e.model.item._id);
       console.log(this.$["comments_"+e.model.item._id]);
       switch(e.target.icon){
@@ -302,6 +314,22 @@
         tips:"Tip",
         qandas:"QandA"
       };
+
+      console.log("Clicked ", e.model.index, " th item of ", this.currentReviewModule);
+      switch(this.currentReviewModule){
+        case "exercises":
+          this.splice("exercises",e.model.index,1);
+          break;
+        case "qandas":
+          this.splice("qandas",e.model.index,1);
+          break;
+        case "tips":
+          this.splice("tips",e.model.index,1);
+          break;
+        case "recipes":
+          this.splice("recipes",e.model.index,1);
+          break;
+      }
 
       xhr.open("PUT",'/reviews/' + modelRadioMapping[this.currentReviewModule]);
       console.log("Current Clicked Radio Button : ", this.currentReviewModule );
