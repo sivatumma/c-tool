@@ -40,51 +40,51 @@
       <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
     </paper-radio-group>
     <template is="dom-if" if="{{qandasModuleChecked}}" class="recipesModuleChecked">
-        <iron-ajax
-          id="ajax"
-            auto
-            url="/reviews/QandA"
-            handle-as="json"
-            last-response="{{qandas}}"
-            on-response="initData"
-            on-error="initData"
-            debounce-duration="300"></iron-ajax>
+      <iron-ajax
+        id="ajax"
+          auto
+          url="/reviews/QandA"
+          handle-as="json"
+          last-response="{{qandas}}"
+          on-response="initData"
+          on-error="initData"
+          debounce-duration="300"></iron-ajax>
 
-        <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
-          <ul><li>Junk</li>
-              <li>100% Duplicate of some other entry</li>
-              <li>or, Finalize to release it.</li>
-          </ul>
-          Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
-          </div>
-          Total: {{qandas.length}}
-        <iron-swipeable-container>
-          <template is="dom-repeat" items="{{qandas}}">
-            <paper-card class="reviewItem" elevation="3">
-              
-              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
-                <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>
-              </template>
+      <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
+        <ul><li>Junk</li>
+            <li>100% Duplicate of some other entry</li>
+            <li>or, Finalize to release it.</li>
+        </ul>
+        Write your suggestions if any, hit comment symbol button to post them to creator. One feedback at a time</p> 
+        </div>
+        Total: {{qandas.length}}
+      <iron-swipeable-container>
+        <template is="dom-repeat" items="{{qandas}}">
+          <paper-card class="reviewItem" elevation="3">
+            
+            <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
+              <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>
+            </template>
 
-              <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
-              <h4>Question</h4>
-              <p>{{item.question}}</p>
-              <h4>Answer</h4>
-              <p>{{item.answer}}</p>
-              <h4>Comments ?</h4> <em>Disabled for now</em>
-              <iron-autogrow-textarea id="comments_{{item._id}}" disabled>
-              </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
-              <p>{{item.comments}}</p>
-              <hr/>
-              <strip>
-                <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
-                <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
-                <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
-              </strip>
-            </paper-card>  
-          </template>
-        </iron-swipeable-container>
+            <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
+            <h4>Question</h4>
+            <p>{{item.question}}</p>
+            <h4>Answer</h4>
+            <p>{{item.answer}}</p>
+            <h4>Comments ?</h4> 
+            <iron-autogrow-textarea id="suggestions_qandas_{{index}}">
+            </iron-autogrow-textarea>
+            <paper-icon-button icon="communication:comment" on-click="handleButtonClick" type="suggestion"></paper-icon-button>
+            <p>{{item.comments}}</p>
+            <hr/>
+            <strip>
+              <paper-icon-button icon="delete" on-click="handleButtonClick"></paper-icon-button><span>Junk</span>
+              <paper-icon-button icon="image:control-point-duplicate" on-click="handleButtonClick"></paper-icon-button><span>Duplicate</span>
+              <paper-icon-button icon="check" on-click="handleButtonClick"></paper-icon-button><span>Finalize</span>
+            </strip>
+          </paper-card>  
+        </template>
+      </iron-swipeable-container>
     </template>
 
     <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
@@ -118,10 +118,10 @@
                   <h1>{{ingredient.NAME}} {{ingredient.qty}} {{ingredient.uom}}</h1>
                 </paper-chip>
               </template>
-              <h4>Comments ?</h4> <em>Disabled for now</em>
-              <iron-autogrow-textarea disabled>
+              <h4>Comments ?</h4> 
+              <iron-autogrow-textarea id="recipes_suggestion_{{index}}">
               </iron-autogrow-textarea>
-              <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
+              <paper-icon-button icon="communication:comment" type="suggestion" on-click="handleButtonClick"></paper-icon-button>
               <p>{{item.comments}}</p>
               <hr/>
               <strip>
@@ -158,10 +158,10 @@
           <paper-card class="reviewItem" elevation="3">
             <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
             <h2>{{item.name}}</h3>
-            <h4>Comments ?</h4> <em>Disabled for now</em>
-            <iron-autogrow-textarea disabled>
+            <h4>Comments ?</h4> 
+            <iron-autogrow-textarea>
             </iron-autogrow-textarea>
-            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
+            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button>
             <p>{{item.comments}}</p>
             <hr/>
             <strip>
@@ -199,10 +199,10 @@
             <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
             <h3> Tip:</h3>
             <p>{{item.tip}}</p>
-            <h4>Comments ?</h4> <em>Disabled for now</em>
-            <iron-autogrow-textarea id="item._id" disabled>
+            <h4>Comments ?</h4> 
+            <iron-autogrow-textarea id="item._id">
             </iron-autogrow-textarea>
-            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button disabled>
+            <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button>
             <p>{{item.comments}}</p>
             <hr/>
             <strip>
@@ -277,10 +277,10 @@
         _id:e.model.item._id,
       };
 
+      console.log("Suggestion: ", document.querySelector("#suggestions_qandas_" + e.model.index).textarea.value);
       console.log(e);
       // e.target.parent.appendChild(document.createTextNode("Reviewed !"));
       console.log(e.model.item._id);
-      console.log(this.$["comments_"+e.model.item._id]);
       switch(e.target.icon){
         case "communication:comment":
           console.log("You are about to comment ",e.model.item.question);
@@ -320,15 +320,19 @@
       switch(this.currentReviewModule){
         case "exercises":
           this.splice("exercises",e.model.index,1);
+          putBody.reviewerSuggestions = document.querySelector("#suggestions_exercises_" + e.model.index).textarea.value;
           break;
         case "qandas":
           this.splice("qandas",e.model.index,1);
+          putBody.reviewerSuggestions = document.querySelector("#suggestions_qandas_" + e.model.index).textarea.value;
           break;
         case "tips":
           this.splice("tips",e.model.index,1);
+          putBody.reviewerSuggestions = document.querySelector("#suggestions_tips_" + e.model.index).textarea.value;
           break;
         case "recipes":
           this.splice("recipes",e.model.index,1);
+          putBody.reviewerSuggestions = document.querySelector("#suggestions_recipes_" + e.model.index).textarea.value;
           break;
       }
 
