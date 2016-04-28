@@ -36940,7 +36940,7 @@ Polymer({
       <!-- <paper-radio-button name="nutritives" checked="{{nutritivesModuleChecked}}">Nutritives</paper-radio-button> -->
     </paper-radio-group>
     <template is="dom-if" if="{{qandasModuleChecked}}" class="recipesModuleChecked">
-        <iron-ajax id="ajax" auto="" url="/reviews/QandA" handle-as="json" last-response="{{qandas}}" on-response="initData" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="ajax" auto="" url="/reviews/QandA" handle-as="json" last-response="{{qandas}}" on-response="initData" on-error="initData" debounce-duration="300"></iron-ajax>
 
         <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
           </p><ul><li>Junk</li>
@@ -36975,7 +36975,7 @@ Polymer({
     </template>
 
     <template is="dom-if" if="{{recipesModuleChecked}}" class="recipesModuleChecked">
-      <iron-ajax id="ajax" auto="" url="/reviews/Recipe" handle-as="json" last-response="{{recipes}}" on-response="initData" debounce-duration="300"></iron-ajax>
+      <iron-ajax id="ajax" auto="" url="/reviews/Recipe" handle-as="json" on-response="initData" on-error="initData" debounce-duration="300"></iron-ajax>
 
         <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
           </p><ul><li>Junk</li>
@@ -37014,7 +37014,7 @@ Polymer({
     </template>
 
     <template is="dom-if" if="{{exercisesModuleChecked}}" class="exercisesModuleChecked">
-      <iron-ajax id="ajax" auto="" url="/reviews/Exercise" handle-as="json" last-response="{{exercises}}" on-response="initData" debounce-duration="300"></iron-ajax>
+      <iron-ajax id="ajax" auto="" url="/reviews/Exercise" handle-as="json" last-response="{{exercises}}" on-response="initData" on-error="initData" debounce-duration="300"></iron-ajax>
 
       <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
         </p><ul><li>Junk</li>
@@ -37046,7 +37046,7 @@ Polymer({
     </template>
 
     <template is="dom-if" if="{{tipsModuleChecked}}" class="tipsModuleChecked">
-      <iron-ajax id="ajax" auto="" url="/reviews/Tip" handle-as="json" last-response="{{tips}}" on-response="initData" debounce-duration="300"></iron-ajax>
+      <iron-ajax id="ajax" auto="" url="/reviews/Tip" handle-as="json" last-response="{{tips}}" on-response="initData" on-error="initData" debounce-duration="300"></iron-ajax>
 
       <div style="background:#f4f4f4; width:460px; padding:20px;"><p> You can mark an item as 
         </p><ul><li>Junk</li>
@@ -37078,6 +37078,10 @@ Polymer({
       </iron-swipeable-container>
     </template>
 
+    <paper-toast id="toast_review" duration="0" text=" You need to re-SignIn to review things">
+      <paper-button onclick="toast_review.toggle()" class="yellow-button">Okay !</paper-button>
+    </paper-toast>
+
 
   </template>
 </dom-module>
@@ -37097,7 +37101,27 @@ Polymer({
       },
       currentReviewModule:{type:Boolean}
     },
+    initData:function(e){
+      if(e.type == 'error'){
+        this.$.toast_review.open();
+        this.signout();
+      }
+    },
+    signout:function(e){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status);
+      };
+      xhr.open("GET",'/users/logout');
+      xhr.send(null);
 
+      //  The following must be put inside the callback. Let us see...
+      delete localStorage.loggedIn;
+      delete localStorage.username;
+      delete localStorage.userShortName;
+      location.reload(); 
+    },
     shortName:function(email){
       return email.split("@")[0].replace("."," ");
     },
