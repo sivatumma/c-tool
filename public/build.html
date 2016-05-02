@@ -36466,7 +36466,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <iron-ajax id="ajax" auto="" url="/data/facade" handle-as="json" last-response="{{facade}}" on-response="initData" debounce-duration="300"></iron-ajax>
 
-    <table><tbody><tr valign="top"><td>
+    <table>
+    <tbody><tr><td colspan="2">
+      <h2>Suggestions &amp; Reviews:</h2>
+        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
+          <strong>{{review.reviewer}}</strong> Says: <br>
+          <strong>Comments:</strong> {{review.reviewerSuggestions}}<br>
+          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br>
+        </template>
+
+      <br>
+      
+    </td></tr><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>
@@ -37008,7 +37019,7 @@ Polymer({
                 </paper-chip>
               </template>
               <h4>Comments ?</h4> 
-              <iron-autogrow-textarea id="recipes_suggestion_{{index}}">
+              <iron-autogrow-textarea id="suggestions_recipes_{{index}}">
               </iron-autogrow-textarea>
               <paper-icon-button icon="communication:comment" type="suggestion" on-click="handleButtonClick"></paper-icon-button>
               <p>{{item.comments}}</p>
@@ -37040,7 +37051,7 @@ Polymer({
             <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
             <h2>{{item.name}}</h2>
             <h4>Comments ?</h4> 
-            <iron-autogrow-textarea>
+            <iron-autogrow-textarea id="suggestions_exercises_{{index}}">
             </iron-autogrow-textarea>
             <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button>
             <p>{{item.comments}}</p>
@@ -37073,7 +37084,7 @@ Polymer({
             <h3> Tip:</h3>
             <p>{{item.tip}}</p>
             <h4>Comments ?</h4> 
-            <iron-autogrow-textarea id="item._id">
+            <iron-autogrow-textarea id="suggestions_tips_{{index}}">
             </iron-autogrow-textarea>
             <paper-icon-button icon="communication:comment" type="suggestion"></paper-icon-button>
             <p>{{item.comments}}</p>
@@ -37150,7 +37161,6 @@ Polymer({
         _id:e.model.item._id,
       };
 
-      console.log("Suggestion: ", document.querySelector("#suggestions_qandas_" + e.model.index).textarea.value);
       console.log(e);
       // e.target.parent.appendChild(document.createTextNode("Reviewed !"));
       console.log(e.model.item._id);
@@ -37177,6 +37187,11 @@ Polymer({
       var that = this;
 
       xhr.onload = function(res){
+        if(xhr.status == 401) {
+          alert("Session expired. Pls relogin");
+          this.$.toast_review.open();
+          this.signout();
+        }
         if(res.currentTarget.readyState == 4){
           console.log(res);
         }
@@ -37210,8 +37225,6 @@ Polymer({
       }
 
       xhr.open("PUT",'/reviews/' + modelRadioMapping[this.currentReviewModule]);
-      console.log("Current Clicked Radio Button : ", this.currentReviewModule );
-      console.log('/reviews/' + modelRadioMapping[this.currentReviewModule]);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       xhr.send(JSON.stringify(putBody));
     },
