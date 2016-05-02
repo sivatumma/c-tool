@@ -52,7 +52,7 @@
         <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Recipe</th><th>Serving Unit</th><th>Total KCals</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{recipes}}">
           <tr valign="top">
-            <td>
+            <td on-click="editThis">
               <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
             </td>
             <td on-click="editThis">{{item.name}}</td>
@@ -81,7 +81,7 @@
         <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
             <template is="dom-repeat" items="{{exercises}}">
             <tr valign="top">
-              <td>
+              <td on-click="editThis">
                 <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
               </td>
               <td on-click="editThis">{{item.name}}</td>
@@ -110,7 +110,7 @@
         <table class="normalTable"><tr><th>Reviewed?</th><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{tips}}">
           <tr valign="top">
-            <td>
+            <td on-click="editThis">
               <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
             </td>
             <td on-click="editThis">{{item.tip}}</td>
@@ -139,7 +139,7 @@
         <table class="normalTable"><tr><th>Reviewed?</th><th>Question</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{qandas}}">
           <tr valign="top">
-            <td>
+            <td on-click="editThis">
               <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
             </td>
             <td on-click="editThis">{{item.question}}</td>

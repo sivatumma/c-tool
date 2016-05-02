@@ -27,7 +27,7 @@ router.post('/:modelName', function(req, res, next) {
         model.find({
             $text: {
                 $search: question
-            }}, function(err, results) {
+            }}).exec(function(err, results) {
         	if(err) {res.status(500).send(err.message);}
             console.log(results.length);
             // callback
