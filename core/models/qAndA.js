@@ -25,5 +25,6 @@ questionAndAnswerSchema.add({
     }]
 });
 
+questionAndAnswerSchema.path('question').index({text : true});
 var QandA = mongoose.model('QandA', questionAndAnswerSchema);
 module.exports = QandA;

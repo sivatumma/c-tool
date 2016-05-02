@@ -13,6 +13,7 @@ var express = require('express'),
     data = require('./routes/data'),
     crud = require('./routes/crud'),
     reviews = require('./routes/reviews'),
+    search = require('./routes/search'),
     bulk = require('./routes/bulk'),
     mobileapp = require('./routes/mobileapp'),
     expressSession = require('express-session'),
@@ -46,6 +47,7 @@ app.use('/crud',crud);
 app.use('/bulk',bulk);
 app.use('/users',users);
 app.use('/reviews',reviews);
+app.use('/search',search);
 app.use('/mobileapp',mobileapp);
 
 

@@ -37009,6 +37009,11 @@ Polymer({
         <iron-swipeable-container>
           <template is="dom-repeat" items="{{recipes}}">
             <paper-card class="reviewItem" elevation="3">
+            
+              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
+                <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
+              </template>
+
               <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
               <h2>{{item.name}}</h2>
               <h4>Ingredients</h4>
@@ -37048,6 +37053,11 @@ Polymer({
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{exercises}}">
           <paper-card class="reviewItem" elevation="3">
+            
+            <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
+              <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
+            </template>
+
             <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
             <h2>{{item.name}}</h2>
             <h4>Comments ?</h4> 
@@ -37080,6 +37090,11 @@ Polymer({
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{tips}}">
           <paper-card class="reviewItem" elevation="3">
+            
+            <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
+              <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
+            </template>
+
             <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
             <h3> Tip:</h3>
             <p>{{item.tip}}</p>
