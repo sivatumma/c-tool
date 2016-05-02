@@ -16,3 +16,4 @@ tmp_*.js
 *.*~
 *.out
 .project
+npm-debug.log*

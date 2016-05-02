@@ -56,7 +56,18 @@ Example:
         on-response="initData"
         debounce-duration="300"></iron-ajax>
 
-    <table><tr valign="top"><td>
+    <table>
+    <tr><td colspan="2">
+      <h2>Suggestions &amp; Reviews:</h2>
+        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
+          <strong>{{review.reviewer}}</strong> Says: <br/>
+          <strong>Comments:</strong> {{review.reviewerSuggestions}}<br/>
+          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br/>
+        </template>
+
+      <br/>
+      
+    </td></tr><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>

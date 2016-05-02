@@ -49,7 +49,7 @@ router.put('/:modelName', function(req, res, next) {
 	// 	if(err){res.send({err:err});}
 	// 	res.status(200).send(updateConcern);
 	// });
-	model.findOneAndUpdate(filter, {$set:{reviews:[{reviewer:currentUser,reviewerFlag:req.body.reviewerFlag,reviewerSuggestions:req.body.reviewerSuggestions}]}},function(err, updateConcern) {
+	model.update(filter, {$set:{reviews:[{reviewer:currentUser,reviewerFlag:req.body.reviewerFlag,reviewerSuggestions:req.body.reviewerSuggestions}]}},function(err, updateConcern) {
 		if(err){res.send({err:err});}
 		
 		res.status(200).send(updateConcern);
