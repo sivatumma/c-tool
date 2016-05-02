@@ -28,8 +28,8 @@ router.post('/:modelName', function(req, res, next) {
             $text: {
                 $search: question
                 }},{limit:10}).exec(function(err, results) {
-        	if(err) {res.status(500).send(err.message);}
-            console.log(results.length);
+        	if(err) {return res.status(500).send(err.message);}
+            return res.status(200).send(results);
             // callback
         });
     } else {
