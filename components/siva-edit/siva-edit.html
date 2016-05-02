@@ -6,7 +6,7 @@
       display: block;
       box-sizing: border-box;
     }
-    :host div.normalTable{max-height:400px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
+    :host div.normalTable{max-height:400px; width:600px; overflow:auto; float:right; padding:20px;border-collapse:collapse; border:1px solid silver; }
     :host table.normalTable td, th{padding:10px; text-align:left;margin:3px; border-bottom:1px solid silver;}
 
     :host h4{border-bottom:1px solid silver; padding-bottom:4px;}
@@ -41,15 +41,20 @@
         <iron-ajax
           id="totalData"
           auto
-          url="/crud/Recipe?username={{username}}"
+          url="/crud/Recipe"
           handle-as="json"
           last-response="{{recipes}}"
           on-response="gotTotalData"
+          on-error="gotTotalData"
           debounce-duration="300"></iron-ajax>
           <div class='normalTable'>
-        <table class="normalTable"><tr><th>Name of Recipe</th><th>Serving Unit</th><th>Total KCals</th><th>Doctor</th></tr>
+        <h4>Total : {{recipes.length}}</h4> 
+        <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Recipe</th><th>Serving Unit</th><th>Total KCals</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{recipes}}">
           <tr valign="top">
+            <td>
+              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
+            </td>
             <td on-click="editThis">{{item.name}}</td>
             <td on-click="editThis">{{item.servingUnit}}</td>
             <td on-click="editThis">{{item.totalKCals}}</td>
@@ -66,15 +71,19 @@
         <iron-ajax
           id="totalData"
           auto
-          url="/crud/Exercise?username={{username}}"
+          url="/crud/Exercise"
           handle-as="json"
           last-response="{{exercises}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
-          <table class="normalTable"><tr><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
+        <h4>Total : {{exercises.length}}</h4> 
+        <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
             <template is="dom-repeat" items="{{exercises}}">
             <tr valign="top">
+              <td>
+                <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
+              </td>
               <td on-click="editThis">{{item.name}}</td>
               <td on-click="editThis">{{item.time}}</td>
               <td on-click="editThis">{{item.caloriesBurnt}}</td>
@@ -91,15 +100,19 @@
         <iron-ajax
           id="totalData"
           auto
-          url="/crud/Tip?username={{username}}"
+          url="/crud/Tip"
           handle-as="json"
           last-response="{{tips}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
-        <table class="normalTable"><tr><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
+        <h4>Total : {{tips.length}}</h4> 
+        <table class="normalTable"><tr><th>Reviewed?</th><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{tips}}">
           <tr valign="top">
+            <td>
+              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
+            </td>
             <td on-click="editThis">{{item.tip}}</td>
             <td on-click="editThis">{{item.suitableForDisease}}</td>
             <td on-click="editThis">{{item.createdBy}}</td>
@@ -116,15 +129,19 @@
         <iron-ajax
           id="totalData"
           auto
-          url="/crud/QandA?username={{username}}"
+          url="/crud/QandA"
           handle-as="json"
           last-response="{{qandas}}"
           on-response="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
-        <table class="normalTable"><tr><th>Question</th><th>Doctor</th></tr>
+        <h4>Total : {{qandas.length}}</h4> 
+        <table class="normalTable"><tr><th>Reviewed?</th><th>Question</th><th>Doctor</th></tr>
           <template is="dom-repeat" items="{{qandas}}">
           <tr valign="top">
+            <td>
+              <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
+            </td>
             <td on-click="editThis">{{item.question}}</td>
             <td><em><strong>{{item.createdBy}}</strong></em></td>
           </tr>
@@ -135,6 +152,9 @@
         <siva-qa-creation data="{{currentModel}}"></siva-qa-creation>
       </template>
 
+    <paper-toast id="toast_edit" duration="0"  text="Please re-SignIn - Session Expired">
+      <paper-button onclick="toast_edit.toggle()" class="yellow-button">Okay !</paper-button>
+    </paper-toast>
 
   </template>
 </dom-module>
@@ -156,7 +176,28 @@
     },
 
     gotTotalData:function(e){
-      console.log(e.detail.response);
+      if(e.type == 'error'){
+        this.$.toast_edit.open();
+        this.signout();
+      }
+    },
+    signout:function(e){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status);
+      };
+      xhr.open("GET",'/users/logout');
+      xhr.send(null);
+
+      //  The following must be put inside the callback. Let us see...
+      delete localStorage.loggedIn;
+      delete localStorage.username;
+      delete localStorage.userShortName;
+      location.reload(); 
+    },
+    greaterThanZero:function(n){
+      return n>0;
     },
 
     editThis:function(e){

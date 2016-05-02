@@ -28,7 +28,7 @@ router.get('/:modelName', function(req, res, next) {
 	url = '/crud/' + req.params.modelName + "?username=" + reviewee;
 	
 	var filter = (currentUser) ? {createdBy: new RegExp('^'+reviewee, "i")} : {};
-	model.find(filter, function(err, data) {
+	model.find(filter).sort({reviews:-1}).exec(function(err, data) {
 		if(err){res.send({err:err});}
 		res.status(200).send(data);
 	  //Do your action here..

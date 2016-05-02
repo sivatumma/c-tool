@@ -11,12 +11,16 @@ var express = require('express'),
 	Tip = require('../core/models/tip');
 
 router.get('/:modelName', function(req, res, next) {
-	console.log(req.session);
+	var model = mongoose.model(req.params.modelName),
+		currentUser,reviewee,
+		session = req.session;
 
-	var filter = (req.query.username && req.query.username!="") ? {createdBy:req.query.username} : {};
-	var model = mongoose.model(req.params.modelName);
+	if(session.user){ currentUser = session.user.username; }
+	if(!currentUser) {return res.status(401).send("You are not authorized to use the current API");}
+
+	var filter = {createdBy:currentUser};
 	model.find(filter).sort({
-        createdBy: 1 //Sort by Date Added DESC
+        reviews: -1, //Sort by Date Added DESC
     }).exec(function(err,data){
 		if(err){res.send({err:err});}
 		res.status(200).send(data);
