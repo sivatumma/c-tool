@@ -19,5 +19,16 @@ exerciseSchema.add({
         reviewAcknowledged: Boolean
     }]
 });
+
+exerciseSchema.add({
+    reviewer: String,
+    reviewerFlag: {
+        type: String,
+        enum: "Junk,Duplicate,Final".split(',')
+    },
+    reviewerSuggestions: String,
+    reviewAcknowledged: Boolean
+});
+
 var Exercise = mongoose.model('Exercise', exerciseSchema);
 module.exports = Exercise;
