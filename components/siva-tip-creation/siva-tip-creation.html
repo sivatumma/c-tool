@@ -23,9 +23,13 @@ Example:
       box-sizing: border-box;
     }
 
-  :host paper-card{background:yellow;}
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
   :host paper-button.green {
     background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
     color: white;
   }
   :host paper-button.green[active] {
@@ -74,6 +78,24 @@ Example:
     </paper-toast>
 </form>
 
+    <br/>
+    <paper-card elevation="2" heading="Suggestions & Reviews">
+      <template is="dom-repeat" items="{{tip.reviews}}" as="review">
+        <strong>{{review.reviewer}}</strong> Says: <br/><br/>
+        {{review.reviewerSuggestions}}<br/><br/>
+        <strong>Review Flags:</strong> {{review.reviewerFlag}}<br/><br/>
+        <template is="dom-if" if="{{tip.reviews.length>0}}">
+          <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+            <template is="dom-if" if="review.reviewAcknowledged">
+              This is final
+            </template>
+            <template is="dom-if" if="!review.reviewAcknowledged">
+              I acknowledge this
+            </template>
+          </paper-button>
+        </template>
+      </template>
+    </paper-card>
 
   </template>
 </dom-module>
@@ -118,6 +140,22 @@ Example:
       // removed from a document.
       //
       // Use this to clean up anything you did in `attached`.
+    },
+    acknowledgeSuggestions:function(){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status,res, xhr.response);
+        if(xhr.status == 200){
+          var x = document.querySelector("paper-button#acknowledged");
+          x.setAttribute("style","background-color: green;");
+          x.innerText="Thanks. Incorporate Suggestions & Save";
+        }
+      };
+      this.tip.reviews[0].reviewAcknowledged = true;
+      xhr.open("PUT",'/crud/Tip');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(this.tip));
     },
 
     addTip: function(e){

@@ -35979,6 +35979,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       box-sizing: border-box;
     }
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
+  :host paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+  }
 
   :host paper-card{ width:300px; background:#f9f9f9;}
   :host p{ margin-top:0px; font-size:90%;}
@@ -36019,6 +36028,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-button onclick="toast_1.toggle()" class="yellow-button">Okay !</paper-button>
     </paper-toast>
   </form>
+
+
+    <br>
+    <paper-card elevation="2" heading="Suggestions &amp; Reviews">
+      <template is="dom-repeat" items="{{exercise.reviews}}" as="review">
+        <strong>{{review.reviewer}}</strong> Says: <br><br>
+        {{review.reviewerSuggestions}}<br><br>
+        <strong>Review Flags:</strong> {{review.reviewerFlag}}<br><br>
+        <template is="dom-if" if="{{exercise.reviews.length>0}}">
+          <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+            <template is="dom-if" if="{{review.reviewAcknowledged}}">
+              This is final
+            </template>
+            <template is="dom-if" if="{{!review.reviewAcknowledged}}">
+              I acknowledge this
+            </template>
+          </paper-button>
+        </template>
+      </template>
+    </paper-card>
+
   </template>
 </dom-module>
 
@@ -36064,6 +36094,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // removed from a document.
       //
       // Use this to clean up anything you did in `attached`.
+    },
+    acknowledgeSuggestions:function(){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status,res, xhr.response);
+        if(xhr.status == 200){
+          var x = document.querySelector("paper-button#acknowledged");
+          x.setAttribute("style","background-color: green;");
+          x.innerText="Thanks. Incorporate Suggestions & Save";
+        }
+      };
+      this.exercise.reviews[0].reviewAcknowledged = true;
+      xhr.open("PUT",'/crud/Exercise');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(this.exercise));
     },
 
     addExercise: function(e){
@@ -36188,7 +36234,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           {{review.reviewerSuggestions}}<br><br>
           <strong>Review Flags:</strong> {{review.reviewerFlag}}<br><br>
           <template is="dom-if" if="{{data.reviews.length>0}}">
-            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">I acknowledge this</paper-button>
+            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+              <template is="dom-if" if="{{review.reviewAcknowledged}}">
+                This is final
+              </template>
+              <template is="dom-if" if="{{!review.reviewAcknowledged}}">
+                I acknowledge this
+              </template>
+            </paper-button>
           </template>
         </template>
       </paper-card>
@@ -36323,9 +36376,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       box-sizing: border-box;
     }
 
-  :host paper-card{background:yellow;}
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
   :host paper-button.green {
     background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
     color: white;
   }
   :host paper-button.green[active] {
@@ -36374,6 +36431,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-toast>
 </form>
 
+    <br>
+    <paper-card elevation="2" heading="Suggestions &amp; Reviews">
+      <template is="dom-repeat" items="{{tip.reviews}}" as="review">
+        <strong>{{review.reviewer}}</strong> Says: <br><br>
+        {{review.reviewerSuggestions}}<br><br>
+        <strong>Review Flags:</strong> {{review.reviewerFlag}}<br><br>
+        <template is="dom-if" if="{{tip.reviews.length>0}}">
+          <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+            <template is="dom-if" if="review.reviewAcknowledged">
+              This is final
+            </template>
+            <template is="dom-if" if="!review.reviewAcknowledged">
+              I acknowledge this
+            </template>
+          </paper-button>
+        </template>
+      </template>
+    </paper-card>
 
   </template>
 </dom-module>
@@ -36418,6 +36493,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // removed from a document.
       //
       // Use this to clean up anything you did in `attached`.
+    },
+    acknowledgeSuggestions:function(){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status,res, xhr.response);
+        if(xhr.status == 200){
+          var x = document.querySelector("paper-button#acknowledged");
+          x.setAttribute("style","background-color: green;");
+          x.innerText="Thanks. Incorporate Suggestions & Save";
+        }
+      };
+      this.tip.reviews[0].reviewAcknowledged = true;
+      xhr.open("PUT",'/crud/Tip');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(this.tip));
     },
 
     addTip: function(e){
@@ -36486,7 +36577,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: var(--paper-green-500);
       color: white;
     }
-    :host paper-card{margin:0px;}
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
+  :host paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+  }
     :host td:first-child{ background:#f4f4f4; padding:0px 10px; margin-right:20px !important; width:300px !important;}
   </style>
 
@@ -36494,17 +36593,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="ajax" auto="" url="/data/facade" handle-as="json" last-response="{{facade}}" on-response="initData" debounce-duration="300"></iron-ajax>
 
     <table>
-    <tbody><tr><td colspan="2">
-      <h2>Suggestions &amp; Reviews:</h2>
-        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
-          <strong>{{review.reviewer}}</strong> Says: <br>
-          <strong>Comments:</strong> {{review.reviewerSuggestions}}<br>
-          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br>
-        </template>
-
-      <br>
-      
-    </td></tr><tr valign="top"><td>
+    <tbody><tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <paper-input id="recipeName" label="What is the Recipe Name" required="" auto-validate="" error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>
@@ -36555,6 +36644,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-button raised="" class="green" on-click="addRecipe">Save Recipe</paper-button>
 
     </form>
+
+
+      <br>
+      <paper-card elevation="2" heading="Suggestions &amp; Reviews">
+        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
+          <strong>{{review.reviewer}}</strong> Says: <br><br>
+          {{review.reviewerSuggestions}}<br><br>
+          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br><br>
+          <template is="dom-if" if="{{recipe.reviews.length>0}}">
+            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+              <template is="dom-if" if="{{review.reviewAcknowledged}}">
+                This is final
+              </template>
+              <template is="dom-if" if="{{!review.reviewAcknowledged}}">
+                I acknowledge this
+              </template>
+            </paper-button>
+          </template>
+        </template>
+      </paper-card>
     </td>
     <td>
       <div class="flex layout horizontal">
@@ -36729,6 +36838,22 @@ Polymer({
     }
     totalsObject.NAME = "Totals :";
     this.push('recipe.ingredients', totalsObject);
+  },
+  acknowledgeSuggestions:function(){
+    var xhr = new XMLHttpRequest();
+    var that = this;
+    xhr.onload = function(res){
+      console.log(xhr.status,res, xhr.response);
+      if(xhr.status == 200){
+        var x = document.querySelector("paper-button#acknowledged");
+        x.setAttribute("style","background-color: green;");
+        x.innerText="Thanks. Incorporate Suggestions & Save";
+      }
+    };
+    this.recipe.reviews[0].reviewAcknowledged = true;
+    xhr.open("PUT",'/crud/Recipe');
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify(this.recipe));
   },
 
   addRecipe: function(e){

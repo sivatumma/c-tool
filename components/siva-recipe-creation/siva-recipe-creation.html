@@ -42,7 +42,15 @@ Example:
       background-color: var(--paper-green-500);
       color: white;
     }
-    :host paper-card{margin:0px;}
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
+  :host paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+  }
     :host td:first-child{ background:#f4f4f4; padding:0px 10px; margin-right:20px !important; width:300px !important;}
   </style>
 
@@ -57,17 +65,7 @@ Example:
         debounce-duration="300"></iron-ajax>
 
     <table>
-    <tr><td colspan="2">
-      <h2>Suggestions &amp; Reviews:</h2>
-        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
-          <strong>{{review.reviewer}}</strong> Says: <br/>
-          <strong>Comments:</strong> {{review.reviewerSuggestions}}<br/>
-          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br/>
-        </template>
-
-      <br/>
-      
-    </td></tr><tr valign="top"><td>
+    <tr valign="top"><td>
       <!-- <h1> Create new Recipe Data </h1> -->
     <form is="iron-form" id="form" method="post" action="/form/handler">
       <paper-input id="recipeName" label="What is the Recipe Name" required auto-validate error-message="Name shouldn't be empty" value="{{recipe.name}}"></paper-input>
@@ -118,6 +116,26 @@ Example:
       <paper-button raised class="green" on-click="addRecipe">Save Recipe</paper-button>
 
     </form>
+
+
+      <br/>
+      <paper-card elevation="2" heading="Suggestions & Reviews">
+        <template is="dom-repeat" items="{{recipe.reviews}}" as="review">
+          <strong>{{review.reviewer}}</strong> Says: <br/><br/>
+          {{review.reviewerSuggestions}}<br/><br/>
+          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br/><br/>
+          <template is="dom-if" if="{{recipe.reviews.length>0}}">
+            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+              <template is="dom-if" if="{{review.reviewAcknowledged}}">
+                This is final
+              </template>
+              <template is="dom-if" if="{{!review.reviewAcknowledged}}">
+                I acknowledge this
+              </template>
+            </paper-button>
+          </template>
+        </template>
+      </paper-card>
     </td>
     <td>
       <DIV class="flex layout horizontal">
@@ -292,6 +310,22 @@ Polymer({
     }
     totalsObject.NAME = "Totals :";
     this.push('recipe.ingredients', totalsObject);
+  },
+  acknowledgeSuggestions:function(){
+    var xhr = new XMLHttpRequest();
+    var that = this;
+    xhr.onload = function(res){
+      console.log(xhr.status,res, xhr.response);
+      if(xhr.status == 200){
+        var x = document.querySelector("paper-button#acknowledged");
+        x.setAttribute("style","background-color: green;");
+        x.innerText="Thanks. Incorporate Suggestions & Save";
+      }
+    };
+    this.recipe.reviews[0].reviewAcknowledged = true;
+    xhr.open("PUT",'/crud/Recipe');
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify(this.recipe));
   },
 
   addRecipe: function(e){

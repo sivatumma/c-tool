@@ -93,7 +93,14 @@ Example:
           {{review.reviewerSuggestions}}<br/><br/>
           <strong>Review Flags:</strong> {{review.reviewerFlag}}<br/><br/>
           <template is="dom-if" if="{{data.reviews.length>0}}">
-            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">I acknowledge this</paper-button>
+            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">
+              <template is="dom-if" if="{{review.reviewAcknowledged}}">
+                This is final
+              </template>
+              <template is="dom-if" if="{{!review.reviewAcknowledged}}">
+                I acknowledge this
+              </template>
+            </paper-button>
           </template>
         </template>
       </paper-card>
