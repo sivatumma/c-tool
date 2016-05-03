@@ -36121,9 +36121,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       width:400px;
     }
 
-  :host paper-card{background:#f9f9f9;}
+  :host paper-card{background:#f9f9f9; text-align:left; padding:10px;}
   :host paper-button.green {
     background-color: var(--paper-green-500);
+    color: white;
+  }
+  :host paper-button.red {
+    background-color: var(--paper-red-500);
     color: white;
   }
   :host paper-button.green[active] {
@@ -36166,13 +36170,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-autogrow-textarea id="answer" placeholder="Type the answer here" style="height: 150px;" value="{{data.answer}}"></iron-autogrow-textarea>    
 
       <br>
-      <h2>Suggestions &amp; Reviews:</h2>
-        <template is="dom-repeat" items="{{data.reviews}}" as="review">
-          <strong>{{review.reviewer}}</strong> Says: <br>
-          <strong>Comments:</strong> {{review.reviewerSuggestions}}<br>
-          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br>
-        </template>
-
       <br>
       <template is="dom-if" if="{{data.nosave}}">
         <!-- <div style="color:red;">The save Button is disabled for now. We will inform once this is stable</div> -->
@@ -36182,6 +36179,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button onclick="toast_q_and_a.toggle()" class="yellow-button">Okay !</paper-button>
       </paper-toast>
     </form> 
+
+
+      <br>
+      <paper-card elevation="2" heading="Suggestions &amp; Reviews">
+        <template is="dom-repeat" items="{{data.reviews}}" as="review">
+          <strong>{{review.reviewer}}</strong> Says: <br><br>
+          {{review.reviewerSuggestions}}<br><br>
+          <strong>Review Flags:</strong> {{review.reviewerFlag}}<br><br>
+          <template is="dom-if" if="{{data.reviews.length>0}}">
+            <paper-button id="acknowledged" class="red" on-click="acknowledgeSuggestions">I acknowledge this</paper-button>
+          </template>
+        </template>
+      </paper-card>
+
   </template>
 <!--  
   <template is="dom-if" if="{{viewType=='view'}}">
@@ -36238,6 +36249,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _isCreateView:function(who){
       console.log(who, localStorage.username);
       return who == '' || who == localStorage.username;
+    },
+    acknowledgeSuggestions:function(){
+      var xhr = new XMLHttpRequest();
+      var that = this;
+      xhr.onload = function(res){
+        console.log(xhr.status,res, xhr.response);
+        if(xhr.status == 200){
+          var x = document.querySelector("paper-button#acknowledged");
+          x.setAttribute("style","background-color: green;");
+          x.innerText="Thanks. Incorporate Suggestions & Save";
+        }
+      };
+      this.data.reviews[0].reviewAcknowledged = true;
+      xhr.open("PUT",'/crud/QandA');
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify(this.data));
     },
     adddata: function(e){
       var xhr = new XMLHttpRequest();
