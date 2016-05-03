@@ -41,7 +41,11 @@ router.put('/:modelName', function(req, res, next) {
 	console.log(req.query);
 	delete req.body._id;
 	console.log(req.body.question, req.body.answer);
-	model.update({_id:_id},req.body,{multi:true},function(err,data) {
+	// model.update({_id:_id},req.body,{multi:true},function(err,data) {
+	// 	if(err){res.status(500).send(err.message);}
+	// 	else res.status(200).send(data);
+	// });
+	model.findOneAndUpdate({_id:_id},req.body,{multi:true},function(err,data) {
 		if(err){res.status(500).send(err.message);}
 		else res.status(200).send(data);
 	});

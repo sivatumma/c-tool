@@ -50,7 +50,7 @@ router.put('/:modelName', function(req, res, next) {
 	// 	res.status(200).send(updateConcern);
 	// });
 	model.update(filter, {$set:{reviews:[{reviewer:currentUser,reviewerFlag:req.body.reviewerFlag,reviewerSuggestions:req.body.reviewerSuggestions}]}},function(err, updateConcern) {
-		if(err){res.send({err:err});}
+		if(err){return res.status(503).send({err:err});}
 		
 		res.status(200).send(updateConcern);
 	});
