@@ -27,7 +27,7 @@ router.get('/:modelName', function(req, res, next) {
 	reviewee = reviewerMappings[currentUser.split("@")[0]].reviewee,
 	url = '/crud/' + req.params.modelName + "?username=" + reviewee;
 	
-	var filter = (currentUser) ? {createdBy: new RegExp('^'+reviewee, "i")} : {};
+	var filter = (currentUser) ? {createdBy: new RegExp('^'+reviewee, "i"), "reviews.reviewerFlag":{$ne:"final"}} : {};
 	model.find(filter).sort({reviews:-1}).exec(function(err, data) {
 		if(err){res.send({err:err});}
 		res.status(200).send(data);
