@@ -12,6 +12,10 @@ var path = require('path'),
 
 module.exports = function(env) {
     var main = {
+        gcm : {
+            url: "http://gcmdev.callhealth.com",
+            method: "POST"
+        },
         application: {
            root_path: path.join('/home', 'siva', 'Downloads', 'chpe-polymer-1.0.3'),
             // root_path: path.join('E:','Work','chpe-1.0'),
