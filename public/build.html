@@ -37200,21 +37200,34 @@ Polymer({
           Total: {{recipes.length}}
         <iron-swipeable-container>
           <template is="dom-repeat" items="{{recipes}}">
-            <paper-card class="reviewItem" elevation="3">
+            <paper-card class="reviewItem disable-swipe" elevation="3">
             
               <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
                 <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
               </template>
 
               <div>Creator: <span class="capitalize">{{shortName(item.createdBy)}}</span></div>
-              <h2>{{item.name}}</h2>
+              <h2>{{item.name}}</h2> 
               <h4>Ingredients</h4>
               <template is="dom-repeat" items="{{item.ingredients}}" as="ingredient">
-                <paper-chip>
-                  <iron-icon class="icon" icon=""></iron-icon>
-                  <h1>{{ingredient.NAME}} {{ingredient.qty}} {{ingredient.uom}}</h1>
-                </paper-chip>
+                <strong>{{ingredient.NAME}} {{ingredient.qty}} {{ingredient.uom}}</strong><br>
+                  <template is="dom-if" if="{{isTotals(ingredient.NAME)}}">
+                  <h1>{{ingredient.NAME}}</h1>
+        <p>
+                  <span>MOISTURE_GM: {{ingredient.MOISTURE_GM}}</span>,<br>
+                  <span>PROTEIN_GM: {{ingredient.PROTEIN_GM}}</span>,<br>
+                  <span>FAT_GM: {{ingredient.FAT_GM}}</span>,<br>
+                  <span>MINERALS_GM: {{ingredient.MINERALS_GM}}</span>,<br>
+                  <span>FIBER_GM: {{ingredient.FIBER_GM}}</span>,<br>
+                  <span>CARBOHYDRATES_GM: {{ingredient.CARBOHYDRATES_GM}}</span>,<br>
+                  <span>ENERGY_KCALS: {{ingredient.ENERGY_KCALS}}</span>,<br>
+                  <span>CALCIUM_MG: {{ingredient.CALCIUM_MG}}</span>,<br>
+                  <span>PHOSPHOROUS_MG: {{ingredient.PHOSPHOROUS_MG}}</span>,<br>
+                  <span>IRON_MG: {{ingredient.IRON_MG}}</span><br>
+               </p></template>
               </template>
+
+
               <h4>Comments ?</h4> 
               <iron-autogrow-textarea id="suggestions_recipes_{{index}}">
               </iron-autogrow-textarea>
@@ -37359,6 +37372,9 @@ Polymer({
     },
     gotTotalData:function(e){
       console.log(e.detail.response);
+    },
+    isTotals:function(x){
+      return x =="Totals :";
     },
     greaterThanZero:function(n){
       return n>0;
