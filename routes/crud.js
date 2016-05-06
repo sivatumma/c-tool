@@ -18,7 +18,7 @@ router.get('/:modelName', function(req, res, next) {
 	if(session.user){ currentUser = session.user.username; }
 	if(!currentUser) {return res.status(401).send("You are not authorized to use the current API");}
 
-	var filter = {createdBy:currentUser, "reviews.reviewerFlag":{$ne:"final"}};
+	var filter = {createdBy:currentUser,  $or:[{"reviews.reviewerFlag":{$ne:"final"}},{"reviews.reviewAcknowledged":false}]};
 	model.find(filter).sort({
         reviews: -1, //Sort by Date Added DESC
     }).exec(function(err,data){

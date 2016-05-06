@@ -60,7 +60,7 @@
         Total: {{qandas.length}}
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{qandas}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>
@@ -173,7 +173,7 @@
       <template is="dom-if" if="{{exercises.length}}">Total: {{exercises.length}}</template>
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{exercises}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>
@@ -218,7 +218,7 @@
       <template is="dom-if" if="{{tips.length}}">Total: {{tips.length}}</template>
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{tips}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed &#x2713;</strong>

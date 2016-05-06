@@ -36311,7 +36311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(xhr.status == 200){
           var x = document.querySelector("paper-button#acknowledged");
           x.setAttribute("style","background-color: green;");
-          x.innerText="Thanks. Incorporate Suggestions & Save";
+          x.value="Thanks. Incorporate Suggestions & Save";
         }
       };
       this.data.reviews[0].reviewAcknowledged = true;
@@ -37160,7 +37160,7 @@ Polymer({
         Total: {{qandas.length}}
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{qandas}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
@@ -37257,7 +37257,7 @@ Polymer({
       <template is="dom-if" if="{{exercises.length}}">Total: {{exercises.length}}</template>
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{exercises}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
@@ -37294,7 +37294,7 @@ Polymer({
       <template is="dom-if" if="{{tips.length}}">Total: {{tips.length}}</template>
       <iron-swipeable-container>
         <template is="dom-repeat" items="{{tips}}">
-          <paper-card class="reviewItem" elevation="3">
+          <paper-card class="reviewItem disable-swipe" elevation="3">
             
             <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}">
               <strong style="float:right; color:red;padding:10px; background: #f0f0f0;">This had been already reviewed ✓</strong>
