@@ -36004,12 +36004,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <h1>Create New Exercise</h1>
     <form is="iron-form" id="form" method="post" action="/form/handler">
     <paper-card elevation="4">
-    <div class="card-actions">
       <paper-input id="name" required="" auto-validate="" error-message="Exercise Name shouldn't be empty" value="{{exercise.name}}" label="Name of the Exercise"></paper-input>
       <paper-input prefix="KG" type="number" value="{{exercise.weight}}" label="Weight of a person (KG)"></paper-input>
       <p>Take any weight. This weight will be taken as basemark for creating calorific consumption of a person of any weight</p>
       <paper-input prefix="Minutes" type="number" value="{{exercise.time}}" label="Time (Minutes)"></paper-input>
-      <paper-input prefix="Minutes" type="number" value="{{exercise.caloriesBurn}}" label="Calories Burned"></paper-input>
+      <paper-input prefix="" type="number" value="{{exercise.met}}" label="MET VALUE"></paper-input>
       <paper-dropdown-menu label="suitableFor" value="{{exercise.suitableFor}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
@@ -36017,7 +36016,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-item>Both</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
-    </div>
     </paper-card>
 
     <br>
@@ -36977,15 +36975,14 @@ Polymer({
         <iron-ajax id="totalData" auto="" url="/crud/Exercise" handle-as="json" last-response="{{exercises}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
         <div class="normalTable">
         <h4>Total : {{exercises.length}}</h4> 
-        <table class="normalTable"><tbody><tr><th>Reviewed?</th><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
+        <table class="normalTable"><tbody><tr><th>Reviewed?</th><th>Name of Exercise</th><th>MET VALUE</th><th>Calories Burn</th><th>Doctor</th></tr>
             <template is="dom-repeat" items="{{exercises}}">
             <tr valign="top">
               <td on-click="editThis">
                 <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>✓</span></template>
               </td>
               <td on-click="editThis">{{item.name}}</td>
-              <td on-click="editThis">{{item.time}}</td>
-              <td on-click="editThis">{{item.caloriesBurnt}}</td>
+              <td on-click="editThis">{{item.met}}</td>
               <td><em><strong>{{item.createdBy}}</strong></em></td>
             </tr>
             </template>
