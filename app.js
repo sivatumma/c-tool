@@ -16,6 +16,7 @@ var express = require('express'),
     search = require('./routes/search'),
     bulk = require('./routes/bulk'),
     mobileapp = require('./routes/mobileapp'),
+    appCache = require('./routes/appCache'),
     expressSession = require('express-session'),
     passport = require('passport'),
     app = express();
@@ -49,6 +50,7 @@ app.use('/users',users);
 app.use('/reviews',reviews);
 app.use('/search',search);
 app.use('/mobileapp',mobileapp);
+app.use('/appCache',appCache);
 
 
 // view engine setup

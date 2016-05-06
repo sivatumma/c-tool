@@ -20,6 +20,8 @@ exerciseSchema.add({
     }]
 });
 
+exerciseSchema.add({met:Number});
+
 exerciseSchema.add({
     reviewer: String,
     reviewerFlag: {
