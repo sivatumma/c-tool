@@ -9,7 +9,7 @@ var reviewerMappings = {
 	"naazia.kauser":{reviewee:"sarojanandam.mattagunja"},
 	"sarojanandam.mattagunja":{reviewee:"merlin.annieraj"},
 	"merlin.annieraj":{reviewee:"naazia.kauser"},
-	"rajasekhar.vanapalli":{reviewee:"siva.tumma"},
+	"rajasekhar.vanapalli":{reviewee:"solomon.ch"},
 	"solomon.ch":{reviewee:"kalpana.payagulla"},
 	"kalpana.payagulla":{reviewee:"krishna.swathi"},
 	"krishna.swathi":{reviewee:"priyanka.gupta"},
