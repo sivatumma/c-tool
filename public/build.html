@@ -36972,7 +36972,7 @@ Polymer({
 
       <!--  This will be shown when Exercises radio button is Checked   -->
       <template is="dom-if" if="{{exercisesModuleChecked}}">
-        <iron-ajax id="totalData" auto="" url="/crud/Exercise" handle-as="json" last-response="{{exercises}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="totalData" auto="" url="/crud/Exercise" handle-as="json" last-response="{{exercises}}" on-response="gotTotalData" on-error="gotTotalData" debounce-duration="300"></iron-ajax>
         <div class="normalTable">
         <h4>Total : {{exercises.length}}</h4> 
         <table class="normalTable"><tbody><tr><th>Reviewed?</th><th>Name of Exercise</th><th>MET VALUE</th><th>Calories Burn</th><th>Doctor</th></tr>
@@ -36993,7 +36993,7 @@ Polymer({
 
       <!--  This will be shown when Tips radio button is Checked   -->
       <template is="dom-if" if="{{tipsModuleChecked}}">
-        <iron-ajax id="totalData" auto="" url="/crud/Tip" handle-as="json" last-response="{{tips}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="totalData" auto="" url="/crud/Tip" handle-as="json" last-response="{{tips}}" on-response="gotTotalData" on-error="gotTotalData" debounce-duration="300"></iron-ajax>
         <div class="normalTable">
         <h4>Total : {{tips.length}}</h4> 
         <table class="normalTable"><tbody><tr><th>Reviewed?</th><th>Tip</th><th>For Diseases</th><th>Category</th><th>Doctor</th></tr>
@@ -37015,7 +37015,7 @@ Polymer({
 
       <!--  This will be shown when Q & As radio button is Checked   -->
       <template is="dom-if" id="qAndAviewList" if="{{qandasModuleChecked}}">
-        <iron-ajax id="totalData" auto="" url="/crud/QandA" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="totalData" auto="" url="/crud/QandA" handle-as="json" last-response="{{qandas}}" on-response="gotTotalData" on-error="gotTotalData" debounce-duration="300"></iron-ajax>
         <div class="normalTable">
         <h4>Total : {{qandas.length}}</h4> 
         <table class="normalTable"><tbody><tr><th>Reviewed?</th><th>Question</th><th>Doctor</th></tr>
@@ -37058,7 +37058,9 @@ Polymer({
     },
 
     gotTotalData:function(e){
+      console.log(e);
       if(e.type == 'error'){
+        alert("Session expired. Pls relogin");
         this.$.toast_edit.open();
         this.signout();
       }

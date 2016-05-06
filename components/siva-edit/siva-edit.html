@@ -75,6 +75,7 @@
           handle-as="json"
           last-response="{{exercises}}"
           on-response="gotTotalData"
+          on-error="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
         <h4>Total : {{exercises.length}}</h4> 
@@ -103,6 +104,7 @@
           handle-as="json"
           last-response="{{tips}}"
           on-response="gotTotalData"
+          on-error="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
         <h4>Total : {{tips.length}}</h4> 
@@ -132,6 +134,7 @@
           handle-as="json"
           last-response="{{qandas}}"
           on-response="gotTotalData"
+          on-error="gotTotalData"
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
         <h4>Total : {{qandas.length}}</h4> 
@@ -175,7 +178,9 @@
     },
 
     gotTotalData:function(e){
+      console.log(e);
       if(e.type == 'error'){
+        alert("Session expired. Pls relogin");
         this.$.toast_edit.open();
         this.signout();
       }
