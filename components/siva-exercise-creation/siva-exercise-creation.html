@@ -48,12 +48,11 @@ Example:
     <h1>Create New Exercise</h1>
     <form is="iron-form" id="form" method="post" action="/form/handler">
     <paper-card elevation="4">
-    <div class="card-actions">
       <paper-input id="name" required auto-validate error-message="Exercise Name shouldn't be empty" value="{{exercise.name}}" label="Name of the Exercise"></paper-input>
       <paper-input prefix="KG" type="number" value="{{exercise.weight}}" label="Weight of a person (KG)"></paper-input>
       <p>Take any weight. This weight will be taken as basemark for creating calorific consumption of a person of any weight</p>
       <paper-input prefix="Minutes" type="number" value="{{exercise.time}}" label="Time (Minutes)"></paper-input>
-      <paper-input prefix="Minutes" type="number" value="{{exercise.caloriesBurn}}" label="Calories Burned"></paper-input>
+      <paper-input prefix="" type="number" value="{{exercise.met}}" label="MET VALUE"></paper-input>
       <paper-dropdown-menu label="suitableFor" value="{{exercise.suitableFor}}">
         <paper-listbox class="dropdown-content">
           <paper-item>Diabetes</paper-item>
@@ -61,7 +60,6 @@ Example:
           <paper-item>Both</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
-    </div>
     </paper-card>
 
     <br/>

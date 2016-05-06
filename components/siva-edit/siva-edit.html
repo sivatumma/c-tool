@@ -78,15 +78,14 @@
           debounce-duration="300"></iron-ajax>
         <div class='normalTable'>
         <h4>Total : {{exercises.length}}</h4> 
-        <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Exercise</th><th>Time</th><th>Calories Burn</th><th>Doctor</th></tr>
+        <table class="normalTable"><tr><th>Reviewed?</th><th>Name of Exercise</th><th>MET VALUE</th><th>Calories Burn</th><th>Doctor</th></tr>
             <template is="dom-repeat" items="{{exercises}}">
             <tr valign="top">
               <td on-click="editThis">
                 <template is="dom-if" if="{{greaterThanZero(item.reviews.length)}}"><span>&#x2713;</span></template>
               </td>
               <td on-click="editThis">{{item.name}}</td>
-              <td on-click="editThis">{{item.time}}</td>
-              <td on-click="editThis">{{item.caloriesBurnt}}</td>
+              <td on-click="editThis">{{item.met}}</td>
               <td><em><strong>{{item.createdBy}}</strong></em></td>
             </tr>
             </template>
