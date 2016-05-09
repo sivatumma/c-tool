@@ -319,7 +319,6 @@ module.exports = function(mongoose) {
       // }
   }
     usersSchema.statics.authorize = function(req, res, next) {
-   console.log("hewlo world");
 
         if (config.approvedAuthorizedAPIKeys.indexOf(req.query.API_KEY) >= 0) {
             return next();
