@@ -13,6 +13,7 @@ var express = require('express'),
     // modelStaticData = require('../core/t')(),
     Recipe = require('../core/models/recipe'),
     Exercise = require('../core/models/exercise');
+var TIMEOUT = 2000;
 /**	
  *	Behavior is like the following: Requests come to this server from RTMB (/rtmb), from mobile app (/mobileapp)
  *	and whatsoever. The current file serves the mobile app requests.
@@ -97,19 +98,18 @@ router.get('/:moduleName', function(req, res, next) {
     };
     switch (req.params.moduleName) {
         case 'notification':
-            console.log(req.get("Authorization"), req.body);
             var notificationBody = {
-                    "to": "eYBrHGCsv-0:APA91bHnrZTzRNFmDeTiEYo1XyKKg4T43Ut0XHUyCtg_PE_r3rCPNKjoa_QzYcN40-2tu5Mcj5yPXQuauBkf6G4NoeGfiZgc86FVrTW0ERPwDX4rVRMb6nQE-QGfJF0A_HosvG-OuDS6",
+                    "to": "eiJPBFj98ME:APA91bExQDORMQ4PhNxe3QpB0dmui-8FxZlAcj-gFpBdxOCYaDZZocb8g945Q0oCPgzrgIAgU8PrzDGsgxJVC_6bFBDPN0wR_S151IxFh1PMJKTJa3U1n1GqW3-j90g5Y02qyEOjPGlc",
                     "data": {
-                        "message": "This is Siva from O-Prime !",
+                        "message": "This is Siva, Mastan, Dattu from O-Prime !",
                     }
                 },
                 url = "https://gcm-http.googleapis.com/gcm/send",
                 headers = {
-                    "Authorization": "key=AIzaSyBmRQVJnin-qAiRD2SagaxIW4NDN9H7f50",
+                    "Authorization": "key=AIzaSyCrZC2cacQTXJppsCtSAH-_Uu4lf0YOPu4",
                     "Content-Type": "application/json"
                 },
-                proxy = request[req.method.toLowerCase()]({
+                proxy = request.post({
                     uri: url,
                     json: req.body,
                     headers: headers,
@@ -128,7 +128,7 @@ router.get('/:moduleName', function(req, res, next) {
             break;
     }
 });
-router.post('/:moduleName', function(req, res, next) {
+router.put('/:moduleName', function(req, res, next) {
     //	Move session handling to User.authorize
     var session = req.session,
         currentUser = session.user,
@@ -205,7 +205,28 @@ router.post('/:moduleName', function(req, res, next) {
     };
     switch (req.params.moduleName) {
         case 'notification':
-            console.log(req.body);
+            console.log("The token of client app: ", req.get("token"));
+            var notificationBody = {
+                    "to": req.get("token"),
+                    "data": {
+                        "message": "Welcome to Oprime : Time: " + new Date().toISOString(),
+                    }
+                },
+                url = "https://gcm-http.googleapis.com/gcm/send",
+                headers = {
+                    "Authorization": "key=AIzaSyCrZC2cacQTXJppsCtSAH-_Uu4lf0YOPu4",
+                    "Content-Type": "application/json"
+                },
+                proxy = request.post({
+                    uri: url,
+                    json: notificationBody,
+                    headers: headers,
+                    timeout: TIMEOUT
+                }, function(error, response, body) {
+                    if (error) return res.send(500, error);
+                    console.log(response);
+                });
+            proxy.pipe(res);
             break;
         case 'medication':
             res.status(200).send(medicationData);
