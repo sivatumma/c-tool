@@ -39,6 +39,11 @@ router.get('/:kindOfData', function(req, res, next) {
 				    facade.sampleIngredient = _.find(data, function(x) {
 				      return x.NAME == "Brinjal";
 				    });
+				    facade.getIngredientData = function(name){
+				    	return _.find(data, function(x) {
+					      return x.NAME == name;
+					    });
+				    };
 					res.status(200).send(JSON.stringify(facade));
 				});
 			break;

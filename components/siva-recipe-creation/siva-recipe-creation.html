@@ -276,7 +276,7 @@ Polymer({
   addIngredient: function(e) {
 
     var that = this;
-    if (this.recipe.ingredients.length > 0) this.pop('recipe.ingredients');
+    if (this.recipe.ingredients.length > 1) this.pop('recipe.ingredients');
     // this.currentIngredient = this.currentIngredient || {};
     _.extend(this.currentIngredient, _.find(this.facade.nutritives, function(x) {
       return x.NAME == that.$.ingredientsInputCombo.value;
@@ -296,11 +296,10 @@ Polymer({
       this.updateTotals();
     }
   },
-
   updateTotals: function() {
     //  This is overhead as polymer only supports data watching on arrays (push, pop etc.)
     //  The actual totals object is the totalsObject below this line
-    var totalsObject = {}
+    var totalsObject = {};
     for (k in this.facade.sampleIngredient) {
       console.log(k);
       if (k == "_id" || k == "NAME" || k == "qty" || k == "uom" || k == "servingsPerOnePerson") continue;
@@ -332,6 +331,7 @@ Polymer({
     var that = this;
     var mealTypes = document.querySelectorAll("#mealType > paper-checkbox[active]");
 
+    if(!this.addingSaltOnly)
     [].forEach.call(mealTypes,function(mealType){
       that.recipe.mealType += mealType.innerText + ",";
     });
@@ -339,6 +339,7 @@ Polymer({
 
     var diseaseFriendliness = document.querySelectorAll("#diseaseFriendly > paper-checkbox[active]");
 
+    if(!this.addingSaltOnly)
     [].forEach.call(diseaseFriendliness,function(diseaseFriendly){
       that.recipe.diseaseFriendly += diseaseFriendly.innerText + ",";
     });

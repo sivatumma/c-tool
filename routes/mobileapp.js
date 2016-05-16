@@ -14,6 +14,14 @@ var express = require('express'),
     Recipe = require('../core/models/recipe'),
     Exercise = require('../core/models/exercise');
 var TIMEOUT = 2000;
+
+//  Automating Notifications - Workflow is Parse Treatment/Diet/Physio prescriptions
+//  and apply node-schedule jobs to send notifications
+
+var schedule = require('node-schedule');
+var chance = new require("chance")();
+ 
+
 /**	
  *	Behavior is like the following: Requests come to this server from RTMB (/rtmb), from mobile app (/mobileapp)
  *	and whatsoever. The current file serves the mobile app requests.
@@ -206,6 +214,35 @@ router.put('/:moduleName', function(req, res, next) {
     switch (req.params.moduleName) {
         case 'notification':
             console.log("The token of client app: ", req.get("token"));
+
+            var rule = new schedule.RecurrenceRule();
+            rule.hour = 16;
+            var t = req.get("token"); 
+            var j = schedule.scheduleJob(rule, function(){
+                var options = ["Medication","Lunch","Metformin","Walking"];
+                // console.log(chance.integer({min:0, max:options.length}));
+                var notificationBody = {
+                        "to": t,
+                        "data": {
+                            "message": "Time for your " + chance.first(),
+                        }
+                    },
+                    url = "https://gcm-http.googleapis.com/gcm/send",
+                    headers = {
+                        "Authorization": "key=AIzaSyCrZC2cacQTXJppsCtSAH-_Uu4lf0YOPu4",
+                        "Content-Type": "application/json"
+                    },
+                    proxy = request.post({
+                        uri: url,
+                        json: notificationBody,
+                        headers: headers,
+                        timeout: TIMEOUT
+                    }, function(error, response, body) {
+                        if (error) return res.send(500, error);
+                        console.log(response);
+                    });
+            });
+
             var notificationBody = {
                     "to": req.get("token"),
                     "data": {
