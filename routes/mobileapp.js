@@ -216,7 +216,7 @@ router.put('/:moduleName', function(req, res, next) {
             console.log("The token of client app: ", req.get("token"));
 
             var rule = new schedule.RecurrenceRule();
-            rule.hour = 16;
+            rule.minute = 16;
             var t = req.get("token"); 
             var j = schedule.scheduleJob(rule, function(){
                 var options = ["Medication","Lunch","Metformin","Walking"];
@@ -224,7 +224,7 @@ router.put('/:moduleName', function(req, res, next) {
                 var notificationBody = {
                         "to": t,
                         "data": {
-                            "message": "Time for your " + chance.first(),
+                            "message": "Time for your " + options[chance.integer({min:0,max:options.length})],
                         }
                     },
                     url = "https://gcm-http.googleapis.com/gcm/send",
