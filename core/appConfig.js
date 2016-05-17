@@ -16,6 +16,9 @@ module.exports = function(env) {
             url: "http://gcmdev.callhealth.com",
             method: "POST"
         },
+        smsGateway:{
+
+        },
         application: {
            root_path: path.join('/home', 'siva', 'Downloads', 'chpe-polymer-1.0.3'),
             // root_path: path.join('E:','Work','chpe-1.0'),
